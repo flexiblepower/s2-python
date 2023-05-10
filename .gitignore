@@ -1,0 +1,7 @@
+**.pyc
+.idea/
+.vscode/
+.venv/
+.pytest_cache/
+.coverage
+unit_test_coverage/

@@ -1,0 +1,279 @@
+---
+openapi: 3.0.1
+info:
+  title: Test document
+  version: '1.0'
+components:
+  schemas:
+    Role:
+      title: ''
+      properties:
+        role:
+          "$ref": "#/components/schemas/RoleType"
+          description: Role type of the Resource Manager for the given commodity
+        commodity:
+          "$ref": "#/components/schemas/Commodity"
+          description: Commodity the role refers to.
+      required:
+      - role
+      - commodity
+      additionalProperties: false
+    RoleType:
+      enum:
+      - ENERGY_PRODUCER
+      - ENERGY_CONSUMER
+      - ENERGY_STORAGE
+      description: |-
+        ENERGY_PRODUCER: Identifier for RoleType Producer
+        ENERGY_CONSUMER: Identifier for RoleType Consumer
+        ENERGY_STORAGE: Identifier for RoleType Storage
+    Commodity:
+      enum:
+      - GAS
+      - HEAT
+      - ELECTRICITY
+      - OIL
+      description: |-
+        GAS: Identifier for Commodity GAS
+        HEAT: Identifier for Commodity HEAT
+        ELECTRICITY: Identifier for Commodity ELECTRICITY
+        OIL: Identifier for Commodity OIL
+    FRBC_ActuatorDescription:
+      properties:
+        id:
+          "$ref": "#/components/schemas/ID"
+          description: ID of the Actuator. Must be unique in the scope of the Resource
+            Manager, for at least the duration of the session between Resource Manager
+            and CEM.
+        diagnostic_label:
+          type: string
+          description: Human readable name/description for the actuator. This element
+            is only intended for diagnostic purposes and not for HMI applications.
+        supported_commodities:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            "$ref": "#/components/schemas/Commodity"
+          description: List of all supported Commodities.
+        operation_modes:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            "$ref": "#/components/schemas/FRBC_OperationMode"
+          description: Provided FRBC.OperationModes associated with this actuator
+        transitions:
+          type: array
+          minItems: 0
+          maxItems: 1000
+          items:
+            "$ref": "#/components/schemas/Transition"
+          description: Possible transitions between FRBC.OperationModes associated
+            with this actuator.
+        timers:
+          type: array
+          minItems: 0
+          maxItems: 1000
+          items:
+            "$ref": "#/components/schemas/Timer"
+          description: List of Timers associated with this actuator
+      required:
+      - id
+      - supported_commodities
+      - operation_modes
+      - transitions
+      - timers
+      additionalProperties: false
+    FRBC_OperationMode:
+      properties:
+        id:
+          "$ref": "#/components/schemas/ID"
+          description: ID of the FRBC.OperationMode. Must be unique in the scope of
+            the FRBC.ActuatorDescription in which it is used.
+        diagnostic_label:
+          type: string
+          description: Human readable name/description of the FRBC.OperationMode.
+            This element is only intended for diagnostic purposes and not for HMI
+            applications.
+        elements:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            "$ref": "#/components/schemas/FRBC_OperationModeElement"
+          description: List of FRBC.OperationModeElements, which describe the properties
+            of this FRBC.OperationMode depending on the fill_level. The fill_level_ranges
+            of the items in the Array must be contiguous.
+        abnormal_condition_only:
+          type: boolean
+          description: Indicates if this FRBC.OperationMode may only be used during
+            an abnormal condition
+      required:
+      - id
+      - elements
+      - abnormal_condition_only
+      additionalProperties: false
+    FRBC_OperationModeElement:
+      properties:
+        fill_level_range:
+          "$ref": "#/components/schemas/NumberRange"
+          description: The range of the fill level for which this FRBC.OperationModeElement
+            applies. The start of the NumberRange shall be smaller than the end of
+            the NumberRange.
+        fill_rate:
+          "$ref": "#/components/schemas/NumberRange"
+          description: 'Indicates the change in fill_level per second. The lower_boundary
+            of the NumberRange is associated with an operation_mode_factor of 0, the
+            upper_boundary is associated with an operation_mode_factor of 1. '
+        power_ranges:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            "$ref": "#/components/schemas/PowerRange"
+          description: The power produced or consumed by this operation mode. The
+            start of each PowerRange is associated with an operation_mode_factor of
+            0, the end is associated with an operation_mode_factor of 1. In the array
+            there must be at least one PowerRange, and at most one PowerRange per
+            CommodityQuantity.
+        running_costs:
+          "$ref": "#/components/schemas/NumberRange"
+          description: Additional costs per second (e.g. wear, services) associated
+            with this operation mode in the currency defined by the ResourceManagerDetails,
+            excluding the commodity cost. The range is expressing uncertainty and
+            is not linked to the operation_mode_factor.
+      required:
+      - fill_level_range
+      - fill_rate
+      - power_ranges
+      additionalProperties: false
+    NumberRange:
+      properties:
+        start_of_range:
+          type: number
+          description: Number that defines the start of the range
+        end_of_range:
+          type: number
+          description: Number that defines the end of the range
+      required:
+      - start_of_range
+      - end_of_range
+      additionalProperties: false
+    PowerRange:
+      properties:
+        start_of_range:
+          type: number
+          description: Power value that defines the start of the range.
+        end_of_range:
+          type: number
+          description: Power value that defines the end of the range.
+        commodity_quantity:
+          "$ref": "#/components/schemas/CommodityQuantity"
+          description: The power quantity the values refer to
+      required:
+      - start_of_range
+      - end_of_range
+      - commodity_quantity
+      additionalProperties: false
+    CommodityQuantity:
+      enum:
+      - ELECTRIC.POWER.L1
+      - ELECTRIC.POWER.L2
+      - ELECTRIC.POWER.L3
+      - ELECTRIC.POWER.3_PHASE_SYMMETRIC
+      - NATURAL_GAS.FLOW_RATE
+      - HYDROGEN.FLOW_RATE
+      - HEAT.TEMPERATURE
+      - HEAT.FLOW_RATE
+      - HEAT.THERMAL_POWER
+      - OIL.FLOW_RATE
+      description: |-
+        ELECTRIC.POWER.L1: Electric power described in Watt on phase 1. If a device utilizes only one phase it should always use L1.
+        ELECTRIC.POWER.L2: Electric power described in Watt on phase 2. Only applicable for 3 phase devices.
+        ELECTRIC.POWER.L3: Electric power described in Watt on phase 3. Only applicable for 3 phase devices.
+        ELECTRIC.POWER.3_PHASE_SYMMETRIC: Electric power described in Watt on when power is equally shared among the three phases. Only applicable for 3 phase devices.
+        NATURAL_GAS.FLOW_RATE: Gas flow rate described in liters per second
+        HYDROGEN.FLOW_RATE: Gas flow rate described in grams per second
+        HEAT.TEMPERATURE: Heat described in degrees Celsius
+        HEAT.FLOW_RATE: Flow rate of heat carrying gas or liquid in liters per second
+        HEAT.THERMAL_POWER: Thermal power in Watt
+        OIL.FLOW_RATE: Oil flow rate described in liters per hour
+    ID:
+      type: string
+      pattern: "[a-zA-Z0-9\\-_:]{2,64}"
+      description: An identifier expressed as a UUID
+    Transition:
+      properties:
+        id:
+          "$ref": "#/components/schemas/ID"
+          description: ID of the Transition. Must be unique in the scope of the OMBC.SystemDescription,
+            FRBC.ActuatorDescription or DDBC.ActuatorDescription in which it is used.
+        from:
+          "$ref": "#/components/schemas/ID"
+          description: ID of the OperationMode (exact type differs per ControlType)
+            that should be switched from.
+        to:
+          "$ref": "#/components/schemas/ID"
+          description: ID of the OperationMode (exact type differs per ControlType)
+            that will be switched to.
+        start_timers:
+          type: array
+          minItems: 0
+          maxItems: 1000
+          items:
+            "$ref": "#/components/schemas/ID"
+          description: List of IDs of Timers that will be (re)started when this transition
+            is initiated
+        blocking_timers:
+          type: array
+          minItems: 0
+          maxItems: 1000
+          items:
+            "$ref": "#/components/schemas/ID"
+          description: List of IDs of Timers that block this Transition from initiating
+            while at least one of these Timers is not yet finished
+        transition_costs:
+          type: number
+          description: Absolute costs for going through this Transition in the currency
+            as described in the ResourceManagerDetails.
+        transition_duration:
+          "$ref": "#/components/schemas/Duration"
+          description: Indicates the time between the initiation of this Transition,
+            and the time at which the device behaves according to the Operation Mode
+            which is defined in the ‘to’ data element. When no value is provided it
+            is assumed the transition duration is negligible.
+        abnormal_condition_only:
+          type: boolean
+          description: Indicates if this Transition may only be used during an abnormal
+            condition (see Clause )
+      required:
+      - id
+      - from
+      - to
+      - start_timers
+      - blocking_timers
+      - abnormal_condition_only
+      additionalProperties: false
+    Duration:
+      type: integer
+      minimum: 0
+      description: Duration in milliseconds
+    Timer:
+      properties:
+        id:
+          "$ref": "#/components/schemas/ID"
+          description: ID of the Timer. Must be unique in the scope of the OMBC.SystemDescription,
+            FRBC.ActuatorDescription or DDBC.ActuatorDescription in which it is used.
+        diagnostic_label:
+          type: string
+          description: Human readable name/description of the Timer. This element
+            is only intended for diagnostic purposes and not for HMI applications.
+        duration:
+          "$ref": "#/components/schemas/Duration"
+          description: The time it takes for the Timer to finish after it has been
+            started
+      required:
+      - id
+      - duration
+      additionalProperties: false
