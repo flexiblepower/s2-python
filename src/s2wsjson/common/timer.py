@@ -10,6 +10,10 @@ from s2wsjson.generated.gen_s2 import Timer as GenTimer, Duration
 from s2wsjson.validate_values_mixin import ValidateValuesMixin
 
 
+def from_timedelta_to_duration(duration: timedelta) -> Duration:
+    return Duration(__root__=math.ceil(duration.total_seconds() * 1000))
+
+
 class Timer(GenTimer, ValidateValuesMixin['Timer']):
     class Config(GenTimer.Config):
         validate_assignment = True
@@ -20,7 +24,7 @@ class Timer(GenTimer, ValidateValuesMixin['Timer']):
         if isinstance(duration, Duration):
             _duration = duration
         elif isinstance(duration, timedelta):
-            _duration = Duration(__root__=math.ceil(duration.total_seconds() * 1000))
+            _duration = from_timedelta_to_duration(duration)
         else:
             _duration = Duration(__root__=duration)
 
@@ -32,7 +36,7 @@ class Timer(GenTimer, ValidateValuesMixin['Timer']):
         return timedelta(milliseconds=self.duration.__root__)
 
     def set_duration_as_timedelta(self, duration: timedelta):
-        self.duration = Duration(__root__=math.ceil(duration.total_seconds() * 1000))
+        self.duration = from_timedelta_to_duration(duration)
 
     @validator('id')
     def validate_id(cls, v):
