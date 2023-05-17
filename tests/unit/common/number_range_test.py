@@ -36,9 +36,17 @@ class NumberRangeTest(TestCase):
         with self.assertRaises(S2ValidationError):
             NumberRange.from_json(json_str)
 
+    def test__from_json__validator_error(self):
+        # Arrange
+        json_str = '{"start_of_range": -6.0, "end_of_range": 5.0}'
+
+        # Act / Assert
+        with self.assertRaises(ValidationError):
+            NumberRange.from_json(json_str)
+
     def test__to_json__happy_path(self):
         # Arrange
-        number_range = NumberRange(4.0, 5.0)
+        number_range = NumberRange(start_of_range=4.0, end_of_range=5.0)
 
         # Act
         json = number_range.to_json()
@@ -49,8 +57,16 @@ class NumberRangeTest(TestCase):
 
     def test__to_json__value_validation_error(self):
         # Arrange
-        number_range = NumberRange(6.0, 5.0)
+        number_range = NumberRange(start_of_range=6.0, end_of_range=5.0)
 
         # Act / Assert
         with self.assertRaises(S2ValidationError):
             number_range.to_json()
+
+    def test__assignment__validator_error(self):
+        # Arrange
+        number_range = NumberRange(start_of_range=4.0, end_of_range=5.0)
+
+        # Act / Assert
+        with self.assertRaises(ValidationError):
+            number_range.start_of_range = -3.0

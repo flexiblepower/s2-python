@@ -5,3 +5,4 @@
 .pytest_cache/
 .coverage
 unit_test_coverage/
+.mypy_cache/
