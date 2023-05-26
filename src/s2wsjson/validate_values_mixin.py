@@ -6,16 +6,14 @@ import pydantic.main
 from s2wsjson.s2_validation_error import S2ValidationError
 
 # Necessary to overwrite validate_model of pydantic to convert ValidationError -> S2ValidationError
-pydantic.main.orig_validate_model = pydantic.main.validate_model
+pydantic.main.orig_validate_model = pydantic.main.validate_model  # type: ignore[attr-defined]
 
 
 def convert_validation_error_to_s2_validation_error(model: Type[BaseModel],
-                                                    input_data: 'pydantic.DictStrAny',
-                                                    cls: 'pydantic.ModelOrDc' = None) -> Tuple['pydantic.DictStrAny',
-                                                                                               'pydantic.SetStr',
-                                                                                               Optional[S2ValidationError]]:
+                                                    input_data: 'pydantic.main.DictStrAny',
+                                                    cls: 'pydantic.main.ModelOrDc' = None) -> Tuple['pydantic.main.DictStrAny', 'pydantic.main.SetStr', Optional[S2ValidationError]]:  # type: ignore[assignment]
     try:
-        values, fields_set, validation_error = pydantic.main.orig_validate_model(model, input_data, cls)
+        values, fields_set, validation_error = pydantic.main.orig_validate_model(model, input_data, cls)  # type: ignore[attr-defined]
 
         if validation_error:
             validation_error = S2ValidationError(model, 'pydantic had a format validation error', validation_error)
@@ -25,18 +23,18 @@ def convert_validation_error_to_s2_validation_error(model: Type[BaseModel],
         raise S2ValidationError(model, 'pydantic had a format validation error', e)
 
 
-pydantic.main.validate_model = convert_validation_error_to_s2_validation_error
-pydantic.main.BaseModel.__orig_setattr__ = pydantic.main.BaseModel.__setattr__
+pydantic.main.validate_model = convert_validation_error_to_s2_validation_error  # type: ignore[assignment]
+pydantic.main.BaseModel.__orig_setattr__ = pydantic.main.BaseModel.__setattr__  # type: ignore[attr-defined]
 
 
 def wrap__setattr__(self: BaseModel, key, value):
     try:
-        self.__orig_setattr__(key, value)
+        self.__orig_setattr__(key, value)  # type: ignore[attr-defined]
     except (ValidationError, TypeError) as e:
         raise S2ValidationError(self, 'Pydantic raised a format validation error.', pydantic_validation_error=e)
 
 
-pydantic.main.BaseModel.__setattr__ = wrap__setattr__
+pydantic.main.BaseModel.__setattr__ = wrap__setattr__  # type: ignore[assignment]
 
 B = TypeVar('B', bound=BaseModel, covariant=True)
 

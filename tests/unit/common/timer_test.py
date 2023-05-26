@@ -2,7 +2,7 @@ import uuid
 from datetime import timedelta
 from unittest import TestCase
 
-from s2wsjson.common.timer import Timer
+from s2wsjson.common import Timer
 from s2wsjson.s2_validation_error import S2ValidationError
 
 
@@ -33,14 +33,6 @@ class TimerTest(TestCase):
         with self.assertRaises(TypeError):
             Timer.parse_raw(json_str)
 
-    def test__from_json__validator_error(self):
-        # Arrange
-        json_str = '{"id": "2bdec96b-be3b-4ba9-afa0-c4a0632ccedf", "duration": 5000, "diagnostic_label": "som-e_label"}'
-
-        # Act / Assert
-        with self.assertRaises(S2ValidationError):
-            Timer.from_json(json_str)
-
     def test__to_json__happy_path(self):
         # Arrange
         timer = Timer(id=uuid.UUID('2bdec96b-be3b-4ba9-afa0-c4a0632ccedf'),
@@ -53,16 +45,6 @@ class TimerTest(TestCase):
         # Assert
         expected_json = '{"id": "2bdec96b-be3b-4ba9-afa0-c4a0632ccedf", "diagnostic_label": "some_label", "duration": 5000}'
         self.assertEqual(json, expected_json)
-
-    def test__assignment__validator_error(self):
-        # Arrange
-        timer = Timer(id=uuid.UUID('2bdec96b-be3b-4ba9-afa0-c4a0632ccedf'),
-                      duration=timedelta(seconds=5),
-                      diagnostic_label='some_label')
-
-        # Act / Assert
-        with self.assertRaises(S2ValidationError):
-            timer.diagnostic_label = 'some-label'
 
     def test__assignment__overriden_duration_field(self):
         # Arrange

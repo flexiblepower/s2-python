@@ -3,9 +3,6 @@ import uuid
 from datetime import timedelta
 from typing import Optional
 
-from pydantic import validator
-
-
 from s2wsjson.generated.gen_s2 import Timer as GenTimer, Duration
 from s2wsjson.validate_values_mixin import ValidateValuesMixin
 
@@ -37,18 +34,3 @@ class Timer(GenTimer, ValidateValuesMixin['Timer']):
 
     def set_duration_as_timedelta(self, duration: timedelta):
         self.duration = from_timedelta_to_duration(duration)
-
-    @validator('id')
-    def validate_id(cls, v):
-        if not v:
-            raise ValueError('ID may not be empty!')
-        return v
-
-    @validator('diagnostic_label')
-    def validate_diagnostic_label(cls, v):
-        if '-' in v:
-            raise ValueError('diagnostic_label may not contain \'-\'')
-        return v
-
-    def validate_across_values(self) -> bool:
-        return True
