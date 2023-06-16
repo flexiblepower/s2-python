@@ -17,7 +17,7 @@ class Timer(GenTimer, ValidateValuesMixin['Timer']):
 
     id: uuid.UUID = GenTimer.__fields__['id']  # type: ignore[assignment]
 
-    def __init__(self, id: uuid.UUID, diagnostic_label: Optional[str], duration: 'Duration | int | timedelta'):
+    def __init__(self, id: uuid.UUID, duration: 'Duration | int | timedelta', diagnostic_label: Optional[str]=None):
         if isinstance(duration, Duration):
             _duration = duration
         elif isinstance(duration, timedelta):
