@@ -45,7 +45,7 @@ class TimerTest(TestCase):
         json_str = '{"id": "2bdec96b-be3b-4ba9-afa0-c4a0632ccedf", "diagnostic_label": "some_label"}'
 
         # Act / Assert
-        with self.assertRaises(TypeError):
+        with self.assertRaises(S2ValidationError):
             Timer.from_json(json_str)
 
     def test__from_json__validator_error(self):

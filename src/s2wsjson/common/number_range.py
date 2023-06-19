@@ -1,9 +1,9 @@
 from pydantic import validator, root_validator
 
-from s2wsjson.validate_values_mixin import ValidateValuesMixin
+from s2wsjson.validate_values_mixin import ValidateValuesMixin, patch
 from s2wsjson.generated.gen_s2 import NumberRange as GenNumberRange
 
-
+@patch
 class NumberRange(GenNumberRange, ValidateValuesMixin['NumberRange']):
     class Config(GenNumberRange.Config):
         validate_assignment = True

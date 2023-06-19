@@ -7,13 +7,13 @@ from pydantic import validator
 
 
 from s2wsjson.generated.gen_s2 import Timer as GenTimer, Duration
-from s2wsjson.validate_values_mixin import ValidateValuesMixin
+from s2wsjson.validate_values_mixin import ValidateValuesMixin, patch
 
 
 def from_timedelta_to_duration(duration: timedelta) -> Duration:
     return Duration(__root__=math.ceil(duration.total_seconds() * 1000))
 
-
+@patch
 class Timer(GenTimer, ValidateValuesMixin['Timer']):
     class Config(GenTimer.Config):
         validate_assignment = True
