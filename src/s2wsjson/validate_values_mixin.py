@@ -63,7 +63,7 @@ def convert_to_s2exception(f : Callable):
     return inner
 
 
-def patch(input_class):
+def catch_and_convert_exceptions(input_class):
 
     input_class.__init__ = convert_to_s2exception(input_class.__init__)
     input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)
