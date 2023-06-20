@@ -68,8 +68,6 @@ def catch_and_convert_exceptions(input_class):
     input_class.__init__ = convert_to_s2exception(input_class.__init__)
     input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)
 
-    input_class.json = convert_to_s2exception(input_class.json)
-    input_class.dict = convert_to_s2exception(input_class.dict)
     input_class.parse_raw = convert_to_s2exception(input_class.parse_raw)
 
-    return 
+    return input_class
