@@ -72,4 +72,4 @@ def catch_and_convert_exceptions(input_class):
     input_class.dict = convert_to_s2exception(input_class.dict)
     input_class.parse_raw = convert_to_s2exception(input_class.parse_raw)
 
-    return input_class
+    return 
