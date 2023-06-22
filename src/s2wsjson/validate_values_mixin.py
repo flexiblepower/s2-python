@@ -1,7 +1,9 @@
-import abc
-from typing import TypeVar, Generic, Protocol, Type
+from typing import TypeVar, Generic, Protocol, Type, Tuple, Optional, Callable
 
-from pydantic import BaseModel, StrBytes, Protocol as PydanticProtocol
+from pydantic import BaseModel, StrBytes, Protocol as PydanticProtocol, ValidationError
+import pydantic.main
+
+from s2wsjson.s2_validation_error import S2ValidationError
 
 
 B = TypeVar('B', bound=BaseModel, covariant=True)
@@ -9,7 +11,6 @@ B = TypeVar('B', bound=BaseModel, covariant=True)
 
 class SupportsValidation(Protocol[B]):
     # ValidateValuesMixin methods
-    def validate_across_values(self) -> bool: ...
     def to_json(self) -> str: ...
     def to_dict(self) -> dict: ...
 
@@ -33,21 +34,40 @@ class SupportsValidation(Protocol[B]):
 C = TypeVar('C', bound='SupportsValidation')
 
 
-class ValidateValuesMixin(Generic[C], abc.ABC):
-    @abc.abstractmethod
-    def validate_across_values(self) -> bool:
-        pass
-
+class ValidateValuesMixin(Generic[C]):
     def to_json(self: C) -> str:
-        self.validate_across_values()
-        return self.json()
+        try:
+            return self.json()
+        except (ValidationError, TypeError) as e:
+            raise S2ValidationError(self, 'Pydantic raised a format validation error.', pydantic_validation_error=e)
 
     def to_dict(self: C) -> dict:
-        self.validate_across_values()
         return self.dict()
 
     @classmethod
     def from_json(cls: Type[C], json_str: str) -> C:
-        gen_model = cls.parse_raw(json_str)
-        gen_model.validate_across_values()
+        gen_model: C = cls.parse_raw(json_str)
         return gen_model
+
+
+def convert_to_s2exception(f : Callable):
+    def inner(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except (ValidationError, TypeError) as e:
+            raise S2ValidationError(args[0], 'Pydantic raised a format validation error.', pydantic_validation_error=e)
+
+    inner.__doc__ = f.__doc__
+    inner.__annotations__ = f.__annotations__
+
+    return inner
+
+
+def catch_and_convert_exceptions(input_class):
+
+    input_class.__init__ = convert_to_s2exception(input_class.__init__)
+    input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)
+
+    input_class.parse_raw = convert_to_s2exception(input_class.parse_raw)
+
+    return input_class

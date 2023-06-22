@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-from pydantic import ValidationError
-
 from s2wsjson.common.number_range import NumberRange
 from s2wsjson.s2_validation_error import S2ValidationError
 
@@ -25,7 +23,7 @@ class NumberRangeTest(TestCase):
         json_str = '{"start_of_range": 4.0}'
 
         # Act / Assert
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(S2ValidationError):
             NumberRange.from_json(json_str)
 
     def test__from_json__value_validation_error(self):
@@ -41,7 +39,7 @@ class NumberRangeTest(TestCase):
         json_str = '{"start_of_range": -6.0, "end_of_range": 5.0}'
 
         # Act / Assert
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(S2ValidationError):
             NumberRange.from_json(json_str)
 
     def test__to_json__happy_path(self):
@@ -56,17 +54,14 @@ class NumberRangeTest(TestCase):
         self.assertEqual(json, expected_json)
 
     def test__to_json__value_validation_error(self):
-        # Arrange
-        number_range = NumberRange(start_of_range=6.0, end_of_range=5.0)
-
-        # Act / Assert
+        # Arrange/ Act / Assert
         with self.assertRaises(S2ValidationError):
-            number_range.to_json()
+            NumberRange(start_of_range=6.0, end_of_range=5.0)
 
     def test__assignment__validator_error(self):
         # Arrange
         number_range = NumberRange(start_of_range=4.0, end_of_range=5.0)
 
         # Act / Assert
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(S2ValidationError):
             number_range.start_of_range = -3.0

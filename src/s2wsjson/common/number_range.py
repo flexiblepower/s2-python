@@ -1,10 +1,9 @@
-from pydantic import validator
+from pydantic import validator, root_validator
 
-from s2wsjson.s2_validation_error import S2ValidationError
-from s2wsjson.validate_values_mixin import ValidateValuesMixin
+from s2wsjson.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
 from s2wsjson.generated.gen_s2 import NumberRange as GenNumberRange
 
-
+@catch_and_convert_exceptions
 class NumberRange(GenNumberRange, ValidateValuesMixin['NumberRange']):
     class Config(GenNumberRange.Config):
         validate_assignment = True
@@ -15,8 +14,16 @@ class NumberRange(GenNumberRange, ValidateValuesMixin['NumberRange']):
             raise ValueError('start_of_range should be >= 0')
         return v
 
-    def validate_across_values(self) -> bool:
-        if self.start_of_range > self.end_of_range:
-            raise S2ValidationError(self, 'start_of_range should not be higher than end_of_range')
+    @validator('end_of_range')
+    def validate_values(cls, end_of_range, values) -> bool:
+        if 'start_of_range' in values and values['start_of_range'] > end_of_range:
+            raise ValueError('start_of_range should not be higher than end_of_range')
 
-        return True
+        return end_of_range
+
+    @root_validator(pre=False)
+    def validate_start_end_order(cls, values):
+        if values.get("start_of_range") > values.get("end_of_range"):
+            raise ValueError(cls, 'start_of_range should not be higher than end_of_range')
+
+        return values

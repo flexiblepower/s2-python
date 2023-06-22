@@ -7,20 +7,20 @@ from pydantic import validator
 
 
 from s2wsjson.generated.gen_s2 import Timer as GenTimer, Duration
-from s2wsjson.validate_values_mixin import ValidateValuesMixin
+from s2wsjson.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
 
 
 def from_timedelta_to_duration(duration: timedelta) -> Duration:
     return Duration(__root__=math.ceil(duration.total_seconds() * 1000))
 
-
+@catch_and_convert_exceptions
 class Timer(GenTimer, ValidateValuesMixin['Timer']):
     class Config(GenTimer.Config):
         validate_assignment = True
 
     id: uuid.UUID = GenTimer.__fields__['id']  # type: ignore[assignment]
 
-    def __init__(self, id: uuid.UUID, diagnostic_label: Optional[str], duration: 'Duration | int | timedelta'):
+    def __init__(self, id: uuid.UUID, duration: 'Duration | int | timedelta', diagnostic_label: Optional[str]=None):
         if isinstance(duration, Duration):
             _duration = duration
         elif isinstance(duration, timedelta):
@@ -46,6 +46,9 @@ class Timer(GenTimer, ValidateValuesMixin['Timer']):
 
     @validator('diagnostic_label')
     def validate_diagnostic_label(cls, v):
+        if v is None:
+            return v
+
         if '-' in v:
             raise ValueError('diagnostic_label may not contain \'-\'')
         return v
