@@ -13,9 +13,6 @@ class TimerTest(TestCase):
 
         # Act
         timer = Timer.from_json(json_str)
-        # TODO Why does mypy think Timer here is of type Any and not Timer? timer.famma() should raise a pycharm error, but that does not work either. Weirdly, autocompletion on timer.<> seems to work.
-        #   reveal_type(timer)
-        #   reveal_type(Timer) also resolves to Any???
 
         # Assert
         expected_id = uuid.UUID('2bdec96b-be3b-4ba9-afa0-c4a0632ccedf')
@@ -45,7 +42,7 @@ class TimerTest(TestCase):
         json_str = '{"id": "2bdec96b-be3b-4ba9-afa0-c4a0632ccedf", "diagnostic_label": "some_label"}'
 
         # Act / Assert
-        with self.assertRaises(TypeError):
+        with self.assertRaises(S2ValidationError):
             Timer.from_json(json_str)
 
     def test__to_json__happy_path(self):
