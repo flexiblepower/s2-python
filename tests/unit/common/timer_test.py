@@ -3,6 +3,7 @@ from datetime import timedelta
 from unittest import TestCase
 
 from s2wsjson.common import Timer
+from s2wsjson.common.duration import Duration
 from s2wsjson.s2_validation_error import S2ValidationError
 
 
@@ -19,7 +20,7 @@ class TimerTest(TestCase):
         expected_duration = timedelta(seconds=5)
         expected_diagnostic_label = 'some_label'
         self.assertEqual(timer.id, expected_id)
-        self.assertEqual(timer.duration_as_timedelta(), expected_duration)
+        self.assertEqual(timer.duration.to_timedelta(), expected_duration)
         self.assertEqual(timer.diagnostic_label, expected_diagnostic_label)
 
     def test_optional_parameters(self):
@@ -35,7 +36,7 @@ class TimerTest(TestCase):
 
         self.assertIsNone(timer.diagnostic_label)
         self.assertEqual(timer.id, expected_id)
-        self.assertEqual(timer.duration_as_timedelta(), expected_duration)
+        self.assertEqual(timer.duration.to_timedelta(), expected_duration)
 
     def test__from_json__format_validation_error(self):
         # Arrange
@@ -65,12 +66,12 @@ class TimerTest(TestCase):
                       diagnostic_label='some_label')
 
         # Act
-        timer.set_duration_as_timedelta(timedelta(seconds=4))
+        timer.duration = Duration.from_timedelta(timedelta(seconds=4))
 
         # Assert
         expected_id = uuid.UUID('2bdec96b-be3b-4ba9-afa0-c4a0632ccedf')
         expected_duration = timedelta(seconds=4)
         expected_diagnostic_label = 'some_label'
         self.assertEqual(timer.id, expected_id)
-        self.assertEqual(timer.duration_as_timedelta(), expected_duration)
+        self.assertEqual(timer.duration.to_timedelta(), expected_duration)
         self.assertEqual(timer.diagnostic_label, expected_diagnostic_label)

@@ -1,14 +1,11 @@
-import math
 import uuid
 from datetime import timedelta
 from typing import Optional
 
-from s2wsjson.generated.gen_s2 import Timer as GenTimer, Duration
+from s2wsjson.common.duration import Duration
+from s2wsjson.generated.gen_s2 import Timer as GenTimer
 from s2wsjson.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
 
-
-def from_timedelta_to_duration(duration: timedelta) -> Duration:
-    return Duration(__root__=math.ceil(duration.total_seconds() * 1000))
 
 @catch_and_convert_exceptions
 class Timer(GenTimer, ValidateValuesMixin['Timer']):
@@ -16,21 +13,16 @@ class Timer(GenTimer, ValidateValuesMixin['Timer']):
         validate_assignment = True
 
     id: uuid.UUID = GenTimer.__fields__['id']  # type: ignore[assignment]
+    duration: Duration = GenTimer.__fields__['duration']
 
     def __init__(self, id: uuid.UUID, duration: 'Duration | int | timedelta', diagnostic_label: Optional[str]=None):
         if isinstance(duration, Duration):
             _duration = duration
         elif isinstance(duration, timedelta):
-            _duration = from_timedelta_to_duration(duration)
+            _duration = Duration.from_timedelta(duration)
         else:
             _duration = Duration(__root__=duration)
 
         super().__init__(id=id,
                          diagnostic_label=diagnostic_label,
                          duration=_duration)
-
-    def duration_as_timedelta(self) -> timedelta:
-        return timedelta(milliseconds=self.duration.__root__)
-
-    def set_duration_as_timedelta(self, duration: timedelta):
-        self.duration = from_timedelta_to_duration(duration)
