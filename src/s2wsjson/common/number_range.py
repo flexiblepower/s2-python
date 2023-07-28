@@ -1,4 +1,4 @@
-from pydantic import validator, root_validator
+from pydantic import root_validator
 
 from s2wsjson.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
 from s2wsjson.generated.gen_s2 import NumberRange as GenNumberRange

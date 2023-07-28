@@ -12,17 +12,5 @@ class Timer(GenTimer, ValidateValuesMixin['Timer']):
     class Config(GenTimer.Config):
         validate_assignment = True
 
-    id: uuid.UUID = GenTimer.__fields__['id']  # type: ignore[assignment]
-    duration: Duration = GenTimer.__fields__['duration']
-
-    def __init__(self, id: uuid.UUID, duration: 'Duration | int | timedelta', diagnostic_label: Optional[str]=None):
-        if isinstance(duration, Duration):
-            _duration = duration
-        elif isinstance(duration, timedelta):
-            _duration = Duration.from_timedelta(duration)
-        else:
-            _duration = Duration(__root__=duration)
-
-        super().__init__(id=id,
-                         diagnostic_label=diagnostic_label,
-                         duration=_duration)
+    id: uuid.UUID = GenTimer.__fields__['id'].field_info  # type: ignore[assignment]
+    duration: Duration = GenTimer.__fields__['duration'].field_info  # type: ignore[assignment]

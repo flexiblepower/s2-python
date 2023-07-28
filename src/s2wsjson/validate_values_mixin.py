@@ -17,7 +17,7 @@ class SupportsValidation(Protocol[B]):
     def from_json(cls, json_str: str) -> B: ...
 
     # Pydantic methods
-    def json(self) -> str: ...
+    def json(self, by_alias: bool = False, exclude_none: bool = False) -> str: ...
     def dict(self) -> dict: ...
 
     @classmethod
@@ -36,7 +36,7 @@ C = TypeVar('C', bound='SupportsValidation')
 class ValidateValuesMixin(Generic[C]):
     def to_json(self: C) -> str:
         try:
-            return self.json()
+            return self.json(by_alias=True, exclude_none=True)
         except (ValidationError, TypeError) as e:
             raise S2ValidationError(self, 'Pydantic raised a format validation error.', pydantic_validation_error=e)
 
@@ -54,7 +54,7 @@ def convert_to_s2exception(f : Callable):
         try:
             return f(*args, **kwargs)
         except (ValidationError, TypeError) as e:
-            raise S2ValidationError(args[0], 'Pydantic raised a format validation error.', pydantic_validation_error=e)
+            raise S2ValidationError(args, 'Pydantic raised a format validation error.', pydantic_validation_error=e)
 
     inner.__doc__ = f.__doc__
     inner.__annotations__ = f.__annotations__

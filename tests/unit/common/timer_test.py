@@ -27,7 +27,7 @@ class TimerTest(TestCase):
         # Arrange / Act
         timer = Timer(
             id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632ccedf"),
-            duration=timedelta(seconds=5),
+            duration=Duration.from_timedelta(timedelta(seconds=5)),
         )
 
         # Assert
@@ -49,7 +49,7 @@ class TimerTest(TestCase):
     def test__to_json__happy_path(self):
         # Arrange
         timer = Timer(id=uuid.UUID('2bdec96b-be3b-4ba9-afa0-c4a0632ccedf'),
-                      duration=timedelta(seconds=5),
+                      duration=Duration.from_timedelta(timedelta(seconds=5)),
                       diagnostic_label='some_label')
 
         # Act
@@ -62,7 +62,7 @@ class TimerTest(TestCase):
     def test__assignment__overriden_duration_field(self):
         # Arrange
         timer = Timer(id=uuid.UUID('2bdec96b-be3b-4ba9-afa0-c4a0632ccedf'),
-                      duration=timedelta(seconds=5),
+                      duration=Duration.from_timedelta(timedelta(seconds=5)),
                       diagnostic_label='some_label')
 
         # Act
