@@ -1,12 +1,14 @@
-from typing import TypeVar, Generic, Protocol, Type, Tuple, Optional, Callable
+from typing import TypeVar, Generic, Protocol, Type, Tuple, Optional, Callable, cast, Any, Union, AbstractSet, Mapping
 
 from pydantic import BaseModel, StrBytes, Protocol as PydanticProtocol, ValidationError
-import pydantic.main
 
 from s2wsjson.s2_validation_error import S2ValidationError
 
 B = TypeVar('B', bound=BaseModel, covariant=True)
 
+IntStr = Union[int, str]
+AbstractSetIntStr = AbstractSet[IntStr]
+MappingIntStrAny = Mapping[IntStr, Any]
 
 class SupportsValidation(Protocol[B]):
     # ValidateValuesMixin methods
@@ -17,8 +19,31 @@ class SupportsValidation(Protocol[B]):
     def from_json(cls, json_str: str) -> B: ...
 
     # Pydantic methods
-    def json(self, by_alias: bool = False, exclude_none: bool = False) -> str: ...
-    def dict(self) -> dict: ...
+    def json(self,
+        *,
+        include: Optional[Union['AbstractSetIntStr', 'MappingIntStrAny']] = None,
+        exclude: Optional[Union['AbstractSetIntStr', 'MappingIntStrAny']] = None,
+        by_alias: bool = False,
+        skip_defaults: Optional[bool] = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        encoder: Optional[Callable[[Any], Any]] = None,
+        models_as_dict: bool = True,
+        **dumps_kwargs: Any,
+    ) -> str: ...
+
+    def dict(
+            self,
+            *,
+            include: Optional[Union['AbstractSetIntStr', 'MappingIntStrAny']] = None,
+            exclude: Optional[Union['AbstractSetIntStr', 'MappingIntStrAny']] = None,
+            by_alias: bool = False,
+            skip_defaults: Optional[bool] = None,
+            exclude_unset: bool = False,
+            exclude_defaults: bool = False,
+            exclude_none: bool = False,
+    ) -> dict[str, Any]: ...
 
     @classmethod
     def parse_raw(cls,
@@ -49,8 +74,8 @@ class ValidateValuesMixin(Generic[C]):
         return gen_model
 
 
-def convert_to_s2exception(f : Callable):
-    def inner(*args, **kwargs):
+def convert_to_s2exception(f : Callable) -> Callable:
+    def inner(*args: list[Any], **kwargs: dict[str, Any]) -> Any:
         try:
             return f(*args, **kwargs)
         except (ValidationError, TypeError) as e:
@@ -62,11 +87,9 @@ def convert_to_s2exception(f : Callable):
     return inner
 
 
-def catch_and_convert_exceptions(input_class):
-
-    input_class.__init__ = convert_to_s2exception(input_class.__init__)
-    input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)
-
-    input_class.parse_raw = convert_to_s2exception(input_class.parse_raw)
+def catch_and_convert_exceptions(input_class: Type[SupportsValidation[B]]) -> Type[SupportsValidation[B]]:
+    input_class.__init__ = convert_to_s2exception(input_class.__init__)  # type: ignore[method-assign]
+    input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)  # type: ignore[method-assign]
+    input_class.parse_raw = convert_to_s2exception(input_class.parse_raw)  # type: ignore[method-assign]
 
     return input_class

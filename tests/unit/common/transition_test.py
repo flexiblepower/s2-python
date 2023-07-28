@@ -32,6 +32,7 @@ class TransitionTest(TestCase):
                                                    uuid.UUID('2bdec96b-be3b-4ba9-afa0-c4a0632cced5')])
         self.assertEqual(transition.blocking_timers, [uuid.UUID('2bdec96b-be3b-4ba9-afa0-c4a0632cced4')])
         self.assertEqual(transition.transition_costs, 4.3)
+        assert transition.transition_duration is not None
         self.assertEqual(transition.transition_duration.to_timedelta(), timedelta(seconds=1.5))
         self.assertEqual(transition.abnormal_condition_only, False)
 

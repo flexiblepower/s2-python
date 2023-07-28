@@ -1,6 +1,4 @@
 import uuid
-from datetime import timedelta
-from typing import Optional
 
 from s2wsjson.common.duration import Duration
 from s2wsjson.generated.gen_s2 import Timer as GenTimer
