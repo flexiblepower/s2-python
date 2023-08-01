@@ -1,6 +1,6 @@
 import uuid
 from datetime import timedelta
-from json import loads
+import json
 from unittest import TestCase
 
 from s2wsjson.common import Transition, Duration
@@ -100,19 +100,17 @@ class TransitionTest(TestCase):
                                    'abnormal_condition_only': False})
 
         # Act
-        json = transition.to_json()
+        json_str = transition.to_json()
 
         # Assert
-        expected_json = '''
-        { "id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
-          "from": "2bdec96b-be3b-4ba9-afa0-c4a0632cced2",
-          "to": "2bdec96b-be3b-4ba9-afa0-c4a0632cced1",
-          "start_timers": [],
-          "blocking_timers": [],
-          "transition_duration": 61000,
-          "abnormal_condition_only": false}
-        '''
-        self.assertEqual(loads(json), loads(expected_json))
+        expected_json = { "id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
+                          "from": "2bdec96b-be3b-4ba9-afa0-c4a0632cced2",
+                          "to": "2bdec96b-be3b-4ba9-afa0-c4a0632cced1",
+                          "start_timers": [],
+                          "blocking_timers": [],
+                          "transition_duration": 61000,
+                          "abnormal_condition_only": False}
+        self.assertEqual(json.loads(json_str), expected_json)
 
     def test__to_json__value_validation_error_neg_duration(self):
         # Arrange/ Act / Assert
