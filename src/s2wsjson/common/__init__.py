@@ -1,4 +1,5 @@
-from s2wsjson.generated.gen_s2 import (RoleType, CommodityQuantity, Commodity, InstructionStatus, ReceptionStatusValues)
+from s2wsjson.generated.gen_s2 import (RoleType, CommodityQuantity, Commodity, InstructionStatus, ReceptionStatusValues,
+                                       EnergyManagementRole, SessionRequestType)
 
 from s2wsjson.common.duration import Duration
 from s2wsjson.common.handshake import Handshake

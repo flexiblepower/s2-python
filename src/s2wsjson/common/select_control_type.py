@@ -6,3 +6,5 @@ from s2wsjson.validate_values_mixin import catch_and_convert_exceptions, Validat
 class SelectControlType(GenSelectControlType, ValidateValuesMixin['SelectControlType']):
     class Config(GenSelectControlType.Config):
         validate_assignment = True
+
+    message_id: uuid.UUID = SelectControlType.__fields__['message_id'].field_info  # type: ignore[assignment]
