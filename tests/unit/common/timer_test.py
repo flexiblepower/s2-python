@@ -3,7 +3,7 @@ from datetime import timedelta
 from unittest import TestCase
 
 from s2wsjson.common.timer import Timer
-
+from s2wsjson.s2_validation_error import S2ValidationError
 
 class TimerTest(TestCase):
     def test__from_json__happy_path(self):
