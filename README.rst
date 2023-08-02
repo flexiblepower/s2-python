@@ -2,9 +2,6 @@ Python Wrapper for S2 Flexibility Protocol
 ===========================================
 
 
-
-
-
 Install for development:
 
     pip install -e .[testing,development]
