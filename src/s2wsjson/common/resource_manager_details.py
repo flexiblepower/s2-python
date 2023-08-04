@@ -1,4 +1,7 @@
-from s2wsjson.common import Duration
+from typing import List
+import uuid
+
+from s2wsjson.common import Duration, Role
 from s2wsjson.generated.gen_s2 import ResourceManagerDetails as GenResourceManagerDetails
 from s2wsjson.validate_values_mixin import catch_and_convert_exceptions, ValidateValuesMixin
 

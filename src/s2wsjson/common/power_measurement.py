@@ -1,4 +1,5 @@
 from typing import List
+import uuid
 
 from s2wsjson.common import PowerValue
 from s2wsjson.generated.gen_s2 import PowerMeasurement as GenPowerMeasurement

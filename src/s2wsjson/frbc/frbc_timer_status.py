@@ -1,3 +1,5 @@
+import uuid
+
 from s2wsjson.generated.gen_s2 import FRBCTimerStatus as GenFRBCTimerStatus
 from s2wsjson.validate_values_mixin import catch_and_convert_exceptions, ValidateValuesMixin
 

@@ -1,3 +1,6 @@
+from typing import Optional
+import uuid
+
 from s2wsjson.generated.gen_s2 import FRBCActuatorStatus as GenFRBCActuatorStatus
 from s2wsjson.validate_values_mixin import catch_and_convert_exceptions, ValidateValuesMixin
 

@@ -1,3 +1,5 @@
+import uuid
+
 from s2wsjson.generated.gen_s2 import SelectControlType as GenSelectControlType
 from s2wsjson.validate_values_mixin import catch_and_convert_exceptions, ValidateValuesMixin
 
@@ -7,4 +9,4 @@ class SelectControlType(GenSelectControlType, ValidateValuesMixin['SelectControl
     class Config(GenSelectControlType.Config):
         validate_assignment = True
 
-    message_id: uuid.UUID = SelectControlType.__fields__['message_id'].field_info  # type: ignore[assignment]
+    message_id: uuid.UUID = GenSelectControlType.__fields__['message_id'].field_info  # type: ignore[assignment]
