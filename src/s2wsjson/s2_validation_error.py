@@ -5,7 +5,6 @@ class S2ValidationError(Exception):
     msg: str
     pydantic_validation_error: 'ValidationError | TypeError | None'
 
-    def __init__(self, obj: object, msg: str, pydantic_validation_error: 'ValidationError | TypeError | None' = None):
+    def __init__(self, obj: object, msg: str):
         self.obj = obj
         self.msg = msg
-        self.pydantic_validation_error = pydantic_validation_error
