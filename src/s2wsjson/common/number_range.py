@@ -16,3 +16,12 @@ class NumberRange(GenNumberRange, ValidateValuesMixin['NumberRange']):
             raise ValueError(cls, 'start_of_range should not be higher than end_of_range')
 
         return values
+
+    def __hash__(self):
+        return hash(f'{self.start_of_range}|{self.end_of_range}')
+
+    def __eq__(self, other):
+        if isinstance(other, NumberRange):
+            return self.start_of_range == other.start_of_range and self.end_of_range and other.end_of_range
+        else:
+            return False
