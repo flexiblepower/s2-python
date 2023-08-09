@@ -1,2 +1,2 @@
 pytz
-pydantic
+pydantic ~= 1.0
