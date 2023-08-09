@@ -19,6 +19,16 @@ class NumberRangeTest(TestCase):
         self.assertEqual(number_range.start_of_range, expected_start_of_range)
         self.assertEqual(number_range.end_of_range, expected_end_of_range)
 
+    def test__from_json__happy_path_equals(self):
+        # Arrange
+        json_str = '{"start_of_range": 4.0, "end_of_range": 5.0}'
+
+        # Act
+        number_range = NumberRange.from_json(json_str)
+
+        # Assert
+        self.assertEqual(number_range, NumberRange(start_of_range=4.0, end_of_range=5.0))
+
     def test__from_json__format_validation_error(self):
         # Arrange
         json_str = '{"start_of_range": 4.0}'

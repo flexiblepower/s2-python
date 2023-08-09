@@ -1,4 +1,4 @@
-from s2wsjson.common import Duration
+from s2wsjson.common import Duration, NumberRange
 
 from s2wsjson.generated.gen_s2 import FRBCFillLevelTargetProfileElement as GenFRBCFillLevelTargetProfileElement
 from s2wsjson.validate_values_mixin import catch_and_convert_exceptions, ValidateValuesMixin
@@ -10,3 +10,4 @@ class FRBCFillLevelTargetProfileElement(GenFRBCFillLevelTargetProfileElement, Va
         validate_assignment = True
 
     duration: Duration = GenFRBCFillLevelTargetProfileElement.__fields__['duration'].field_info  # type: ignore[assignment]
+    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.__fields__['fill_level_range'].field_info  # type: ignore[assignment]
