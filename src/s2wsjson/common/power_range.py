@@ -2,12 +2,13 @@ from typing import Any
 
 from pydantic import root_validator
 
+from s2wsjson.generated.gen_s2 import PowerRange as GenPowerRange
 from s2wsjson.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
-from s2wsjson.generated.gen_s2 import NumberRange as GenNumberRange
+
 
 @catch_and_convert_exceptions
-class NumberRange(GenNumberRange, ValidateValuesMixin['NumberRange']):
-    class Config(GenNumberRange.Config):
+class PowerRange(GenPowerRange, ValidateValuesMixin['PowerRange']):
+    class Config(GenPowerRange.Config):
         validate_assignment = True
 
     @root_validator(pre=False)
