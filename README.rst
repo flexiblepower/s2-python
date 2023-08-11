@@ -10,3 +10,7 @@ Install for development:
 Run tests:
     pip install -e .[testing,development]
     tox
+
+Build
+    tox -e build,clean
+    
