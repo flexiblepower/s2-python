@@ -6,3 +6,6 @@
 .coverage
 unit_test_coverage/
 .mypy_cache/
+venv
+*.egg-info
+*venv*
