@@ -13,3 +13,7 @@ class Duration(GenDuration, ValidateValuesMixin['Duration']):
     @staticmethod
     def from_timedelta(duration: timedelta) -> 'Duration':
         return Duration(__root__=math.ceil(duration.total_seconds() * 1000))
+
+    @staticmethod
+    def from_milliseconds(milliseconds: int) -> 'Duration':
+        return Duration(__root__=milliseconds)
