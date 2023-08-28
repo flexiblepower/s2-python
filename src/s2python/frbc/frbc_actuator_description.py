@@ -4,7 +4,8 @@ from typing import List, Any
 
 from pydantic import root_validator
 
-from s2python.common import Transition, Timer
+from s2python.common import Transition, Timer, Commodity
+from s2python.common.support import commodity_has_quantity
 from s2python.frbc import FRBCOperationMode
 from s2python.generated.gen_s2 import FRBCActuatorDescription as GenFRBCActuatorDescription, CommodityQuantity
 from s2python.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
@@ -19,6 +20,7 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, ValidateValuesMixin['F
     operation_modes: List[FRBCOperationMode] = GenFRBCActuatorDescription.__fields__['operation_modes'].field_info  # type: ignore[assignment]
     transitions: List[Transition] = GenFRBCActuatorDescription.__fields__['transitions'].field_info  # type: ignore[assignment]
     timers: List[Timer] = GenFRBCActuatorDescription.__fields__['timers'].field_info  # type: ignore[assignment]
+    supported_commodities: List[Commodity] = GenFRBCActuatorDescription.__fields__['supported_commodities'].field_info  # type: ignore[assignment]
 
     @root_validator(pre=False)
     def validate_timers_in_transitions(cls, values: dict[str, Any]) -> dict[str, Any]:
@@ -84,7 +86,7 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, ValidateValuesMixin['F
                 for commodity in supported_commodities:
                     power_ranges_for_commodity = [power_range
                                                   for power_range in operation_mode_element.power_ranges
-                                                  if power_range.commodity_quantity == commodity]
+                                                  if commodity_has_quantity(commodity, power_range.commodity_quantity)]
 
                     if len(power_ranges_for_commodity) > 1:
                         raise ValueError(cls, f'Multiple power ranges defined for commodity {commodity} in operation '

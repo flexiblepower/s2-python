@@ -1,3 +1,4 @@
+import json
 import uuid
 from datetime import timedelta
 from unittest import TestCase
@@ -53,11 +54,11 @@ class TimerTest(TestCase):
                       diagnostic_label='some_label')
 
         # Act
-        json = timer.to_json()
+        json_str = timer.to_json()
 
         # Assert
-        expected_json = '{"id": "2bdec96b-be3b-4ba9-afa0-c4a0632ccedf", "diagnostic_label": "some_label", "duration": 5000}'
-        self.assertEqual(json, expected_json)
+        expected_json = {"id": "2bdec96b-be3b-4ba9-afa0-c4a0632ccedf", "diagnostic_label": "some_label", "duration": 5000}
+        self.assertEqual(json.loads(json_str), expected_json)
 
     def test__assignment__overriden_duration_field(self):
         # Arrange
