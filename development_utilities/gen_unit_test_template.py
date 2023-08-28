@@ -9,9 +9,9 @@ import uuid
 
 import pydantic
 
-from s2wsjson import frbc
-from s2wsjson.common import Duration, PowerRange, NumberRange
-from s2wsjson.generated.gen_s2 import CommodityQuantity
+from s2python import frbc
+from s2python.common import Duration, PowerRange, NumberRange
+from s2python.generated.gen_s2 import CommodityQuantity
 
 I = TypeVar('I')
 def split_words_list(list_: Sequence[I], is_sep: Callable[[I], bool]) -> list[list[I]]:
@@ -209,8 +209,8 @@ import json
 from unittest import TestCase
 import uuid
 
-from s2wsjson.common import *
-from s2wsjson.frbc import *
+from s2python.common import *
+from s2python.frbc import *
 
 
 class {class_name}Test(TestCase):

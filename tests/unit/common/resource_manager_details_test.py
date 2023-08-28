@@ -3,7 +3,7 @@ import uuid
 from datetime import timedelta
 from unittest import TestCase
 
-from s2wsjson.common import (ResourceManagerDetails, CommodityQuantity, ControlType, Currency, Duration, Commodity,
+from s2python.common import (ResourceManagerDetails, CommodityQuantity, ControlType, Currency, Duration, Commodity,
                              Role, RoleType)
 
 

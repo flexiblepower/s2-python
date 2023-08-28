@@ -7,8 +7,8 @@ all_members.sort(key=lambda t: t[0])
 for name, member in all_members:
     if inspect.isclass(member):
         print(f"""
-from s2wsjson.generated.gen_s2 import {name} as Gen{name}
-from s2wsjson.validate_values_mixin import catch_and_convert_exceptions, ValidateValuesMixin
+from s2python.generated.gen_s2 import {name} as Gen{name}
+from s2python.validate_values_mixin import catch_and_convert_exceptions, ValidateValuesMixin
 
 
 @catch_and_convert_exceptions

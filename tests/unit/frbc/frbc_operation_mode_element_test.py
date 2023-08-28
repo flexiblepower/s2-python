@@ -3,8 +3,9 @@ import json
 from unittest import TestCase
 import uuid
 
-from s2wsjson.common import *
-from s2wsjson.frbc import *
+from s2python.common import NumberRange, PowerRange
+from s2python.frbc.frbc_operation_mode_element import FRBCOperationModeElement
+from s2python.generated.gen_s2 import CommodityQuantity
 
 
 class FRBCOperationModeElementTest(TestCase):

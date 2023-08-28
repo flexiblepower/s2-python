@@ -3,7 +3,7 @@ from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
 
-from s2wsjson.common import PowerForecast, Duration, PowerForecastValue, PowerForecastElement, CommodityQuantity
+from s2python.common import PowerForecast, Duration, PowerForecastValue, PowerForecastElement, CommodityQuantity
 
 
 class PowerForecastTest(TestCase):

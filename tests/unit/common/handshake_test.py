@@ -2,7 +2,7 @@ import json
 import uuid
 from unittest import TestCase, skip
 
-from s2wsjson.common import Handshake, EnergyManagementRole
+from s2python.common import Handshake, EnergyManagementRole
 
 
 class HandshakeTest(TestCase):

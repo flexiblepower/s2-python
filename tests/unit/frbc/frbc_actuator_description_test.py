@@ -3,8 +3,8 @@ import uuid
 from datetime import timedelta
 from unittest import TestCase
 
-from s2wsjson.common import Transition, Duration, Timer, NumberRange, PowerRange, CommodityQuantity, Commodity
-from s2wsjson.frbc import FRBCActuatorDescription, FRBCOperationMode, FRBCOperationModeElement
+from s2python.common import Transition, Duration, Timer, NumberRange, PowerRange, CommodityQuantity, Commodity
+from s2python.frbc import FRBCActuatorDescription, FRBCOperationMode, FRBCOperationModeElement
 
 
 class FRBCActuatorDescriptionTest(TestCase):

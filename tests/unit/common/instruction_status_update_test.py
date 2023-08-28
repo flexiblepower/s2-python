@@ -5,7 +5,7 @@ from unittest import TestCase
 
 from pytz import timezone, utc
 
-from s2wsjson.common import InstructionStatusUpdate, InstructionStatus
+from s2python.common import InstructionStatusUpdate, InstructionStatus
 
 
 class InstructionStatusUpdateTest(TestCase):

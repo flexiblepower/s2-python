@@ -1,8 +1,8 @@
 import json
 from unittest import TestCase
 
-from s2wsjson.common import PowerRange, CommodityQuantity
-from s2wsjson.s2_validation_error import S2ValidationError
+from s2python.common import PowerRange, CommodityQuantity
+from s2python.s2_validation_error import S2ValidationError
 
 
 class PowerRangeTest(TestCase):

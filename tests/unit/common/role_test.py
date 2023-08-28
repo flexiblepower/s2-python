@@ -1,7 +1,7 @@
 import json
 from unittest import TestCase, skip
 
-from s2wsjson.common import Role, Commodity, RoleType
+from s2python.common import Role, Commodity, RoleType
 
 
 class RoleTest(TestCase):

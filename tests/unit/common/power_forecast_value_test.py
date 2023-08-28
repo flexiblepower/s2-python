@@ -1,7 +1,7 @@
 import json
 from unittest import TestCase
 
-from s2wsjson.common import PowerForecastValue, CommodityQuantity
+from s2python.common import PowerForecastValue, CommodityQuantity
 
 
 class PowerForecastValueTest(TestCase):

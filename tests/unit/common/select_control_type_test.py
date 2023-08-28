@@ -2,7 +2,7 @@ import json
 import uuid
 from unittest import TestCase
 
-from s2wsjson.common import SelectControlType, ControlType
+from s2python.common import SelectControlType, ControlType
 
 
 class SelectControlTypeTest(TestCase):

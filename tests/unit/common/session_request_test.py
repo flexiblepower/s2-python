@@ -2,7 +2,7 @@ import json
 import uuid
 from unittest import TestCase
 
-from s2wsjson.common import SessionRequest, SessionRequestType
+from s2python.common import SessionRequest, SessionRequestType
 
 
 class SessionRequestTest(TestCase):

@@ -3,7 +3,7 @@ import json
 import uuid
 from unittest import TestCase, skip
 
-from s2wsjson.common import PowerMeasurement, PowerValue, CommodityQuantity
+from s2python.common import PowerMeasurement, PowerValue, CommodityQuantity
 
 
 class PowerMeasurementTest(TestCase):

@@ -2,7 +2,7 @@ import json
 import uuid
 from unittest import TestCase, skip
 
-from s2wsjson.common import ReceptionStatus, ReceptionStatusValues
+from s2python.common import ReceptionStatus, ReceptionStatusValues
 
 
 class ReceptionStatusTest(TestCase):

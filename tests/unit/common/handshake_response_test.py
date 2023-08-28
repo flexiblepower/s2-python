@@ -2,7 +2,7 @@ import json
 import uuid
 from unittest import TestCase
 
-from s2wsjson.common import HandshakeResponse
+from s2python.common import HandshakeResponse
 
 
 class HandshakeResponseTest(TestCase):

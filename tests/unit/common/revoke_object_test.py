@@ -2,7 +2,7 @@ import json
 import uuid
 from unittest import TestCase
 
-from s2wsjson.common import RevokeObject, RevokableObjects
+from s2python.common import RevokeObject, RevokableObjects
 
 
 class RevokeObjectTest(TestCase):
