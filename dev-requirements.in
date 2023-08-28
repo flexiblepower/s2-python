@@ -1,9 +1,0 @@
--c requirements.txt
-
-pip-tools
-pytest
-pytest-coverage
-pytest-timer
-pylint
-mypy
-datamodel-code-generator
