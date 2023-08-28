@@ -4,10 +4,10 @@ from typing import List, Dict, Any
 
 from pydantic import root_validator
 
-from s2wsjson.common import NumberRange
-from s2wsjson.frbc import FRBCOperationModeElement
-from s2wsjson.generated.gen_s2 import FRBCOperationMode as GenFRBCOperationMode
-from s2wsjson.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
+from s2python.common import NumberRange
+from s2python.frbc import FRBCOperationModeElement
+from s2python.generated.gen_s2 import FRBCOperationMode as GenFRBCOperationMode
+from s2python.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
 
 
 @catch_and_convert_exceptions

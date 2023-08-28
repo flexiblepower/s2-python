@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, Protocol, Type, Tuple, Optional, Callable, 
 
 from pydantic import BaseModel, StrBytes, Protocol as PydanticProtocol, ValidationError
 
-from s2wsjson.s2_validation_error import S2ValidationError
+from s2python.s2_validation_error import S2ValidationError
 
 B = TypeVar('B', bound=BaseModel, covariant=True)
 

@@ -3,8 +3,8 @@ from datetime import timedelta
 from json import loads
 from unittest import TestCase
 
-from s2wsjson.common import Transition, Duration
-from s2wsjson.s2_validation_error import S2ValidationError
+from s2python.common import Transition, Duration
+from s2python.s2_validation_error import S2ValidationError
 
 
 class TransitionTest(TestCase):

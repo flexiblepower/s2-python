@@ -4,10 +4,10 @@ from typing import List, Any
 
 from pydantic import root_validator
 
-from s2wsjson.common import Transition, Timer
-from s2wsjson.frbc import FRBCOperationMode
-from s2wsjson.generated.gen_s2 import FRBCActuatorDescription as GenFRBCActuatorDescription, CommodityQuantity
-from s2wsjson.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
+from s2python.common import Transition, Timer
+from s2python.frbc import FRBCOperationMode
+from s2python.generated.gen_s2 import FRBCActuatorDescription as GenFRBCActuatorDescription, CommodityQuantity
+from s2python.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
 
 
 @catch_and_convert_exceptions
