@@ -1,2 +1,3 @@
-import importlib.metadata
-__version__ = importlib.metadata.version('s2python')
+from s2python.version import VERSION
+
+__version__ = VERSION
