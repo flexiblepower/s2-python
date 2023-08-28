@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from s2wsjson.frbc import FRBCOperationMode
+from s2python.frbc import FRBCOperationMode
 
 
 class FRBCOperationModeTest(TestCase):

@@ -2,9 +2,9 @@ import uuid
 from datetime import timedelta
 from unittest import TestCase
 
-from s2wsjson.common import Timer
-from s2wsjson.common.duration import Duration
-from s2wsjson.s2_validation_error import S2ValidationError
+from s2python.common import Timer
+from s2python.common.duration import Duration
+from s2python.s2_validation_error import S2ValidationError
 
 
 class TimerTest(TestCase):

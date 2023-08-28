@@ -1,9 +1,9 @@
 import uuid
 from typing import Optional, List
 
-from s2wsjson.common import Duration
-from s2wsjson.generated.gen_s2 import Transition as GenTransition
-from s2wsjson.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
+from s2python.common import Duration
+from s2python.generated.gen_s2 import Transition as GenTransition
+from s2python.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
 
 
 @catch_and_convert_exceptions

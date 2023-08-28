@@ -1,8 +1,8 @@
 from typing import Optional, List
 
-from s2wsjson.common import NumberRange, PowerRange
-from s2wsjson.generated.gen_s2 import FRBCOperationModeElement as GenFRBCOperationModeElement
-from s2wsjson.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
+from s2python.common import NumberRange, PowerRange
+from s2python.generated.gen_s2 import FRBCOperationModeElement as GenFRBCOperationModeElement
+from s2python.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
 
 
 @catch_and_convert_exceptions
