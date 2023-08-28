@@ -9,3 +9,5 @@ unit_test_coverage/
 venv
 *.egg-info
 *venv*
+.tox/
+dist/

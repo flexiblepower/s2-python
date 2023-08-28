@@ -1,2 +1,3 @@
-import importlib.metadata
-__version__ = importlib.metadata.version('s2wsjson')
+from s2wsjson.version import VERSION
+
+__version__ = VERSION

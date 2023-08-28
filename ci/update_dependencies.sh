@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 
 . .venv/bin/activate
-pip-compile -U --resolver=backtracking -o ./requirements.txt ./requirements.in
-pip-compile -U --resolver=backtracking -o ./dev-requirements.txt ./dev-requirements.in
+pip-compile -U --extra=testing --extra=development --extra=docs -o ./dev-requirements.txt  setup.cfg
