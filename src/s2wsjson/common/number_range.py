@@ -22,6 +22,6 @@ class NumberRange(GenNumberRange, ValidateValuesMixin['NumberRange']):
 
     def __eq__(self, other):
         if isinstance(other, NumberRange):
-            return self.start_of_range == other.start_of_range and self.end_of_range and other.end_of_range
+            return self.start_of_range == other.start_of_range and self.end_of_range == other.end_of_range
         else:
             return False
