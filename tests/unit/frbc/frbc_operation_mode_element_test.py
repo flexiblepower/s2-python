@@ -1,63 +1,83 @@
+from datetime import timedelta, datetime, timezone as offset
+import json
 from unittest import TestCase
+import uuid
 
-from s2wsjson.common import NumberRange, PowerRange
-from s2wsjson.frbc.frbc_operation_mode_element import FRBCOperationModeElement
-from s2wsjson.generated.gen_s2 import CommodityQuantity
+from s2wsjson.common import *
+from s2wsjson.frbc import *
 
 
 class FRBCOperationModeElementTest(TestCase):
-    def test__from_json__happy_path(self):
+    def test__from_json__happy_path_full(self):
         # Arrange
-        json_str = '''
-        { "fill_level_range": {"start_of_range": 4.0, "end_of_range": 5.0},
-          "fill_rate": {"start_of_range": 0.13, "end_of_range": 10342.569},
-          "power_ranges": [{"start_of_range": 400, "end_of_range": 6000, "commodity_quantity": "HYDROGEN.FLOW_RATE"}],
-          "running_costs": {"start_of_range": 4.3, "end_of_range": 4.6}}
-        '''
+        json_str = """
+{
+    "fill_level_range": {
+        "end_of_range": 51798.05122344172,
+        "start_of_range": 12901.48976850875
+    },
+    "fill_rate": {
+        "end_of_range": 35734.54630113551,
+        "start_of_range": 10740.443924585083
+    },
+    "power_ranges": [
+        {
+            "commodity_quantity": "ELECTRIC.POWER.L1",
+            "end_of_range": 69093.48993128976,
+            "start_of_range": 34859.59303603876
+        }
+    ],
+    "running_costs": {
+        "end_of_range": 47869.03540464825,
+        "start_of_range": 19009.60894672492
+    }
+}
+        """
 
         # Act
-        element: FRBCOperationModeElement = FRBCOperationModeElement.from_json(json_str)
+        frbc_operation_mode_element = FRBCOperationModeElement.from_json(json_str)
 
         # Assert
-        expected_fill_level_range = NumberRange(start_of_range=4.0, end_of_range=5.0)
-        expected_fill_rate = NumberRange(start_of_range=0.13, end_of_range=10342.569)
-        expected_power_ranges = [PowerRange(start_of_range=400,
-                                            end_of_range=6000,
-                                            commodity_quantity=CommodityQuantity.HYDROGEN_FLOW_RATE)]
-        expected_running_costs = NumberRange(start_of_range=4.3, end_of_range=4.6)
-        self.assertEqual(element.fill_level_range, expected_fill_level_range)
-        self.assertEqual(element.fill_rate, expected_fill_rate)
-        self.assertEqual(element.power_ranges, expected_power_ranges)
-        self.assertEqual(element.running_costs, expected_running_costs)
+        self.assertEqual(frbc_operation_mode_element.fill_level_range,
+                         NumberRange(end_of_range=51798.05122344172, start_of_range=12901.48976850875))
+        self.assertEqual(frbc_operation_mode_element.fill_rate,
+                         NumberRange(end_of_range=35734.54630113551, start_of_range=10740.443924585083))
+        self.assertEqual(frbc_operation_mode_element.power_ranges, [
+            PowerRange(commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1, end_of_range=69093.48993128976,
+                       start_of_range=34859.59303603876)])
+        self.assertEqual(frbc_operation_mode_element.running_costs,
+                         NumberRange(end_of_range=47869.03540464825, start_of_range=19009.60894672492))
 
-    # def test__from_json__format_validation_error(self):
-    #     # Arrange
-    #     json_str = '{"start_of_range": 4.0}'
-    #
-    #     # Act / Assert
-    #     with self.assertRaises(S2ValidationError):
-    #         NumberRange.from_json(json_str)
-    #
-    # def test__from_json__value_validation_error(self):
-    #     # Arrange
-    #     json_str = '{"start_of_range": 6.0, "end_of_range": 5.0}'
-    #
-    #     # Act / Assert
-    #     with self.assertRaises(S2ValidationError):
-    #         NumberRange.from_json(json_str)
-    #
-    # def test__to_json__happy_path(self):
-    #     # Arrange
-    #     number_range = NumberRange(start_of_range=4.0, end_of_range=5.0)
-    #
-    #     # Act
-    #     json = number_range.to_json()
-    #
-    #     # Assert
-    #     expected_json = '{"start_of_range": 4.0, "end_of_range": 5.0}'
-    #     self.assertEqual(json, expected_json)
-    #
-    # def test__to_json__value_validation_error(self):
-    #     # Arrange/ Act / Assert
-    #     with self.assertRaises(S2ValidationError):
-    #         NumberRange(start_of_range=6.0, end_of_range=5.0)
+    def test__to_json__happy_path_full(self):
+        # Arrange
+        frbc_operation_mode_element = FRBCOperationModeElement(
+            fill_level_range=NumberRange(end_of_range=51798.05122344172, start_of_range=12901.48976850875),
+            fill_rate=NumberRange(end_of_range=35734.54630113551, start_of_range=10740.443924585083), power_ranges=[
+                PowerRange(commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1, end_of_range=69093.48993128976,
+                           start_of_range=34859.59303603876)],
+            running_costs=NumberRange(end_of_range=47869.03540464825, start_of_range=19009.60894672492))
+
+        # Act
+        json_str = frbc_operation_mode_element.to_json()
+
+        # Assert
+        expected_json = {
+            'fill_level_range': {
+                'end_of_range': 51798.05122344172,
+                'start_of_range': 12901.48976850875
+            },
+            'fill_rate': {
+                'end_of_range': 35734.54630113551,
+                'start_of_range': 10740.443924585083
+            },
+            'power_ranges': [{
+                                 'commodity_quantity': 'ELECTRIC.POWER.L1',
+                                 'end_of_range': 69093.48993128976,
+                                 'start_of_range': 34859.59303603876
+                             }],
+            'running_costs': {
+                'end_of_range': 47869.03540464825,
+                'start_of_range': 19009.60894672492
+            }
+        }
+        self.assertEqual(json.loads(json_str), expected_json)

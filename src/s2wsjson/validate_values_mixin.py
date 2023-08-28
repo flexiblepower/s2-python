@@ -63,7 +63,7 @@ class ValidateValuesMixin(Generic[C]):
         try:
             return self.json(by_alias=True, exclude_none=True)
         except (ValidationError, TypeError) as e:
-            raise S2ValidationError(self, 'Pydantic raised a format validation error.', pydantic_validation_error=e)
+            raise S2ValidationError(self, 'Pydantic raised a format validation error.') from e
 
     def to_dict(self: C) -> dict:
         return self.dict()
@@ -79,7 +79,7 @@ def convert_to_s2exception(f : Callable) -> Callable:
         try:
             return f(*args, **kwargs)
         except (ValidationError, TypeError) as e:
-            raise S2ValidationError(args, 'Pydantic raised a format validation error.', pydantic_validation_error=e)
+            raise S2ValidationError(args, 'Pydantic raised a format validation error.') from e
 
     inner.__doc__ = f.__doc__
     inner.__annotations__ = f.__annotations__
