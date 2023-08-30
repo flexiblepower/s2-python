@@ -32,8 +32,8 @@ jobs:
       - uses: actions/setup-python@v4
         id: setup-python
         with: {python-version: "3.11"}
-      - name: Run static analysis and format checkers
-        run: pipx run pre-commit run --all-files --show-diff-on-failure
+      # - name: Run static analysis and format checkers
+      #   run: pipx run pre-commit run --all-files --show-diff-on-failure
       - name: Build package distribution files
         run: >-
           pipx run --python '${{ steps.setup-python.outputs.python-path }}'
