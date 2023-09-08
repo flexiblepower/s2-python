@@ -1,4 +1,6 @@
 name: tests-and-publish
+# this pipeline started as an adaptation of the pipeline of the
+# FlexMeasures client (https://github.com/FlexMeasures/flexmeasures-client/)
 
 on:
   push:
