@@ -1,6 +1,6 @@
-from itertools import pairwise
+#from itertools import pairwise
 import uuid
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Generator, Tuple
 
 from pydantic import root_validator
 
@@ -8,7 +8,7 @@ from s2python.common import NumberRange
 from s2python.frbc import FRBCOperationModeElement
 from s2python.generated.gen_s2 import FRBCOperationMode as GenFRBCOperationMode
 from s2python.validate_values_mixin import ValidateValuesMixin, catch_and_convert_exceptions
-
+from s2python.utils import pairwise
 
 @catch_and_convert_exceptions
 class FRBCOperationMode(GenFRBCOperationMode, ValidateValuesMixin['FRBCOperationMode']):
@@ -19,11 +19,11 @@ class FRBCOperationMode(GenFRBCOperationMode, ValidateValuesMixin['FRBCOperation
     elements: List[FRBCOperationModeElement] = GenFRBCOperationMode.__fields__['elements'].field_info  # type: ignore[assignment]
 
     @root_validator(pre=False)
-    def validate_contiguous_fill_levels_operation_mode_elements(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def validate_contiguous_fill_levels_operation_mode_elements(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         elements_by_fill_level_range: Dict[NumberRange, FRBCOperationModeElement]
         elements_by_fill_level_range = {element.fill_level_range: element for element in values.get('elements', [])}
 
-        sorted_fill_level_ranges: list[NumberRange]
+        sorted_fill_level_ranges: List[NumberRange]
         sorted_fill_level_ranges = list(elements_by_fill_level_range.keys())
         sorted_fill_level_ranges.sort(key=lambda r: r.start_of_range)
 

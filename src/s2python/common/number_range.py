@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 from pydantic import root_validator
 
@@ -11,7 +11,7 @@ class NumberRange(GenNumberRange, ValidateValuesMixin['NumberRange']):
         validate_assignment = True
 
     @root_validator(pre=False)
-    def validate_start_end_order(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def validate_start_end_order(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         if values.get("start_of_range", 0.0) > values.get("end_of_range", 0.0):
             raise ValueError(cls, 'start_of_range should not be higher than end_of_range')
 
