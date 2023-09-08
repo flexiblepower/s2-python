@@ -1,6 +1,6 @@
 import uuid
 
-from typing import List, Any
+from typing import List, Any, Dict
 
 from pydantic import root_validator
 
@@ -23,7 +23,7 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, ValidateValuesMixin['F
     supported_commodities: List[Commodity] = GenFRBCActuatorDescription.__fields__['supported_commodities'].field_info  # type: ignore[assignment]
 
     @root_validator(pre=False)
-    def validate_timers_in_transitions(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def validate_timers_in_transitions(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         timers_by_id = {timer.id: timer for timer in values.get("timers", {})}
         transition: Transition
         for transition in values.get("transitions", []):
@@ -40,7 +40,7 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, ValidateValuesMixin['F
         return values
 
     @root_validator(pre=False)
-    def validate_timers_unique_ids(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def validate_timers_unique_ids(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         ids = []
         timer: Timer
         for timer in values.get("timers", []):
@@ -51,7 +51,7 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, ValidateValuesMixin['F
         return values
 
     @root_validator(pre=False)
-    def validate_operation_modes_in_transitions(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def validate_operation_modes_in_transitions(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         operation_mode_by_id = {operation_mode.id: operation_mode
                                 for operation_mode in values.get("operation_modes", [])}
         transition: Transition
@@ -67,7 +67,7 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, ValidateValuesMixin['F
         return values
 
     @root_validator(pre=False)
-    def validate_operation_modes_unique_ids(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def validate_operation_modes_unique_ids(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         ids = []
         operation_mode: FRBCOperationMode
         for operation_mode in values.get("operation_modes", []):
@@ -78,7 +78,7 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, ValidateValuesMixin['F
         return values
 
     @root_validator(pre=False)
-    def validate_operation_mode_elements_have_all_supported_commodities(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def validate_operation_mode_elements_have_all_supported_commodities(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         supported_commodities = values.get('supported_commodities', [])
         operation_mode: FRBCOperationMode
         for operation_mode in values.get("operation_modes", []):
@@ -99,7 +99,7 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, ValidateValuesMixin['F
         return values
 
     @root_validator(pre=False)
-    def validate_unique_supported_commodities(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def validate_unique_supported_commodities(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         supported_commodities: list[CommodityQuantity] = values.get('supported_commodities', [])
 
         for supported_commodity in supported_commodities:

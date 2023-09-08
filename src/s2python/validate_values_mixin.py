@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, Protocol, Type, Tuple, Optional, Callable, cast, Any, Union, AbstractSet, Mapping
+from typing import TypeVar, Generic, Protocol, Type, Tuple, Optional, Callable, cast, Any, Union, AbstractSet, Mapping, List, Dict
 
 from pydantic import BaseModel, StrBytes, Protocol as PydanticProtocol, ValidationError
 
@@ -43,7 +43,7 @@ class SupportsValidation(Protocol[B]):
             exclude_unset: bool = False,
             exclude_defaults: bool = False,
             exclude_none: bool = False,
-    ) -> dict[str, Any]: ...
+    ) -> Dict[str, Any]: ...
 
     @classmethod
     def parse_raw(cls,
@@ -75,7 +75,7 @@ class ValidateValuesMixin(Generic[C]):
 
 
 def convert_to_s2exception(f : Callable) -> Callable:
-    def inner(*args: list[Any], **kwargs: dict[str, Any]) -> Any:
+    def inner(*args: List[Any], **kwargs: Dict[str, Any]) -> Any:
         try:
             return f(*args, **kwargs)
         except (ValidationError, TypeError) as e:
