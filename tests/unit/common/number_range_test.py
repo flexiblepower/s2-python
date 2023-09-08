@@ -27,7 +27,9 @@ class NumberRangeTest(TestCase):
         number_range = NumberRange.from_json(json_str)
 
         # Assert
-        self.assertEqual(number_range, NumberRange(start_of_range=4.0, end_of_range=5.0))
+        self.assertEqual(
+            number_range, NumberRange(start_of_range=4.0, end_of_range=5.0)
+        )
 
     def test__from_json__format_validation_error(self):
         # Arrange

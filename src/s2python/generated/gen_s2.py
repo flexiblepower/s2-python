@@ -12,145 +12,145 @@ from pydantic import BaseModel, Extra, Field, conint, constr
 
 
 class Commodity(Enum):
-    GAS = 'GAS'
-    HEAT = 'HEAT'
-    ELECTRICITY = 'ELECTRICITY'
-    OIL = 'OIL'
+    GAS = "GAS"
+    HEAT = "HEAT"
+    ELECTRICITY = "ELECTRICITY"
+    OIL = "OIL"
 
 
 class CommodityQuantity(Enum):
-    ELECTRIC_POWER_L1 = 'ELECTRIC.POWER.L1'
-    ELECTRIC_POWER_L2 = 'ELECTRIC.POWER.L2'
-    ELECTRIC_POWER_L3 = 'ELECTRIC.POWER.L3'
-    ELECTRIC_POWER_3_PHASE_SYMMETRIC = 'ELECTRIC.POWER.3_PHASE_SYMMETRIC'
-    NATURAL_GAS_FLOW_RATE = 'NATURAL_GAS.FLOW_RATE'
-    HYDROGEN_FLOW_RATE = 'HYDROGEN.FLOW_RATE'
-    HEAT_TEMPERATURE = 'HEAT.TEMPERATURE'
-    HEAT_FLOW_RATE = 'HEAT.FLOW_RATE'
-    HEAT_THERMAL_POWER = 'HEAT.THERMAL_POWER'
-    OIL_FLOW_RATE = 'OIL.FLOW_RATE'
+    ELECTRIC_POWER_L1 = "ELECTRIC.POWER.L1"
+    ELECTRIC_POWER_L2 = "ELECTRIC.POWER.L2"
+    ELECTRIC_POWER_L3 = "ELECTRIC.POWER.L3"
+    ELECTRIC_POWER_3_PHASE_SYMMETRIC = "ELECTRIC.POWER.3_PHASE_SYMMETRIC"
+    NATURAL_GAS_FLOW_RATE = "NATURAL_GAS.FLOW_RATE"
+    HYDROGEN_FLOW_RATE = "HYDROGEN.FLOW_RATE"
+    HEAT_TEMPERATURE = "HEAT.TEMPERATURE"
+    HEAT_FLOW_RATE = "HEAT.FLOW_RATE"
+    HEAT_THERMAL_POWER = "HEAT.THERMAL_POWER"
+    OIL_FLOW_RATE = "OIL.FLOW_RATE"
 
 
 class ControlType(Enum):
-    POWER_ENVELOPE_BASED_CONTROL = 'POWER_ENVELOPE_BASED_CONTROL'
-    POWER_PROFILE_BASED_CONTROL = 'POWER_PROFILE_BASED_CONTROL'
-    OPERATION_MODE_BASED_CONTROL = 'OPERATION_MODE_BASED_CONTROL'
-    FILL_RATE_BASED_CONTROL = 'FILL_RATE_BASED_CONTROL'
-    DEMAND_DRIVEN_BASED_CONTROL = 'DEMAND_DRIVEN_BASED_CONTROL'
-    NOT_CONTROLABLE = 'NOT_CONTROLABLE'
-    NO_SELECTION = 'NO_SELECTION'
+    POWER_ENVELOPE_BASED_CONTROL = "POWER_ENVELOPE_BASED_CONTROL"
+    POWER_PROFILE_BASED_CONTROL = "POWER_PROFILE_BASED_CONTROL"
+    OPERATION_MODE_BASED_CONTROL = "OPERATION_MODE_BASED_CONTROL"
+    FILL_RATE_BASED_CONTROL = "FILL_RATE_BASED_CONTROL"
+    DEMAND_DRIVEN_BASED_CONTROL = "DEMAND_DRIVEN_BASED_CONTROL"
+    NOT_CONTROLABLE = "NOT_CONTROLABLE"
+    NO_SELECTION = "NO_SELECTION"
 
 
 class Currency(Enum):
-    AED = 'AED'
-    ANG = 'ANG'
-    AUD = 'AUD'
-    CHE = 'CHE'
-    CHF = 'CHF'
-    CHW = 'CHW'
-    EUR = 'EUR'
-    GBP = 'GBP'
-    LBP = 'LBP'
-    LKR = 'LKR'
-    LRD = 'LRD'
-    LSL = 'LSL'
-    LYD = 'LYD'
-    MAD = 'MAD'
-    MDL = 'MDL'
-    MGA = 'MGA'
-    MKD = 'MKD'
-    MMK = 'MMK'
-    MNT = 'MNT'
-    MOP = 'MOP'
-    MRO = 'MRO'
-    MUR = 'MUR'
-    MVR = 'MVR'
-    MWK = 'MWK'
-    MXN = 'MXN'
-    MXV = 'MXV'
-    MYR = 'MYR'
-    MZN = 'MZN'
-    NAD = 'NAD'
-    NGN = 'NGN'
-    NIO = 'NIO'
-    NOK = 'NOK'
-    NPR = 'NPR'
-    NZD = 'NZD'
-    OMR = 'OMR'
-    PAB = 'PAB'
-    PEN = 'PEN'
-    PGK = 'PGK'
-    PHP = 'PHP'
-    PKR = 'PKR'
-    PLN = 'PLN'
-    PYG = 'PYG'
-    QAR = 'QAR'
-    RON = 'RON'
-    RSD = 'RSD'
-    RUB = 'RUB'
-    RWF = 'RWF'
-    SAR = 'SAR'
-    SBD = 'SBD'
-    SCR = 'SCR'
-    SDG = 'SDG'
-    SEK = 'SEK'
-    SGD = 'SGD'
-    SHP = 'SHP'
-    SLL = 'SLL'
-    SOS = 'SOS'
-    SRD = 'SRD'
-    SSP = 'SSP'
-    STD = 'STD'
-    SYP = 'SYP'
-    SZL = 'SZL'
-    THB = 'THB'
-    TJS = 'TJS'
-    TMT = 'TMT'
-    TND = 'TND'
-    TOP = 'TOP'
-    TRY = 'TRY'
-    TTD = 'TTD'
-    TWD = 'TWD'
-    TZS = 'TZS'
-    UAH = 'UAH'
-    UGX = 'UGX'
-    USD = 'USD'
-    USN = 'USN'
-    UYI = 'UYI'
-    UYU = 'UYU'
-    UZS = 'UZS'
-    VEF = 'VEF'
-    VND = 'VND'
-    VUV = 'VUV'
-    WST = 'WST'
-    XAG = 'XAG'
-    XAU = 'XAU'
-    XBA = 'XBA'
-    XBB = 'XBB'
-    XBC = 'XBC'
-    XBD = 'XBD'
-    XCD = 'XCD'
-    XOF = 'XOF'
-    XPD = 'XPD'
-    XPF = 'XPF'
-    XPT = 'XPT'
-    XSU = 'XSU'
-    XTS = 'XTS'
-    XUA = 'XUA'
-    XXX = 'XXX'
-    YER = 'YER'
-    ZAR = 'ZAR'
-    ZMW = 'ZMW'
-    ZWL = 'ZWL'
+    AED = "AED"
+    ANG = "ANG"
+    AUD = "AUD"
+    CHE = "CHE"
+    CHF = "CHF"
+    CHW = "CHW"
+    EUR = "EUR"
+    GBP = "GBP"
+    LBP = "LBP"
+    LKR = "LKR"
+    LRD = "LRD"
+    LSL = "LSL"
+    LYD = "LYD"
+    MAD = "MAD"
+    MDL = "MDL"
+    MGA = "MGA"
+    MKD = "MKD"
+    MMK = "MMK"
+    MNT = "MNT"
+    MOP = "MOP"
+    MRO = "MRO"
+    MUR = "MUR"
+    MVR = "MVR"
+    MWK = "MWK"
+    MXN = "MXN"
+    MXV = "MXV"
+    MYR = "MYR"
+    MZN = "MZN"
+    NAD = "NAD"
+    NGN = "NGN"
+    NIO = "NIO"
+    NOK = "NOK"
+    NPR = "NPR"
+    NZD = "NZD"
+    OMR = "OMR"
+    PAB = "PAB"
+    PEN = "PEN"
+    PGK = "PGK"
+    PHP = "PHP"
+    PKR = "PKR"
+    PLN = "PLN"
+    PYG = "PYG"
+    QAR = "QAR"
+    RON = "RON"
+    RSD = "RSD"
+    RUB = "RUB"
+    RWF = "RWF"
+    SAR = "SAR"
+    SBD = "SBD"
+    SCR = "SCR"
+    SDG = "SDG"
+    SEK = "SEK"
+    SGD = "SGD"
+    SHP = "SHP"
+    SLL = "SLL"
+    SOS = "SOS"
+    SRD = "SRD"
+    SSP = "SSP"
+    STD = "STD"
+    SYP = "SYP"
+    SZL = "SZL"
+    THB = "THB"
+    TJS = "TJS"
+    TMT = "TMT"
+    TND = "TND"
+    TOP = "TOP"
+    TRY = "TRY"
+    TTD = "TTD"
+    TWD = "TWD"
+    TZS = "TZS"
+    UAH = "UAH"
+    UGX = "UGX"
+    USD = "USD"
+    USN = "USN"
+    UYI = "UYI"
+    UYU = "UYU"
+    UZS = "UZS"
+    VEF = "VEF"
+    VND = "VND"
+    VUV = "VUV"
+    WST = "WST"
+    XAG = "XAG"
+    XAU = "XAU"
+    XBA = "XBA"
+    XBB = "XBB"
+    XBC = "XBC"
+    XBD = "XBD"
+    XCD = "XCD"
+    XOF = "XOF"
+    XPD = "XPD"
+    XPF = "XPF"
+    XPT = "XPT"
+    XSU = "XSU"
+    XTS = "XTS"
+    XUA = "XUA"
+    XXX = "XXX"
+    YER = "YER"
+    ZAR = "ZAR"
+    ZMW = "ZMW"
+    ZWL = "ZWL"
 
 
 class Duration(BaseModel):
-    __root__: conint(ge=0) = Field(..., description='Duration in milliseconds')
+    __root__: conint(ge=0) = Field(..., description="Duration in milliseconds")
 
 
 class EnergyManagementRole(Enum):
-    CEM = 'CEM'
-    RM = 'RM'
+    CEM = "CEM"
+    RM = "RM"
 
 
 class FRBCUsageForecastElement(BaseModel):
@@ -158,52 +158,52 @@ class FRBCUsageForecastElement(BaseModel):
         extra = Extra.forbid
 
     duration: Duration = Field(
-        ..., description='Indicator for how long the given usage_rate is valid.'
+        ..., description="Indicator for how long the given usage_rate is valid."
     )
     usage_rate_expected: float = Field(
         ...,
-        description='The most likely value for the usage rate; the expected increase or decrease of the fill_level per second',
+        description="The most likely value for the usage rate; the expected increase or decrease of the fill_level per second",
     )
     usage_rate_lower_68PPR: Optional[float] = Field(
         None,
-        description='The lower limit of the range with a 68\xa0% probability that the usage rate is within that range',
+        description="The lower limit of the range with a 68\xa0% probability that the usage rate is within that range",
     )
     usage_rate_lower_95PPR: Optional[float] = Field(
         None,
-        description='The lower limit of the range with a 95\xa0% probability that the usage rate is within that range',
+        description="The lower limit of the range with a 95\xa0% probability that the usage rate is within that range",
     )
     usage_rate_lower_limit: Optional[float] = Field(
         None,
-        description='The lower limit of the range with a 100\xa0% probability that the usage rate is within that range',
+        description="The lower limit of the range with a 100\xa0% probability that the usage rate is within that range",
     )
     usage_rate_upper_68PPR: Optional[float] = Field(
         None,
-        description='The upper limit of the range with a 68\xa0% probability that the usage rate is within that range',
+        description="The upper limit of the range with a 68\xa0% probability that the usage rate is within that range",
     )
     usage_rate_upper_95PPR: Optional[float] = Field(
         None,
-        description='The upper limit of the range with a 95\xa0% probability that the usage rate is within that range. ',
+        description="The upper limit of the range with a 95\xa0% probability that the usage rate is within that range. ",
     )
     usage_rate_upper_limit: Optional[float] = Field(
         None,
-        description='The upper limit of the range with a 100\xa0% probability that the usage rate is within that range.',
+        description="The upper limit of the range with a 100\xa0% probability that the usage rate is within that range.",
     )
 
 
 class ID(BaseModel):
-    __root__: constr(regex=r'[a-zA-Z0-9\-_:]{2,64}') = Field(
-        ..., description='An identifier expressed as a UUID'
+    __root__: constr(regex=r"[a-zA-Z0-9\-_:]{2,64}") = Field(
+        ..., description="An identifier expressed as a UUID"
     )
 
 
 class InstructionStatus(Enum):
-    NEW = 'NEW'
-    ACCEPTED = 'ACCEPTED'
-    REJECTED = 'REJECTED'
-    REVOKED = 'REVOKED'
-    STARTED = 'STARTED'
-    SUCCEEDED = 'SUCCEEDED'
-    ABORTED = 'ABORTED'
+    NEW = "NEW"
+    ACCEPTED = "ACCEPTED"
+    REJECTED = "REJECTED"
+    REVOKED = "REVOKED"
+    STARTED = "STARTED"
+    SUCCEEDED = "SUCCEEDED"
+    ABORTED = "ABORTED"
 
 
 class InstructionStatusUpdate(BaseModel):
@@ -211,15 +211,15 @@ class InstructionStatusUpdate(BaseModel):
         extra = Extra.forbid
 
     instruction_id: ID = Field(
-        ..., description='ID of this instruction (as provided by the CEM) '
+        ..., description="ID of this instruction (as provided by the CEM) "
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('InstructionStatusUpdate', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("InstructionStatusUpdate", const=True)
     status_type: InstructionStatus = Field(
-        ..., description='Present status of this instruction.'
+        ..., description="Present status of this instruction."
     )
     timestamp: datetime = Field(
-        ..., description='Timestamp when status_type has changed the last time.'
+        ..., description="Timestamp when status_type has changed the last time."
     )
 
 
@@ -228,10 +228,10 @@ class NumberRange(BaseModel):
         extra = Extra.forbid
 
     end_of_range: float = Field(
-        ..., description='Number that defines the end of the range'
+        ..., description="Number that defines the end of the range"
     )
     start_of_range: float = Field(
-        ..., description='Number that defines the start of the range'
+        ..., description="Number that defines the start of the range"
     )
 
 
@@ -241,23 +241,23 @@ class OMBCInstruction(BaseModel):
 
     abnormal_condition: bool = Field(
         ...,
-        description='Indicates if this is an instruction during an abnormal condition',
+        description="Indicates if this is an instruction during an abnormal condition",
     )
     execution_time: datetime = Field(
-        ..., description='Time when instruction should be executed.'
+        ..., description="Time when instruction should be executed."
     )
     id: ID = Field(
         ...,
-        description='ID of the instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="ID of the instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('OMBC.Instruction', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("OMBC.Instruction", const=True)
     operation_mode_factor: float = Field(
         ...,
-        description='The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal than 0 and less or equal to 1.',
+        description="The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal than 0 and less or equal to 1.",
     )
     operation_mode_id: ID = Field(
-        ..., description='ID of the OMBC.OperationMode that should be activated'
+        ..., description="ID of the OMBC.OperationMode that should be activated"
     )
 
 
@@ -266,21 +266,21 @@ class OMBCStatus(BaseModel):
         extra = Extra.forbid
 
     active_operation_mode_id: ID = Field(
-        ..., description='ID of the active OMBC.OperationMode.'
+        ..., description="ID of the active OMBC.OperationMode."
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('OMBC.Status', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("OMBC.Status", const=True)
     operation_mode_factor: float = Field(
         ...,
-        description='The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal than 0 and less or equal to 1.',
+        description="The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal than 0 and less or equal to 1.",
     )
     previous_operation_mode_id: Optional[ID] = Field(
         None,
-        description='ID of the OMBC.OperationMode that was previously active. This value shall always be provided, unless the active OMBC.OperationMode is the first OMBC.OperationMode the Resource Manager is aware of.',
+        description="ID of the OMBC.OperationMode that was previously active. This value shall always be provided, unless the active OMBC.OperationMode is the first OMBC.OperationMode the Resource Manager is aware of.",
     )
     transition_timestamp: Optional[datetime] = Field(
         None,
-        description='Time at which the transition from the previous OMBC.OperationMode to the active OMBC.OperationMode was initiated. This value shall always be provided, unless the active OMBC.OperationMode is the first OMBC.OperationMode the Resource Manager is aware of.',
+        description="Time at which the transition from the previous OMBC.OperationMode to the active OMBC.OperationMode was initiated. This value shall always be provided, unless the active OMBC.OperationMode is the first OMBC.OperationMode the Resource Manager is aware of.",
     )
 
 
@@ -290,11 +290,11 @@ class OMBCTimerStatus(BaseModel):
 
     finished_at: datetime = Field(
         ...,
-        description='Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.',
+        description="Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('OMBC.TimerStatus', const=True)
-    timer_id: ID = Field(..., description='The ID of the timer this message refers to')
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("OMBC.TimerStatus", const=True)
+    timer_id: ID = Field(..., description="The ID of the timer this message refers to")
 
 
 class PEBCEnergyConstraint(BaseModel):
@@ -303,55 +303,55 @@ class PEBCEnergyConstraint(BaseModel):
 
     commodity_quantity: CommodityQuantity = Field(
         ...,
-        description='Type of power quantity which applies to upper_average_power and lower_average_power',
+        description="Type of power quantity which applies to upper_average_power and lower_average_power",
     )
     id: ID = Field(
         ...,
-        description='Identifier of this PEBC.EnergyConstraints. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="Identifier of this PEBC.EnergyConstraints. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     lower_average_power: float = Field(
         ...,
-        description='Lower average power within the time period given by valid_from and valid_until. If the duration is multiplied with this power value, then the associated lower energy content can be derived. This is the lowest amount of energy the resource will consume during that period of time.  ',
+        description="Lower average power within the time period given by valid_from and valid_until. If the duration is multiplied with this power value, then the associated lower energy content can be derived. This is the lowest amount of energy the resource will consume during that period of time.  ",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PEBC.EnergyConstraint', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PEBC.EnergyConstraint", const=True)
     upper_average_power: float = Field(
         ...,
-        description='Upper average power within the time period given by valid_from and valid_until. If the duration is multiplied with this power value, then the associated upper energy content can be derived. This is the highest amount of energy the resource will consume during that period of time.',
+        description="Upper average power within the time period given by valid_from and valid_until. If the duration is multiplied with this power value, then the associated upper energy content can be derived. This is the highest amount of energy the resource will consume during that period of time.",
     )
     valid_from: datetime = Field(
         ...,
-        description='Moment this PEBC.EnergyConstraints information starts to be valid',
+        description="Moment this PEBC.EnergyConstraints information starts to be valid",
     )
     valid_until: datetime = Field(
         ...,
-        description='Moment until this PEBC.EnergyConstraints information is valid.',
+        description="Moment until this PEBC.EnergyConstraints information is valid.",
     )
 
 
 class PEBCPowerEnvelopeConsequenceType(Enum):
-    VANISH = 'VANISH'
-    DEFER = 'DEFER'
+    VANISH = "VANISH"
+    DEFER = "DEFER"
 
 
 class PEBCPowerEnvelopeElement(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    duration: Duration = Field(..., description='The duration of the element')
+    duration: Duration = Field(..., description="The duration of the element")
     lower_limit: float = Field(
         ...,
-        description='Lower power limit according to the commodity_quantity of the containing PEBC.PowerEnvelope. The lower_limit must be smaller or equal to the upper_limit. The Resource Manager is requested to keep the power values for the given commodity quantity equal to or above the lower_limit. The lower_limit shall be in accordance with the constraints provided by the Resource Manager through any PEBC.AllowedLimitRange with limit_type LOWER_LIMIT.',
+        description="Lower power limit according to the commodity_quantity of the containing PEBC.PowerEnvelope. The lower_limit must be smaller or equal to the upper_limit. The Resource Manager is requested to keep the power values for the given commodity quantity equal to or above the lower_limit. The lower_limit shall be in accordance with the constraints provided by the Resource Manager through any PEBC.AllowedLimitRange with limit_type LOWER_LIMIT.",
     )
     upper_limit: float = Field(
         ...,
-        description='Upper power limit according to the commodity_quantity of the containing PEBC.PowerEnvelope. The lower_limit must be smaller or equal to the upper_limit. The Resource Manager is requested to keep the power values for the given commodity quantity equal to or below the upper_limit. The upper_limit shall be in accordance with the constraints provided by the Resource Manager through any PEBC.AllowedLimitRange with limit_type UPPER_LIMIT.',
+        description="Upper power limit according to the commodity_quantity of the containing PEBC.PowerEnvelope. The lower_limit must be smaller or equal to the upper_limit. The Resource Manager is requested to keep the power values for the given commodity quantity equal to or below the upper_limit. The upper_limit shall be in accordance with the constraints provided by the Resource Manager through any PEBC.AllowedLimitRange with limit_type UPPER_LIMIT.",
     )
 
 
 class PEBCPowerEnvelopeLimitType(Enum):
-    UPPER_LIMIT = 'UPPER_LIMIT'
-    LOWER_LIMIT = 'LOWER_LIMIT'
+    UPPER_LIMIT = "UPPER_LIMIT"
+    LOWER_LIMIT = "LOWER_LIMIT"
 
 
 class PPBCEndInterruptionInstruction(BaseModel):
@@ -360,38 +360,38 @@ class PPBCEndInterruptionInstruction(BaseModel):
 
     abnormal_condition: bool = Field(
         ...,
-        description='Indicates if this is an instruction during an abnormal condition',
+        description="Indicates if this is an instruction during an abnormal condition",
     )
     execution_time: datetime = Field(
-        ..., description='End time of Interruption of the PPBC.PowerSequence.'
+        ..., description="End time of Interruption of the PPBC.PowerSequence."
     )
     id: ID = Field(
         ...,
-        description='ID of the Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="ID of the Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PPBC.EndInterruptionInstruction', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PPBC.EndInterruptionInstruction", const=True)
     power_profile_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerProfileDefinition of which the PPBC.PowerSequence interruption is being ended by the CEM.',
+        description="ID of the PPBC.PowerProfileDefinition of which the PPBC.PowerSequence interruption is being ended by the CEM.",
     )
     power_sequence_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerSequence for which the CEM wants to end the interruption.',
+        description="ID of the PPBC.PowerSequence for which the CEM wants to end the interruption.",
     )
     sequence_container_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerSequnceContainer of which the PPBC.PowerSequence interruption is being ended by the CEM.',
+        description="ID of the PPBC.PowerSequnceContainer of which the PPBC.PowerSequence interruption is being ended by the CEM.",
     )
 
 
 class PPBCPowerSequenceStatus(Enum):
-    NOT_SCHEDULED = 'NOT_SCHEDULED'
-    SCHEDULED = 'SCHEDULED'
-    EXECUTING = 'EXECUTING'
-    INTERRUPTED = 'INTERRUPTED'
-    FINISHED = 'FINISHED'
-    ABORTED = 'ABORTED'
+    NOT_SCHEDULED = "NOT_SCHEDULED"
+    SCHEDULED = "SCHEDULED"
+    EXECUTING = "EXECUTING"
+    INTERRUPTED = "INTERRUPTED"
+    FINISHED = "FINISHED"
+    ABORTED = "ABORTED"
 
 
 class PPBCScheduleInstruction(BaseModel):
@@ -400,28 +400,28 @@ class PPBCScheduleInstruction(BaseModel):
 
     abnormal_condition: bool = Field(
         ...,
-        description='Indicates if this is an instruction during an abnormal condition',
+        description="Indicates if this is an instruction during an abnormal condition",
     )
     execution_time: datetime = Field(
-        ..., description='Start time of the PPBC.PowerSequence.'
+        ..., description="Start time of the PPBC.PowerSequence."
     )
     id: ID = Field(
         ...,
-        description='ID of the Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="ID of the Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PPBC.ScheduleInstruction', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PPBC.ScheduleInstruction", const=True)
     power_profile_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerProfileDefinition of which the PPBC.PowerSequence is being selected and scheduled by the CEM.',
+        description="ID of the PPBC.PowerProfileDefinition of which the PPBC.PowerSequence is being selected and scheduled by the CEM.",
     )
     power_sequence_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerSequence that is being selected and scheduled by the CEM.',
+        description="ID of the PPBC.PowerSequence that is being selected and scheduled by the CEM.",
     )
     sequence_container_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerSequnceContainer of which the PPBC.PowerSequence is being selected and scheduled by the CEM.',
+        description="ID of the PPBC.PowerSequnceContainer of which the PPBC.PowerSequence is being selected and scheduled by the CEM.",
     )
 
 
@@ -431,27 +431,27 @@ class PPBCStartInterruptionInstruction(BaseModel):
 
     abnormal_condition: bool = Field(
         ...,
-        description='Indicates if this is an instruction during an abnormal condition',
+        description="Indicates if this is an instruction during an abnormal condition",
     )
     execution_time: datetime = Field(
-        ..., description='Start time of the interruption of the PPBC.PowerSequence.'
+        ..., description="Start time of the interruption of the PPBC.PowerSequence."
     )
     id: ID = Field(
         ...,
-        description='ID of the Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="ID of the Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PPBC.StartInterruptionInstruction', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PPBC.StartInterruptionInstruction", const=True)
     power_profile_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerProfileDefinition of which the PPBC.PowerSequence is being interrupted by the CEM.',
+        description="ID of the PPBC.PowerProfileDefinition of which the PPBC.PowerSequence is being interrupted by the CEM.",
     )
     power_sequence_id: ID = Field(
-        ..., description='ID of the PPBC.PowerSequence that the CEM wants to interrupt.'
+        ..., description="ID of the PPBC.PowerSequence that the CEM wants to interrupt."
     )
     sequence_container_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerSequnceContainer of which the PPBC.PowerSequence is being interrupted by the CEM.',
+        description="ID of the PPBC.PowerSequnceContainer of which the PPBC.PowerSequence is being interrupted by the CEM.",
     )
 
 
@@ -460,32 +460,32 @@ class PowerForecastValue(BaseModel):
         extra = Extra.forbid
 
     commodity_quantity: CommodityQuantity = Field(
-        ..., description='The power quantity the value refers to'
+        ..., description="The power quantity the value refers to"
     )
-    value_expected: float = Field(..., description='The expected power value.')
+    value_expected: float = Field(..., description="The expected power value.")
     value_lower_68PPR: Optional[float] = Field(
         None,
-        description='The lower boundary of the range with 68\xa0% certainty the power value is in it',
+        description="The lower boundary of the range with 68\xa0% certainty the power value is in it",
     )
     value_lower_95PPR: Optional[float] = Field(
         None,
-        description='The lower boundary of the range with 95\xa0% certainty the power value is in it',
+        description="The lower boundary of the range with 95\xa0% certainty the power value is in it",
     )
     value_lower_limit: Optional[float] = Field(
         None,
-        description='The lower boundary of the range with 100\xa0% certainty the power value is in it',
+        description="The lower boundary of the range with 100\xa0% certainty the power value is in it",
     )
     value_upper_68PPR: Optional[float] = Field(
         None,
-        description='The upper boundary of the range with 68\xa0% certainty the power value is in it',
+        description="The upper boundary of the range with 68\xa0% certainty the power value is in it",
     )
     value_upper_95PPR: Optional[float] = Field(
         None,
-        description='The upper boundary of the range with 95\xa0% certainty the power value is in it',
+        description="The upper boundary of the range with 95\xa0% certainty the power value is in it",
     )
     value_upper_limit: Optional[float] = Field(
         None,
-        description='The upper boundary of the range with 100\xa0% certainty the power value is in it',
+        description="The upper boundary of the range with 100\xa0% certainty the power value is in it",
     )
 
 
@@ -494,13 +494,13 @@ class PowerRange(BaseModel):
         extra = Extra.forbid
 
     commodity_quantity: CommodityQuantity = Field(
-        ..., description='The power quantity the values refer to'
+        ..., description="The power quantity the values refer to"
     )
     end_of_range: float = Field(
-        ..., description='Power value that defines the end of the range.'
+        ..., description="Power value that defines the end of the range."
     )
     start_of_range: float = Field(
-        ..., description='Power value that defines the start of the range.'
+        ..., description="Power value that defines the start of the range."
     )
 
 
@@ -509,55 +509,55 @@ class PowerValue(BaseModel):
         extra = Extra.forbid
 
     commodity_quantity: CommodityQuantity = Field(
-        ..., description='The power quantity the value refers to'
+        ..., description="The power quantity the value refers to"
     )
     value: float = Field(
         ...,
-        description='Power value expressed in the unit associated with the CommodityQuantity',
+        description="Power value expressed in the unit associated with the CommodityQuantity",
     )
 
 
 class ReceptionStatusValues(Enum):
-    INVALID_DATA = 'INVALID_DATA'
-    INVALID_MESSAGE = 'INVALID_MESSAGE'
-    INVALID_CONTENT = 'INVALID_CONTENT'
-    TEMPORARY_ERROR = 'TEMPORARY_ERROR'
-    PERMANENT_ERROR = 'PERMANENT_ERROR'
-    OK = 'OK'
+    INVALID_DATA = "INVALID_DATA"
+    INVALID_MESSAGE = "INVALID_MESSAGE"
+    INVALID_CONTENT = "INVALID_CONTENT"
+    TEMPORARY_ERROR = "TEMPORARY_ERROR"
+    PERMANENT_ERROR = "PERMANENT_ERROR"
+    OK = "OK"
 
 
 class RevokableObjects(Enum):
-    PEBC_PowerConstraints = 'PEBC.PowerConstraints'
-    PEBC_EnergyConstraint = 'PEBC.EnergyConstraint'
-    PEBC_Instruction = 'PEBC.Instruction'
-    PPBC_PowerProfileDefinition = 'PPBC.PowerProfileDefinition'
-    PPBC_ScheduleInstruction = 'PPBC.ScheduleInstruction'
-    PPBC_StartInterruptionInstruction = 'PPBC.StartInterruptionInstruction'
-    PPBC_EndInterruptionInstruction = 'PPBC.EndInterruptionInstruction'
-    OMBC_SystemDescription = 'OMBC.SystemDescription'
-    OMBC_Instruction = 'OMBC.Instruction'
-    FRBC_SystemDescription = 'FRBC.SystemDescription'
-    FRBC_Instruction = 'FRBC.Instruction'
-    DDBC_SystemDescription = 'DDBC.SystemDescription'
-    DDBC_Instruction = 'DDBC.Instruction'
+    PEBC_PowerConstraints = "PEBC.PowerConstraints"
+    PEBC_EnergyConstraint = "PEBC.EnergyConstraint"
+    PEBC_Instruction = "PEBC.Instruction"
+    PPBC_PowerProfileDefinition = "PPBC.PowerProfileDefinition"
+    PPBC_ScheduleInstruction = "PPBC.ScheduleInstruction"
+    PPBC_StartInterruptionInstruction = "PPBC.StartInterruptionInstruction"
+    PPBC_EndInterruptionInstruction = "PPBC.EndInterruptionInstruction"
+    OMBC_SystemDescription = "OMBC.SystemDescription"
+    OMBC_Instruction = "OMBC.Instruction"
+    FRBC_SystemDescription = "FRBC.SystemDescription"
+    FRBC_Instruction = "FRBC.Instruction"
+    DDBC_SystemDescription = "DDBC.SystemDescription"
+    DDBC_Instruction = "DDBC.Instruction"
 
 
 class RevokeObject(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('RevokeObject', const=True)
-    object_id: ID = Field(..., description='The ID of object that needs to be revoked')
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("RevokeObject", const=True)
+    object_id: ID = Field(..., description="The ID of object that needs to be revoked")
     object_type: RevokableObjects = Field(
-        ..., description='The type of object that needs to be revoked'
+        ..., description="The type of object that needs to be revoked"
     )
 
 
 class RoleType(Enum):
-    ENERGY_PRODUCER = 'ENERGY_PRODUCER'
-    ENERGY_CONSUMER = 'ENERGY_CONSUMER'
-    ENERGY_STORAGE = 'ENERGY_STORAGE'
+    ENERGY_PRODUCER = "ENERGY_PRODUCER"
+    ENERGY_CONSUMER = "ENERGY_CONSUMER"
+    ENERGY_STORAGE = "ENERGY_STORAGE"
 
 
 class SelectControlType(BaseModel):
@@ -566,15 +566,15 @@ class SelectControlType(BaseModel):
 
     control_type: ControlType = Field(
         ...,
-        description='The ControlType to activate. Must be one of the available ControlTypes as defined in the ResourceManagerDetails',
+        description="The ControlType to activate. Must be one of the available ControlTypes as defined in the ResourceManagerDetails",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('SelectControlType', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("SelectControlType", const=True)
 
 
 class SessionRequestType(Enum):
-    RECONNECT = 'RECONNECT'
-    TERMINATE = 'TERMINATE'
+    RECONNECT = "RECONNECT"
+    TERMINATE = "TERMINATE"
 
 
 class Timer(BaseModel):
@@ -583,15 +583,15 @@ class Timer(BaseModel):
 
     diagnostic_label: Optional[str] = Field(
         None,
-        description='Human readable name/description of the Timer. This element is only intended for diagnostic purposes and not for HMI applications.',
+        description="Human readable name/description of the Timer. This element is only intended for diagnostic purposes and not for HMI applications.",
     )
     duration: Duration = Field(
         ...,
-        description='The time it takes for the Timer to finish after it has been started',
+        description="The time it takes for the Timer to finish after it has been started",
     )
     id: ID = Field(
         ...,
-        description='ID of the Timer. Must be unique in the scope of the OMBC.SystemDescription, FRBC.ActuatorDescription or DDBC.ActuatorDescription in which it is used.',
+        description="ID of the Timer. Must be unique in the scope of the OMBC.SystemDescription, FRBC.ActuatorDescription or DDBC.ActuatorDescription in which it is used.",
     )
 
 
@@ -601,40 +601,40 @@ class Transition(BaseModel):
 
     abnormal_condition_only: bool = Field(
         ...,
-        description='Indicates if this Transition may only be used during an abnormal condition (see Clause )',
+        description="Indicates if this Transition may only be used during an abnormal condition (see Clause )",
     )
     blocking_timers: List[ID] = Field(
         ...,
-        description='List of IDs of Timers that block this Transition from initiating while at least one of these Timers is not yet finished',
+        description="List of IDs of Timers that block this Transition from initiating while at least one of these Timers is not yet finished",
         max_items=1000,
         min_items=0,
     )
     from_: ID = Field(
         ...,
-        alias='from',
-        description='ID of the OperationMode (exact type differs per ControlType) that should be switched from.',
+        alias="from",
+        description="ID of the OperationMode (exact type differs per ControlType) that should be switched from.",
     )
     id: ID = Field(
         ...,
-        description='ID of the Transition. Must be unique in the scope of the OMBC.SystemDescription, FRBC.ActuatorDescription or DDBC.ActuatorDescription in which it is used.',
+        description="ID of the Transition. Must be unique in the scope of the OMBC.SystemDescription, FRBC.ActuatorDescription or DDBC.ActuatorDescription in which it is used.",
     )
     start_timers: List[ID] = Field(
         ...,
-        description='List of IDs of Timers that will be (re)started when this transition is initiated',
+        description="List of IDs of Timers that will be (re)started when this transition is initiated",
         max_items=1000,
         min_items=0,
     )
     to: ID = Field(
         ...,
-        description='ID of the OperationMode (exact type differs per ControlType) that will be switched to.',
+        description="ID of the OperationMode (exact type differs per ControlType) that will be switched to.",
     )
     transition_costs: Optional[float] = Field(
         None,
-        description='Absolute costs for going through this Transition in the currency as described in the ResourceManagerDetails.',
+        description="Absolute costs for going through this Transition in the currency as described in the ResourceManagerDetails.",
     )
     transition_duration: Optional[Duration] = Field(
         None,
-        description='Indicates the time between the initiation of this Transition, and the time at which the device behaves according to the Operation Mode which is defined in the ‘to’ data element. When no value is provided it is assumed the transition duration is negligible.',
+        description="Indicates the time between the initiation of this Transition, and the time at which the device behaves according to the Operation Mode which is defined in the ‘to’ data element. When no value is provided it is assumed the transition duration is negligible.",
     )
 
 
@@ -644,24 +644,24 @@ class DDBCActuatorStatus(BaseModel):
 
     active_operation_mode_id: ID = Field(
         ...,
-        description='The operation mode that is presently active for this actuator.',
+        description="The operation mode that is presently active for this actuator.",
     )
     actuator_id: ID = Field(
-        ..., description='ID of the actuator this messages refers to'
+        ..., description="ID of the actuator this messages refers to"
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('DDBC.ActuatorStatus', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("DDBC.ActuatorStatus", const=True)
     operation_mode_factor: float = Field(
         ...,
-        description='The number indicates the factor with which the DDBC.OperationMode is configured. The factor should be greater than or equal to 0 and less or equal to 1.',
+        description="The number indicates the factor with which the DDBC.OperationMode is configured. The factor should be greater than or equal to 0 and less or equal to 1.",
     )
     previous_operation_mode_id: Optional[ID] = Field(
         None,
-        description='ID of the DDBC,OperationMode that was active before the present one. This value shall always be provided, unless the active DDBC.OperationMode is the first DDBC.OperationMode the Resource Manager is aware of.',
+        description="ID of the DDBC,OperationMode that was active before the present one. This value shall always be provided, unless the active DDBC.OperationMode is the first DDBC.OperationMode the Resource Manager is aware of.",
     )
     transition_timestamp: Optional[datetime] = Field(
         None,
-        description='Time at which the transition from the previous DDBC.OperationMode to the active DDBC.OperationMode was initiated. This value shall always be provided, unless the active DDBC.OperationMode is the first DDBC.OperationMode the Resource Manager is aware of.',
+        description="Time at which the transition from the previous DDBC.OperationMode to the active DDBC.OperationMode was initiated. This value shall always be provided, unless the active DDBC.OperationMode is the first DDBC.OperationMode the Resource Manager is aware of.",
     )
 
 
@@ -671,33 +671,33 @@ class DDBCAverageDemandRateForecastElement(BaseModel):
 
     demand_rate_expected: float = Field(
         ...,
-        description='The most likely value for the demand rate; the expected increase or decrease of the fill_level per second',
+        description="The most likely value for the demand rate; the expected increase or decrease of the fill_level per second",
     )
     demand_rate_lower_68PPR: Optional[float] = Field(
         None,
-        description='The lower limit of the range with a 68\xa0% probability that the demand rate is within that range',
+        description="The lower limit of the range with a 68\xa0% probability that the demand rate is within that range",
     )
     demand_rate_lower_95PPR: Optional[float] = Field(
         None,
-        description='The lower limit of the range with a 95\xa0% probability that the demand rate is within that range',
+        description="The lower limit of the range with a 95\xa0% probability that the demand rate is within that range",
     )
     demand_rate_lower_limit: Optional[float] = Field(
         None,
-        description='The lower limit of the range with a 100\xa0% probability that the demand rate is within that range',
+        description="The lower limit of the range with a 100\xa0% probability that the demand rate is within that range",
     )
     demand_rate_upper_68PPR: Optional[float] = Field(
         None,
-        description='The upper limit of the range with a 68\xa0% probability that the demand rate is within that range',
+        description="The upper limit of the range with a 68\xa0% probability that the demand rate is within that range",
     )
     demand_rate_upper_95PPR: Optional[float] = Field(
         None,
-        description='The upper limit of the range with a 95\xa0% probability that the demand rate is within that range',
+        description="The upper limit of the range with a 95\xa0% probability that the demand rate is within that range",
     )
     demand_rate_upper_limit: Optional[float] = Field(
         None,
-        description='The upper limit of the range with a 100\xa0% probability that the demand rate is within that range',
+        description="The upper limit of the range with a 100\xa0% probability that the demand rate is within that range",
     )
-    duration: Duration = Field(..., description='Duration of the element')
+    duration: Duration = Field(..., description="Duration of the element")
 
 
 class DDBCInstruction(BaseModel):
@@ -706,26 +706,26 @@ class DDBCInstruction(BaseModel):
 
     abnormal_condition: bool = Field(
         ...,
-        description='Indicates if this is an instruction during an abnormal condition',
+        description="Indicates if this is an instruction during an abnormal condition",
     )
     actuator_id: ID = Field(
-        ..., description='ID of the actuator this Instruction belongs to.'
+        ..., description="ID of the actuator this Instruction belongs to."
     )
     execution_time: datetime = Field(
         ...,
-        description='Indicates the moment the execution of the instruction shall start',
+        description="Indicates the moment the execution of the instruction shall start",
     )
     id: ID = Field(
         ...,
-        description='Identifier of this DDBC.Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="Identifier of this DDBC.Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('DDBC.Instruction', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("DDBC.Instruction", const=True)
     operation_mode_factor: float = Field(
         ...,
-        description='The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal to 0 and less or equal to 1.',
+        description="The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal to 0 and less or equal to 1.",
     )
-    operation_mode_id: ID = Field(..., description='ID of the DDBC.OperationMode')
+    operation_mode_id: ID = Field(..., description="ID of the DDBC.OperationMode")
 
 
 class DDBCOperationMode(BaseModel):
@@ -734,29 +734,29 @@ class DDBCOperationMode(BaseModel):
 
     Id: ID = Field(
         ...,
-        description='ID of this operation mode. Must be unique in the scope of the DDBC.ActuatorDescription in which it is used.',
+        description="ID of this operation mode. Must be unique in the scope of the DDBC.ActuatorDescription in which it is used.",
     )
     abnormal_condition_only: bool = Field(
         ...,
-        description='Indicates if this DDBC.OperationMode may only be used during an abnormal condition.',
+        description="Indicates if this DDBC.OperationMode may only be used during an abnormal condition.",
     )
     diagnostic_label: Optional[str] = Field(
         None,
-        description='Human readable name/description of the DDBC.OperationMode. This element is only intended for diagnostic purposes and not for HMI applications.',
+        description="Human readable name/description of the DDBC.OperationMode. This element is only intended for diagnostic purposes and not for HMI applications.",
     )
     power_ranges: List[PowerRange] = Field(
         ...,
-        description='The power produced or consumed by this operation mode. The start of each PowerRange is associated with an operation_mode_factor of 0, the end is associated with an operation_mode_factor of 1. In the array there must be at least one PowerRange, and at most one PowerRange per CommodityQuantity.',
+        description="The power produced or consumed by this operation mode. The start of each PowerRange is associated with an operation_mode_factor of 0, the end is associated with an operation_mode_factor of 1. In the array there must be at least one PowerRange, and at most one PowerRange per CommodityQuantity.",
         max_items=10,
         min_items=1,
     )
     running_costs: Optional[NumberRange] = Field(
         None,
-        description='Additional costs per second (e.g. wear, services) associated with this operation mode in the currency defined by the ResourceManagerDetails, excluding the commodity cost. The range is expressing uncertainty and is not linked to the operation_mode_factor.',
+        description="Additional costs per second (e.g. wear, services) associated with this operation mode in the currency defined by the ResourceManagerDetails, excluding the commodity cost. The range is expressing uncertainty and is not linked to the operation_mode_factor.",
     )
     supply_range: NumberRange = Field(
         ...,
-        description='The supply rate this DDBC.OperationMode can deliver for the CEM to match the demand rate. The start of the NumberRange is associated with an operation_mode_factor of 0, the end is associated with an operation_mode_factor of 1.',
+        description="The supply rate this DDBC.OperationMode can deliver for the CEM to match the demand rate. The start of the NumberRange is associated with an operation_mode_factor of 0, the end is associated with an operation_mode_factor of 1.",
     )
 
 
@@ -765,15 +765,15 @@ class DDBCTimerStatus(BaseModel):
         extra = Extra.forbid
 
     actuator_id: ID = Field(
-        ..., description='The ID of the actuator the timer belongs to'
+        ..., description="The ID of the actuator the timer belongs to"
     )
     finished_at: datetime = Field(
         ...,
-        description='Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.',
+        description="Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('DDBC.TimerStatus', const=True)
-    timer_id: ID = Field(..., description='The ID of the timer this message refers to')
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("DDBC.TimerStatus", const=True)
+    timer_id: ID = Field(..., description="The ID of the timer this message refers to")
 
 
 class FRBCActuatorStatus(BaseModel):
@@ -781,24 +781,24 @@ class FRBCActuatorStatus(BaseModel):
         extra = Extra.forbid
 
     active_operation_mode_id: ID = Field(
-        ..., description='ID of the FRBC.OperationMode that is presently active.'
+        ..., description="ID of the FRBC.OperationMode that is presently active."
     )
     actuator_id: ID = Field(
-        ..., description='ID of the actuator this messages refers to'
+        ..., description="ID of the actuator this messages refers to"
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('FRBC.ActuatorStatus', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("FRBC.ActuatorStatus", const=True)
     operation_mode_factor: float = Field(
         ...,
-        description='The number indicates the factor with which the FRBC.OperationMode is configured. The factor should be greater than or equal than 0 and less or equal to 1.',
+        description="The number indicates the factor with which the FRBC.OperationMode is configured. The factor should be greater than or equal than 0 and less or equal to 1.",
     )
     previous_operation_mode_id: Optional[ID] = Field(
         None,
-        description='ID of the FRBC.OperationMode that was active before the present one. This value shall always be provided, unless the active FRBC.OperationMode is the first FRBC.OperationMode the Resource Manager is aware of.',
+        description="ID of the FRBC.OperationMode that was active before the present one. This value shall always be provided, unless the active FRBC.OperationMode is the first FRBC.OperationMode the Resource Manager is aware of.",
     )
     transition_timestamp: Optional[datetime] = Field(
         None,
-        description='Time at which the transition from the previous FRBC.OperationMode to the active FRBC.OperationMode was initiated. This value shall always be provided, unless the active FRBC.OperationMode is the first FRBC.OperationMode the Resource Manager is aware of.',
+        description="Time at which the transition from the previous FRBC.OperationMode to the active FRBC.OperationMode was initiated. This value shall always be provided, unless the active FRBC.OperationMode is the first FRBC.OperationMode the Resource Manager is aware of.",
     )
 
 
@@ -806,10 +806,10 @@ class FRBCFillLevelTargetProfileElement(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    duration: Duration = Field(..., description='The duration of the element.')
+    duration: Duration = Field(..., description="The duration of the element.")
     fill_level_range: NumberRange = Field(
         ...,
-        description='The target range in which the fill_level must be for the time period during which the element is active. The start of the range must be smaller or equal to the end of the range. The CEM must take best-effort actions to proactively achieve this target.',
+        description="The target range in which the fill_level must be for the time period during which the element is active. The start of the range must be smaller or equal to the end of the range. The CEM must take best-effort actions to proactively achieve this target.",
     )
 
 
@@ -819,26 +819,26 @@ class FRBCInstruction(BaseModel):
 
     abnormal_condition: bool = Field(
         ...,
-        description='Indicates if this is an instruction during an abnormal condition.',
+        description="Indicates if this is an instruction during an abnormal condition.",
     )
     actuator_id: ID = Field(
-        ..., description='ID of the actuator this instruction belongs to.'
+        ..., description="ID of the actuator this instruction belongs to."
     )
     execution_time: datetime = Field(
-        ..., description='Time when instruction should be executed.'
+        ..., description="Time when instruction should be executed."
     )
     id: ID = Field(
         ...,
-        description='ID of the instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="ID of the instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('FRBC.Instruction', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("FRBC.Instruction", const=True)
     operation_mode: ID = Field(
-        ..., description='ID of the FRBC.OperationMode that should be activated.'
+        ..., description="ID of the FRBC.OperationMode that should be activated."
     )
     operation_mode_factor: float = Field(
         ...,
-        description='The number indicates the factor with which the FRBC.OperationMode should be configured. The factor should be greater than or equal to 0 and less or equal to 1.',
+        description="The number indicates the factor with which the FRBC.OperationMode should be configured. The factor should be greater than or equal to 0 and less or equal to 1.",
     )
 
 
@@ -848,11 +848,11 @@ class FRBCLeakageBehaviourElement(BaseModel):
 
     fill_level_range: NumberRange = Field(
         ...,
-        description='The fill level range for which this FRBC.LeakageBehaviourElement applies. The start of the range must be less than the end of the range.',
+        description="The fill level range for which this FRBC.LeakageBehaviourElement applies. The start of the range must be less than the end of the range.",
     )
     leakage_rate: float = Field(
         ...,
-        description='Indicates how fast the momentary fill level will decrease per second due to leakage within the given range of the fill level.',
+        description="Indicates how fast the momentary fill level will decrease per second due to leakage within the given range of the fill level.",
     )
 
 
@@ -862,21 +862,21 @@ class FRBCOperationModeElement(BaseModel):
 
     fill_level_range: NumberRange = Field(
         ...,
-        description='The range of the fill level for which this FRBC.OperationModeElement applies. The start of the NumberRange shall be smaller than the end of the NumberRange.',
+        description="The range of the fill level for which this FRBC.OperationModeElement applies. The start of the NumberRange shall be smaller than the end of the NumberRange.",
     )
     fill_rate: NumberRange = Field(
         ...,
-        description='Indicates the change in fill_level per second. The lower_boundary of the NumberRange is associated with an operation_mode_factor of 0, the upper_boundary is associated with an operation_mode_factor of 1. ',
+        description="Indicates the change in fill_level per second. The lower_boundary of the NumberRange is associated with an operation_mode_factor of 0, the upper_boundary is associated with an operation_mode_factor of 1. ",
     )
     power_ranges: List[PowerRange] = Field(
         ...,
-        description='The power produced or consumed by this operation mode. The start of each PowerRange is associated with an operation_mode_factor of 0, the end is associated with an operation_mode_factor of 1. In the array there must be at least one PowerRange, and at most one PowerRange per CommodityQuantity.',
+        description="The power produced or consumed by this operation mode. The start of each PowerRange is associated with an operation_mode_factor of 0, the end is associated with an operation_mode_factor of 1. In the array there must be at least one PowerRange, and at most one PowerRange per CommodityQuantity.",
         max_items=10,
         min_items=1,
     )
     running_costs: Optional[NumberRange] = Field(
         None,
-        description='Additional costs per second (e.g. wear, services) associated with this operation mode in the currency defined by the ResourceManagerDetails, excluding the commodity cost. The range is expressing uncertainty and is not linked to the operation_mode_factor.',
+        description="Additional costs per second (e.g. wear, services) associated with this operation mode in the currency defined by the ResourceManagerDetails, excluding the commodity cost. The range is expressing uncertainty and is not linked to the operation_mode_factor.",
     )
 
 
@@ -886,27 +886,27 @@ class FRBCStorageDescription(BaseModel):
 
     diagnostic_label: Optional[str] = Field(
         None,
-        description='Human readable name/description of the storage (e.g. hot water buffer or battery). This element is only intended for diagnostic purposes and not for HMI applications.',
+        description="Human readable name/description of the storage (e.g. hot water buffer or battery). This element is only intended for diagnostic purposes and not for HMI applications.",
     )
     fill_level_label: Optional[str] = Field(
         None,
-        description='Human readable description of the (physical) units associated with the fill_level (e.g. degrees Celsius or percentage state of charge). This element is only intended for diagnostic purposes and not for HMI applications.',
+        description="Human readable description of the (physical) units associated with the fill_level (e.g. degrees Celsius or percentage state of charge). This element is only intended for diagnostic purposes and not for HMI applications.",
     )
     fill_level_range: NumberRange = Field(
         ...,
-        description='The range in which the fill_level should remain. It is expected of the CEM to keep the fill_level within this range. When the fill_level is not within this range, the Resource Manager can ignore instructions from the CEM (except during abnormal conditions). ',
+        description="The range in which the fill_level should remain. It is expected of the CEM to keep the fill_level within this range. When the fill_level is not within this range, the Resource Manager can ignore instructions from the CEM (except during abnormal conditions). ",
     )
     provides_fill_level_target_profile: bool = Field(
         ...,
-        description='Indicates whether the Storage could provide a target profile for the fill level through the FRBC.FillLevelTargetProfile.',
+        description="Indicates whether the Storage could provide a target profile for the fill level through the FRBC.FillLevelTargetProfile.",
     )
     provides_leakage_behaviour: bool = Field(
         ...,
-        description='Indicates whether the Storage could provide details of power leakage behaviour through the FRBC.LeakageBehaviour.',
+        description="Indicates whether the Storage could provide details of power leakage behaviour through the FRBC.LeakageBehaviour.",
     )
     provides_usage_forecast: bool = Field(
         ...,
-        description='Indicates whether the Storage could provide a UsageForecast through the FRBC.UsageForecast.',
+        description="Indicates whether the Storage could provide a UsageForecast through the FRBC.UsageForecast.",
     )
 
 
@@ -914,10 +914,10 @@ class FRBCStorageStatus(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('FRBC.StorageStatus', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("FRBC.StorageStatus", const=True)
     present_fill_level: float = Field(
-        ..., description='Present fill level of the Storage'
+        ..., description="Present fill level of the Storage"
     )
 
 
@@ -926,15 +926,15 @@ class FRBCTimerStatus(BaseModel):
         extra = Extra.forbid
 
     actuator_id: ID = Field(
-        ..., description='The ID of the actuator the timer belongs to'
+        ..., description="The ID of the actuator the timer belongs to"
     )
     finished_at: datetime = Field(
         ...,
-        description='Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.',
+        description="Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('FRBC.TimerStatus', const=True)
-    timer_id: ID = Field(..., description='The ID of the timer this message refers to')
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("FRBC.TimerStatus", const=True)
+    timer_id: ID = Field(..., description="The ID of the timer this message refers to")
 
 
 class FRBCUsageForecast(BaseModel):
@@ -943,14 +943,14 @@ class FRBCUsageForecast(BaseModel):
 
     elements: List[FRBCUsageForecastElement] = Field(
         ...,
-        description='Further elements that model the profile. There shall be at least one element. Elements must be placed in chronological order.',
+        description="Further elements that model the profile. There shall be at least one element. Elements must be placed in chronological order.",
         max_items=288,
         min_items=1,
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('FRBC.UsageForecast', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("FRBC.UsageForecast", const=True)
     start_time: datetime = Field(
-        ..., description='Time at which the FRBC.UsageForecast starts.'
+        ..., description="Time at which the FRBC.UsageForecast starts."
     )
 
 
@@ -958,14 +958,14 @@ class Handshake(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('Handshake', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("Handshake", const=True)
     role: EnergyManagementRole = Field(
-        ..., description='The role of the sender of this message'
+        ..., description="The role of the sender of this message"
     )
     supported_protocol_versions: Optional[List[str]] = Field(
         None,
-        description='Protocol versions supported by the sender of this message. This field is mandatory for the RM, but optional for the CEM.',
+        description="Protocol versions supported by the sender of this message. This field is mandatory for the RM, but optional for the CEM.",
         min_items=1,
     )
 
@@ -974,10 +974,10 @@ class HandshakeResponse(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('HandshakeResponse', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("HandshakeResponse", const=True)
     selected_protocol_version: str = Field(
-        ..., description='The protocol version the CEM selected for this session'
+        ..., description="The protocol version the CEM selected for this session"
     )
 
 
@@ -987,25 +987,25 @@ class OMBCOperationMode(BaseModel):
 
     abnormal_condition_only: bool = Field(
         ...,
-        description='Indicates if this OMBC.OperationMode may only be used during an abnormal condition.',
+        description="Indicates if this OMBC.OperationMode may only be used during an abnormal condition.",
     )
     diagnostic_label: Optional[str] = Field(
         None,
-        description='Human readable name/description of the OMBC.OperationMode. This element is only intended for diagnostic purposes and not for HMI applications.',
+        description="Human readable name/description of the OMBC.OperationMode. This element is only intended for diagnostic purposes and not for HMI applications.",
     )
     id: ID = Field(
         ...,
-        description='ID of the OBMC.OperationMode. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="ID of the OBMC.OperationMode. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     power_ranges: List[PowerRange] = Field(
         ...,
-        description='The power produced or consumed by this operation mode. The start of each PowerRange is associated with an operation_mode_factor of 0, the end is associated with an operation_mode_factor of 1. In the array there must be at least one PowerRange, and at most one PowerRange per CommodityQuantity.',
+        description="The power produced or consumed by this operation mode. The start of each PowerRange is associated with an operation_mode_factor of 0, the end is associated with an operation_mode_factor of 1. In the array there must be at least one PowerRange, and at most one PowerRange per CommodityQuantity.",
         max_items=10,
         min_items=1,
     )
     running_costs: Optional[NumberRange] = Field(
         None,
-        description='Additional costs per second (e.g. wear, services) associated with this operation mode in the currency defined by the ResourceManagerDetails , excluding the commodity cost. The range is expressing uncertainty and is not linked to the operation_mode_factor.',
+        description="Additional costs per second (e.g. wear, services) associated with this operation mode in the currency defined by the ResourceManagerDetails , excluding the commodity cost. The range is expressing uncertainty and is not linked to the operation_mode_factor.",
     )
 
 
@@ -1013,29 +1013,29 @@ class OMBCSystemDescription(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('OMBC.SystemDescription', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("OMBC.SystemDescription", const=True)
     operation_modes: List[OMBCOperationMode] = Field(
         ...,
-        description='OMBC.OperationModes available for the CEM in order to coordinate the device behaviour.',
+        description="OMBC.OperationModes available for the CEM in order to coordinate the device behaviour.",
         max_items=100,
         min_items=1,
     )
     timers: List[Timer] = Field(
         ...,
-        description='Timers that control when certain transitions can be made.',
+        description="Timers that control when certain transitions can be made.",
         max_items=1000,
         min_items=0,
     )
     transitions: List[Transition] = Field(
         ...,
-        description='Possible transitions to switch from one OMBC.OperationMode to another.',
+        description="Possible transitions to switch from one OMBC.OperationMode to another.",
         max_items=1000,
         min_items=0,
     )
     valid_from: datetime = Field(
         ...,
-        description='Moment this OMBC.SystemDescription starts to be valid. If the system description is immediately valid, the DateTimeStamp should be now or in the past.',
+        description="Moment this OMBC.SystemDescription starts to be valid. If the system description is immediately valid, the DateTimeStamp should be now or in the past.",
     )
 
 
@@ -1045,18 +1045,18 @@ class PEBCAllowedLimitRange(BaseModel):
 
     abnormal_condition_only: bool = Field(
         ...,
-        description='Indicates if this PEBC.AllowedLimitRange may only be used during an abnormal condition',
+        description="Indicates if this PEBC.AllowedLimitRange may only be used during an abnormal condition",
     )
     commodity_quantity: CommodityQuantity = Field(
-        ..., description='Type of power quantity this PEBC.AllowedLimitRange applies to'
+        ..., description="Type of power quantity this PEBC.AllowedLimitRange applies to"
     )
     limit_type: PEBCPowerEnvelopeLimitType = Field(
         ...,
-        description='Indicates if this ranges applies to the upper limit or the lower limit',
+        description="Indicates if this ranges applies to the upper limit or the lower limit",
     )
     range_boundary: NumberRange = Field(
         ...,
-        description='Boundaries of the power range of this PEBC.AllowedLimitRange. The CEM is allowed to choose values within this range for the power envelope for the limit as described in limit_type. The start of the range shall be smaller or equal than the end of the range. ',
+        description="Boundaries of the power range of this PEBC.AllowedLimitRange. The CEM is allowed to choose values within this range for the power envelope for the limit as described in limit_type. The start of the range shall be smaller or equal than the end of the range. ",
     )
 
 
@@ -1066,25 +1066,25 @@ class PEBCPowerConstraints(BaseModel):
 
     allowed_limit_ranges: List[PEBCAllowedLimitRange] = Field(
         ...,
-        description='The actual constraints. There shall be at least one PEBC.AllowedLimitRange for the UPPER_LIMIT and at least one AllowedLimitRange for the LOWER_LIMIT. It is allowed to have multiple PEBC.AllowedLimitRange objects with identical CommodityQuantities and LimitTypes.',
+        description="The actual constraints. There shall be at least one PEBC.AllowedLimitRange for the UPPER_LIMIT and at least one AllowedLimitRange for the LOWER_LIMIT. It is allowed to have multiple PEBC.AllowedLimitRange objects with identical CommodityQuantities and LimitTypes.",
         max_items=100,
         min_items=2,
     )
     consequence_type: PEBCPowerEnvelopeConsequenceType = Field(
-        ..., description='Type of consequence of limiting power'
+        ..., description="Type of consequence of limiting power"
     )
     id: ID = Field(
         ...,
-        description='Identifier of this PEBC.PowerConstraints. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="Identifier of this PEBC.PowerConstraints. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PEBC.PowerConstraints', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PEBC.PowerConstraints", const=True)
     valid_from: datetime = Field(
-        ..., description='Moment this PEBC.PowerConstraints start to be valid'
+        ..., description="Moment this PEBC.PowerConstraints start to be valid"
     )
     valid_until: Optional[datetime] = Field(
         None,
-        description='Moment until this PEBC.PowerConstraints is valid. If valid_until is not present, there is no determined end time of this PEBC.PowerConstraints.',
+        description="Moment until this PEBC.PowerConstraints is valid. If valid_until is not present, there is no determined end time of this PEBC.PowerConstraints.",
     )
 
 
@@ -1093,15 +1093,15 @@ class PEBCPowerEnvelope(BaseModel):
         extra = Extra.forbid
 
     commodity_quantity: CommodityQuantity = Field(
-        ..., description='Type of power quantity this PEBC.PowerEnvelope applies to'
+        ..., description="Type of power quantity this PEBC.PowerEnvelope applies to"
     )
     id: ID = Field(
         ...,
-        description='Identifier of this PEBC.PowerEnvelope. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="Identifier of this PEBC.PowerEnvelope. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     power_envelope_elements: List[PEBCPowerEnvelopeElement] = Field(
         ...,
-        description='The elements of this PEBC.PowerEnvelope. Shall contain at least one element. Elements must be placed in chronological order.',
+        description="The elements of this PEBC.PowerEnvelope. Shall contain at least one element. Elements must be placed in chronological order.",
         max_items=288,
         min_items=1,
     )
@@ -1113,22 +1113,22 @@ class PPBCPowerSequenceContainerStatus(BaseModel):
 
     power_profile_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerProfileDefinition of which the data element ‘sequence_container_id’ refers to. ',
+        description="ID of the PPBC.PowerProfileDefinition of which the data element ‘sequence_container_id’ refers to. ",
     )
     progress: Optional[Duration] = Field(
         None,
-        description='Time that has passed since the selected sequence has started. A value must be provided, unless no sequence has been selected or the selected sequence hasn’t started yet.',
+        description="Time that has passed since the selected sequence has started. A value must be provided, unless no sequence has been selected or the selected sequence hasn’t started yet.",
     )
     selected_sequence_id: Optional[ID] = Field(
         None,
-        description='ID of selected PPBC.PowerSequence. When no ID is given, no sequence was selected yet.',
+        description="ID of selected PPBC.PowerSequence. When no ID is given, no sequence was selected yet.",
     )
     sequence_container_id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerSequenceContainer this PPBC.PowerSequenceContainerStatus provides information about.',
+        description="ID of the PPBC.PowerSequenceContainer this PPBC.PowerSequenceContainerStatus provides information about.",
     )
     status: PPBCPowerSequenceStatus = Field(
-        ..., description='Status of the selected PPBC.PowerSequence'
+        ..., description="Status of the selected PPBC.PowerSequence"
     )
 
 
@@ -1137,11 +1137,11 @@ class PPBCPowerSequenceElement(BaseModel):
         extra = Extra.forbid
 
     duration: Duration = Field(
-        ..., description='Duration of the PPBC.PowerSequenceElement.'
+        ..., description="Duration of the PPBC.PowerSequenceElement."
     )
     power_values: List[PowerForecastValue] = Field(
         ...,
-        description='The value of power and deviations for the given duration. The array should contain at least one PowerForecastValue and at most one PowerForecastValue per CommodityQuantity.',
+        description="The value of power and deviations for the given duration. The array should contain at least one PowerForecastValue and at most one PowerForecastValue per CommodityQuantity.",
         max_items=10,
         min_items=1,
     )
@@ -1151,10 +1151,10 @@ class PowerForecastElement(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    duration: Duration = Field(..., description='Duration of the PowerForecastElement')
+    duration: Duration = Field(..., description="Duration of the PowerForecastElement")
     power_values: List[PowerForecastValue] = Field(
         ...,
-        description='The values of power that are expected for the given period of time. There shall be at least one PowerForecastValue, and at most one PowerForecastValue per CommodityQuantity.',
+        description="The values of power that are expected for the given period of time. There shall be at least one PowerForecastValue, and at most one PowerForecastValue per CommodityQuantity.",
         max_items=10,
         min_items=1,
     )
@@ -1165,13 +1165,13 @@ class PowerMeasurement(BaseModel):
         extra = Extra.forbid
 
     measurement_timestamp: datetime = Field(
-        ..., description='Timestamp when PowerValues were measured.'
+        ..., description="Timestamp when PowerValues were measured."
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PowerMeasurement', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PowerMeasurement", const=True)
     values: List[PowerValue] = Field(
         ...,
-        description='Array of measured PowerValues. Must contain at least one item and at most one item per ‘commodity_quantity’ (defined inside the PowerValue).',
+        description="Array of measured PowerValues. Must contain at least one item and at most one item per ‘commodity_quantity’ (defined inside the PowerValue).",
         max_items=10,
         min_items=1,
     )
@@ -1183,14 +1183,14 @@ class ReceptionStatus(BaseModel):
 
     diagnostic_label: Optional[str] = Field(
         None,
-        description='Diagnostic label that can be used to provide additional information for debugging. However, not for HMI purposes.',
+        description="Diagnostic label that can be used to provide additional information for debugging. However, not for HMI purposes.",
     )
-    message_type: str = Field('ReceptionStatus', const=True)
+    message_type: str = Field("ReceptionStatus", const=True)
     status: ReceptionStatusValues = Field(
-        ..., description='Enumeration of status values'
+        ..., description="Enumeration of status values"
     )
     subject_message_id: ID = Field(
-        ..., description='The message this ReceptionStatus refers to'
+        ..., description="The message this ReceptionStatus refers to"
     )
 
 
@@ -1198,9 +1198,9 @@ class Role(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    commodity: Commodity = Field(..., description='Commodity the role refers to.')
+    commodity: Commodity = Field(..., description="Commodity the role refers to.")
     role: RoleType = Field(
-        ..., description='Role type of the Resource Manager for the given commodity'
+        ..., description="Role type of the Resource Manager for the given commodity"
     )
 
 
@@ -1210,11 +1210,11 @@ class SessionRequest(BaseModel):
 
     diagnostic_label: Optional[str] = Field(
         None,
-        description='Optional field for a human readible descirption for debugging purposes',
+        description="Optional field for a human readible descirption for debugging purposes",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('SessionRequest', const=True)
-    request: SessionRequestType = Field(..., description='The type of request')
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("SessionRequest", const=True)
+    request: SessionRequestType = Field(..., description="The type of request")
 
 
 class DDBCActuatorDescription(BaseModel):
@@ -1223,33 +1223,33 @@ class DDBCActuatorDescription(BaseModel):
 
     diagnostic_label: Optional[str] = Field(
         None,
-        description='Human readable name/description of the actuator. This element is only intended for diagnostic purposes and not for HMI applications.',
+        description="Human readable name/description of the actuator. This element is only intended for diagnostic purposes and not for HMI applications.",
     )
     id: ID = Field(
         ...,
-        description='ID of this DDBC.ActuatorDescription. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="ID of this DDBC.ActuatorDescription. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     operation_modes: List[DDBCOperationMode] = Field(
         ...,
-        description='List of all Operation Modes that are available for this actuator. There shall be at least one DDBC.OperationMode.',
+        description="List of all Operation Modes that are available for this actuator. There shall be at least one DDBC.OperationMode.",
         max_items=100,
         min_items=1,
     )
     supported_commodites: List[Commodity] = Field(
         ...,
-        description='Commodities supported by the operation modes of this actuator. There shall be at least one commodity',
+        description="Commodities supported by the operation modes of this actuator. There shall be at least one commodity",
         max_items=4,
         min_items=1,
     )
     timers: List[Timer] = Field(
         ...,
-        description='List of Timers associated with Transitions for this Actuator. Can be empty.',
+        description="List of Timers associated with Transitions for this Actuator. Can be empty.",
         max_items=1000,
         min_items=0,
     )
     transitions: List[Transition] = Field(
         ...,
-        description='List of Transitions between Operation Modes. Shall contain at least one Transition.',
+        description="List of Transitions between Operation Modes. Shall contain at least one Transition.",
         max_items=1000,
         min_items=0,
     )
@@ -1261,13 +1261,13 @@ class DDBCAverageDemandRateForecast(BaseModel):
 
     elements: List[DDBCAverageDemandRateForecastElement] = Field(
         ...,
-        description='Elements of the profile. Elements must be placed in chronological order.',
+        description="Elements of the profile. Elements must be placed in chronological order.",
         max_items=288,
         min_items=1,
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('DDBC.AverageDemandRateForecast', const=True)
-    start_time: datetime = Field(..., description='Start time of the profile.')
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("DDBC.AverageDemandRateForecast", const=True)
+    start_time: datetime = Field(..., description="Start time of the profile.")
 
 
 class DDBCSystemDescription(BaseModel):
@@ -1276,22 +1276,22 @@ class DDBCSystemDescription(BaseModel):
 
     actuators: List[DDBCActuatorDescription] = Field(
         ...,
-        description='List of all available actuators in the system. Must contain at least one DDBC.ActuatorAggregated.',
+        description="List of all available actuators in the system. Must contain at least one DDBC.ActuatorAggregated.",
         max_items=10,
         min_items=1,
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('DDBC.SystemDescription', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("DDBC.SystemDescription", const=True)
     present_demand_rate: NumberRange = Field(
-        ..., description='Present demand rate that needs to be satisfied by the system'
+        ..., description="Present demand rate that needs to be satisfied by the system"
     )
     provides_average_demand_rate_forecast: bool = Field(
         ...,
-        description='Indicates whether the Resource Manager could provide a demand rate forecast through the DDBC.AverageDemandRateForecast.',
+        description="Indicates whether the Resource Manager could provide a demand rate forecast through the DDBC.AverageDemandRateForecast.",
     )
     valid_from: datetime = Field(
         ...,
-        description='Moment this DDBC.SystemDescription starts to be valid. If the system description is immediately valid, the DateTimeStamp should be now or in the past.',
+        description="Moment this DDBC.SystemDescription starts to be valid. If the system description is immediately valid, the DateTimeStamp should be now or in the past.",
     )
 
 
@@ -1301,14 +1301,14 @@ class FRBCFillLevelTargetProfile(BaseModel):
 
     elements: List[FRBCFillLevelTargetProfileElement] = Field(
         ...,
-        description='List of different fill levels that have to be targeted within a given duration. There shall be at least one element. Elements must be placed in chronological order.',
+        description="List of different fill levels that have to be targeted within a given duration. There shall be at least one element. Elements must be placed in chronological order.",
         max_items=288,
         min_items=1,
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('FRBC.FillLevelTargetProfile', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("FRBC.FillLevelTargetProfile", const=True)
     start_time: datetime = Field(
-        ..., description='Time at which the FRBC.FillLevelTargetProfile starts.'
+        ..., description="Time at which the FRBC.FillLevelTargetProfile starts."
     )
 
 
@@ -1318,15 +1318,15 @@ class FRBCLeakageBehaviour(BaseModel):
 
     elements: List[FRBCLeakageBehaviourElement] = Field(
         ...,
-        description='List of elements that model the leakage behaviour of the buffer. The fill_level_ranges of the elements must be contiguous.',
+        description="List of elements that model the leakage behaviour of the buffer. The fill_level_ranges of the elements must be contiguous.",
         max_items=288,
         min_items=1,
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('FRBC.LeakageBehaviour', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("FRBC.LeakageBehaviour", const=True)
     valid_from: datetime = Field(
         ...,
-        description='Moment this FRBC.LeakageBehaviour starts to be valid. If the FRBC.LeakageBehaviour is immediately valid, the DateTimeStamp should be now or in the past.',
+        description="Moment this FRBC.LeakageBehaviour starts to be valid. If the FRBC.LeakageBehaviour is immediately valid, the DateTimeStamp should be now or in the past.",
     )
 
 
@@ -1336,21 +1336,21 @@ class FRBCOperationMode(BaseModel):
 
     abnormal_condition_only: bool = Field(
         ...,
-        description='Indicates if this FRBC.OperationMode may only be used during an abnormal condition',
+        description="Indicates if this FRBC.OperationMode may only be used during an abnormal condition",
     )
     diagnostic_label: Optional[str] = Field(
         None,
-        description='Human readable name/description of the FRBC.OperationMode. This element is only intended for diagnostic purposes and not for HMI applications.',
+        description="Human readable name/description of the FRBC.OperationMode. This element is only intended for diagnostic purposes and not for HMI applications.",
     )
     elements: List[FRBCOperationModeElement] = Field(
         ...,
-        description='List of FRBC.OperationModeElements, which describe the properties of this FRBC.OperationMode depending on the fill_level. The fill_level_ranges of the items in the Array must be contiguous.',
+        description="List of FRBC.OperationModeElements, which describe the properties of this FRBC.OperationMode depending on the fill_level. The fill_level_ranges of the items in the Array must be contiguous.",
         max_items=100,
         min_items=1,
     )
     id: ID = Field(
         ...,
-        description='ID of the FRBC.OperationMode. Must be unique in the scope of the FRBC.ActuatorDescription in which it is used.',
+        description="ID of the FRBC.OperationMode. Must be unique in the scope of the FRBC.ActuatorDescription in which it is used.",
     )
 
 
@@ -1360,25 +1360,25 @@ class PEBCInstruction(BaseModel):
 
     abnormal_condition: bool = Field(
         ...,
-        description='Indicates if this is an instruction during an abnormal condition.',
+        description="Indicates if this is an instruction during an abnormal condition.",
     )
     execution_time: datetime = Field(
         ...,
-        description='Indicates the moment the execution of the instruction shall start.',
+        description="Indicates the moment the execution of the instruction shall start.",
     )
     id: ID = Field(
         ...,
-        description='Identifier of this PEBC.Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="Identifier of this PEBC.Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PEBC.Instruction', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PEBC.Instruction", const=True)
     power_constraints_id: ID = Field(
         ...,
-        description='Identifier of the PEBC.PowerConstraints this PEBC.Instruction was based on.',
+        description="Identifier of the PEBC.PowerConstraints this PEBC.Instruction was based on.",
     )
     power_envelopes: List[PEBCPowerEnvelope] = Field(
         ...,
-        description='The PEBC.PowerEnvelope(s) that should be followed by the Resource Manager. There shall be at least one PEBC.PowerEnvelope, but at most one PEBC.PowerEnvelope for each CommodityQuantity.',
+        description="The PEBC.PowerEnvelope(s) that should be followed by the Resource Manager. There shall be at least one PEBC.PowerEnvelope, but at most one PEBC.PowerEnvelope for each CommodityQuantity.",
         max_items=10,
         min_items=1,
     )
@@ -1388,11 +1388,11 @@ class PPBCPowerProfileStatus(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PPBC.PowerProfileStatus', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PPBC.PowerProfileStatus", const=True)
     sequence_container_status: List[PPBCPowerSequenceContainerStatus] = Field(
         ...,
-        description='Array with status information for all PPBC.PowerSequenceContainers in the PPBC.PowerProfileDefinition.',
+        description="Array with status information for all PPBC.PowerSequenceContainers in the PPBC.PowerProfileDefinition.",
         max_items=1000,
         min_items=1,
     )
@@ -1404,25 +1404,25 @@ class PPBCPowerSequence(BaseModel):
 
     abnormal_condition_only: bool = Field(
         ...,
-        description='Indicates if this PPBC.PowerSequence may only be used during an abnormal condition',
+        description="Indicates if this PPBC.PowerSequence may only be used during an abnormal condition",
     )
     elements: List[PPBCPowerSequenceElement] = Field(
         ...,
-        description='List of PPBC.PowerSequenceElements. Shall contain at least one element. Elements must be placed in chronological order.',
+        description="List of PPBC.PowerSequenceElements. Shall contain at least one element. Elements must be placed in chronological order.",
         max_items=288,
         min_items=1,
     )
     id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerSequence. Must be unique in the scope of the PPBC.PowerSequnceContainer in which it is used.',
+        description="ID of the PPBC.PowerSequence. Must be unique in the scope of the PPBC.PowerSequnceContainer in which it is used.",
     )
     is_interruptible: bool = Field(
         ...,
-        description='Indicates whether the option of pausing a sequence is available.',
+        description="Indicates whether the option of pausing a sequence is available.",
     )
     max_pause_before: Optional[Duration] = Field(
         None,
-        description='The maximum duration for which a device can be paused between the end of the previous running sequence and the start of this one',
+        description="The maximum duration for which a device can be paused between the end of the previous running sequence and the start of this one",
     )
 
 
@@ -1432,11 +1432,11 @@ class PPBCPowerSequenceContainer(BaseModel):
 
     id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerSequenceContainer. Must be unique in the scope of the PPBC.PowerProfileDefinition in which it is used.',
+        description="ID of the PPBC.PowerSequenceContainer. Must be unique in the scope of the PPBC.PowerProfileDefinition in which it is used.",
     )
     power_sequences: List[PPBCPowerSequence] = Field(
         ...,
-        description='List of alternative Sequences where one could be chosen by the CEM',
+        description="List of alternative Sequences where one could be chosen by the CEM",
         max_items=288,
         min_items=1,
     )
@@ -1448,14 +1448,14 @@ class PowerForecast(BaseModel):
 
     elements: List[PowerForecastElement] = Field(
         ...,
-        description='Elements of which this forecast consists. Contains at least one element. Elements must be placed in chronological order.',
+        description="Elements of which this forecast consists. Contains at least one element. Elements must be placed in chronological order.",
         max_items=288,
         min_items=1,
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PowerForecast', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PowerForecast", const=True)
     start_time: datetime = Field(
-        ..., description='Start time of time period that is covered by the profile.'
+        ..., description="Start time of time period that is covered by the profile."
     )
 
 
@@ -1465,52 +1465,52 @@ class ResourceManagerDetails(BaseModel):
 
     available_control_types: List[ControlType] = Field(
         ...,
-        description='The control types supported by this Resource Manager.',
+        description="The control types supported by this Resource Manager.",
         max_items=5,
         min_items=1,
     )
     currency: Optional[Currency] = Field(
         None,
-        description='Currency to be used for all information regarding costs. Mandatory if cost information is published.',
+        description="Currency to be used for all information regarding costs. Mandatory if cost information is published.",
     )
     firmware_version: Optional[str] = Field(
         None,
-        description='Version identifier of the firmware used in the device (provided by the manufacturer)',
+        description="Version identifier of the firmware used in the device (provided by the manufacturer)",
     )
     instruction_processing_delay: Duration = Field(
         ...,
-        description='The average time the combination of Resource Manager and HBES/BACS/SASS or (Smart) device needs to process and execute an instruction',
+        description="The average time the combination of Resource Manager and HBES/BACS/SASS or (Smart) device needs to process and execute an instruction",
     )
-    manufacturer: Optional[str] = Field(None, description='Name of Manufacturer')
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('ResourceManagerDetails', const=True)
+    manufacturer: Optional[str] = Field(None, description="Name of Manufacturer")
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("ResourceManagerDetails", const=True)
     model: Optional[str] = Field(
         None,
-        description='Name of the model of the device (provided by the manufacturer)',
+        description="Name of the model of the device (provided by the manufacturer)",
     )
-    name: Optional[str] = Field(None, description='Human readable name given by user')
+    name: Optional[str] = Field(None, description="Human readable name given by user")
     provides_forecast: bool = Field(
         ...,
-        description='Indicates whether the ResourceManager is able to provide PowerForecasts',
+        description="Indicates whether the ResourceManager is able to provide PowerForecasts",
     )
     provides_power_measurement_types: List[CommodityQuantity] = Field(
         ...,
-        description='Array of all CommodityQuantities that this Resource Manager can provide measurements for. ',
+        description="Array of all CommodityQuantities that this Resource Manager can provide measurements for. ",
         max_items=10,
         min_items=1,
     )
     resource_id: ID = Field(
         ...,
-        description='Identifier of the Resource Manager. Must be unique within the scope of the CEM.',
+        description="Identifier of the Resource Manager. Must be unique within the scope of the CEM.",
     )
     roles: List[Role] = Field(
         ...,
-        description='Each Resource Manager provides one or more energy Roles',
+        description="Each Resource Manager provides one or more energy Roles",
         max_items=3,
         min_items=1,
     )
     serial_number: Optional[str] = Field(
-        None, description='Serial number of the device (provided by the manufacturer)'
+        None, description="Serial number of the device (provided by the manufacturer)"
     )
 
 
@@ -1520,30 +1520,30 @@ class FRBCActuatorDescription(BaseModel):
 
     diagnostic_label: Optional[str] = Field(
         None,
-        description='Human readable name/description for the actuator. This element is only intended for diagnostic purposes and not for HMI applications.',
+        description="Human readable name/description for the actuator. This element is only intended for diagnostic purposes and not for HMI applications.",
     )
     id: ID = Field(
         ...,
-        description='ID of the Actuator. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="ID of the Actuator. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     operation_modes: List[FRBCOperationMode] = Field(
         ...,
-        description='Provided FRBC.OperationModes associated with this actuator',
+        description="Provided FRBC.OperationModes associated with this actuator",
         max_items=100,
         min_items=1,
     )
     supported_commodities: List[Commodity] = Field(
-        ..., description='List of all supported Commodities.', max_items=4, min_items=1
+        ..., description="List of all supported Commodities.", max_items=4, min_items=1
     )
     timers: List[Timer] = Field(
         ...,
-        description='List of Timers associated with this actuator',
+        description="List of Timers associated with this actuator",
         max_items=1000,
         min_items=0,
     )
     transitions: List[Transition] = Field(
         ...,
-        description='Possible transitions between FRBC.OperationModes associated with this actuator.',
+        description="Possible transitions between FRBC.OperationModes associated with this actuator.",
         max_items=1000,
         min_items=0,
     )
@@ -1554,14 +1554,14 @@ class FRBCSystemDescription(BaseModel):
         extra = Extra.forbid
 
     actuators: List[FRBCActuatorDescription] = Field(
-        ..., description='Details of all Actuators.', max_items=10, min_items=1
+        ..., description="Details of all Actuators.", max_items=10, min_items=1
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('FRBC.SystemDescription', const=True)
-    storage: FRBCStorageDescription = Field(..., description='Details of the storage.')
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("FRBC.SystemDescription", const=True)
+    storage: FRBCStorageDescription = Field(..., description="Details of the storage.")
     valid_from: datetime = Field(
         ...,
-        description='Moment this FRBC.SystemDescription starts to be valid. If the system description is immediately valid, the DateTimeStamp should be now or in the past.',
+        description="Moment this FRBC.SystemDescription starts to be valid. If the system description is immediately valid, the DateTimeStamp should be now or in the past.",
     )
 
 
@@ -1571,21 +1571,21 @@ class PPBCPowerProfileDefinition(BaseModel):
 
     end_time: datetime = Field(
         ...,
-        description='Indicates when the last PPBC.PowerSequence shall be finished at the latest',
+        description="Indicates when the last PPBC.PowerSequence shall be finished at the latest",
     )
     id: ID = Field(
         ...,
-        description='ID of the PPBC.PowerProfileDefinition. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.',
+        description="ID of the PPBC.PowerProfileDefinition. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    message_id: ID = Field(..., description='ID of this message')
-    message_type: str = Field('PPBC.PowerProfileDefinition', const=True)
+    message_id: ID = Field(..., description="ID of this message")
+    message_type: str = Field("PPBC.PowerProfileDefinition", const=True)
     power_sequences_containers: List[PPBCPowerSequenceContainer] = Field(
         ...,
-        description='The PPBC.PowerSequenceContainers that make up this PPBC.PowerProfileDefinition. There shall be at least one PPBC.PowerSequenceContainer that includes at least one PPBC.PowerSequence. PPBC.PowerSequenceContainers must be placed in chronological order.',
+        description="The PPBC.PowerSequenceContainers that make up this PPBC.PowerProfileDefinition. There shall be at least one PPBC.PowerSequenceContainer that includes at least one PPBC.PowerSequence. PPBC.PowerSequenceContainers must be placed in chronological order.",
         max_items=1000,
         min_items=1,
     )
     start_time: datetime = Field(
         ...,
-        description='Indicates the first possible time the first PPBC.PowerSequence could start',
+        description="Indicates the first possible time the first PPBC.PowerSequence could start",
     )

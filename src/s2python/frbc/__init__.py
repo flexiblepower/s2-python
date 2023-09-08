@@ -1,4 +1,6 @@
-from s2python.frbc.frbc_fill_level_target_profile_element import FRBCFillLevelTargetProfileElement
+from s2python.frbc.frbc_fill_level_target_profile_element import (
+    FRBCFillLevelTargetProfileElement,
+)
 from s2python.frbc.frbc_fill_level_target_profile import FRBCFillLevelTargetProfile
 from s2python.frbc.frbc_instruction import FRBCInstruction
 from s2python.frbc.frbc_leakage_behaviour_element import FRBCLeakageBehaviourElement

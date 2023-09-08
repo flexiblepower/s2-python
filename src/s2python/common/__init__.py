@@ -1,5 +1,15 @@
-from s2python.generated.gen_s2 import (RoleType, CommodityQuantity, Commodity, InstructionStatus, ReceptionStatusValues,
-                                       EnergyManagementRole, SessionRequestType, ControlType, Currency, RevokableObjects)
+from s2python.generated.gen_s2 import (
+    RoleType,
+    CommodityQuantity,
+    Commodity,
+    InstructionStatus,
+    ReceptionStatusValues,
+    EnergyManagementRole,
+    SessionRequestType,
+    ControlType,
+    Currency,
+    RevokableObjects,
+)
 
 from s2python.common.duration import Duration
 from s2python.common.role import Role

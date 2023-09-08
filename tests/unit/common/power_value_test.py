@@ -13,13 +13,16 @@ class PowerValueTest(TestCase):
         power_value: PowerValue = PowerValue.from_json(json_str)
 
         # Assert
-        self.assertEqual(power_value.commodity_quantity, CommodityQuantity.OIL_FLOW_RATE)
+        self.assertEqual(
+            power_value.commodity_quantity, CommodityQuantity.OIL_FLOW_RATE
+        )
         self.assertEqual(power_value.value, 43.43)
 
     def test__to_json__happy_path(self):
         # Arrange
-        power_value = PowerValue(commodity_quantity=CommodityQuantity.OIL_FLOW_RATE,
-                                 value=43.43)
+        power_value = PowerValue(
+            commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=43.43
+        )
 
         # Act
         json_str = power_value.to_json()
