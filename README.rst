@@ -1,5 +1,14 @@
 Python Wrapper for S2 Flexibility Protocol
 ===========================================
+
+.. image:: https://pypip.in/v/$REPO/badge.png
+    :target: https://crate.io/packages/s2-python/
+    :alt: Latest PyPI version
+
+.. image:: https://pypip.in/d/$REPO/badge.png
+    :target: https://crate.io/packages/s2-python/
+    :alt: Number of PyPI downloads
+
 |PyPI pyversions|
 
 .. |PyPI pyversions| image:: https://img.shields.io/pypi/pyversions/ansicolortags.svg
@@ -8,11 +17,6 @@ Python Wrapper for S2 Flexibility Protocol
 |PyPI version fury.io|
 
 .. |PyPI version fury.io| image:: https://badge.fury.io/py/ansicolortags.svg
-   :target: https://pypi.python.org/pypi/s2-python/
-
-|PyPI download total|
-
-.. |PyPI download total| image:: https://img.shields.io/pypi/dt/ansicolortags.svg
    :target: https://pypi.python.org/pypi/s2-python/
 
 |PyPI license|
