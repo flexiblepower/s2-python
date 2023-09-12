@@ -1,28 +1,11 @@
 Python Wrapper for S2 Flexibility Protocol
 ===========================================
-
-.. image:: https://img.shields.io/pypi/dm/s2-python
-   :alt: PyPI - Downloads
-
-
 .. image:: https://img.shields.io/pypi/v/s2-python
    :alt: PyPI - Version
-
-
-|PyPI pyversions|
-
-.. |PyPI pyversions| image:: https://img.shields.io/pypi/pyversions/ansicolortags.svg
-   :target: https://pypi.python.org/pypi/s2-python/
-
-|PyPI version fury.io|
-
-.. |PyPI version fury.io| image:: https://badge.fury.io/py/ansicolortags.svg
-   :target: https://pypi.python.org/pypi/s2-python/
-
-|PyPI license|
-
-.. |PyPI license| image:: https://img.shields.io/pypi/l/ansicolortags.svg
-   :target: https://pypi.python.org/pypi/s2-python/
+.. image:: https://img.shields.io/pypi/v/s2-python
+   :alt: PyPI - Version
+.. image:: https://img.shields.io/pypi/l/s2-python
+   :alt: PyPI - License
 
 This Python package implements the message validation for the EN50491-12-2 "S2" standard for home and building energy management. This implementation
 is based on the asyncapi description of the protocol provided in the `s2-ws-json <https://github.com/flexiblepower/s2-ws-json/>`_ repository. 
@@ -35,13 +18,15 @@ Example
 Short code snippet:
 
 .. code-block::python
-    >> number_range = PowerRange(start_of_range=4.0,
+    # create s2 messages as Python objects
+    number_range = PowerRange(start_of_range=4.0,
                             end_of_range=5.0,
                             commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
-    >> number_range.to_json()
-        {"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}
-    >> json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
-    >> PowerRange.from_json(json_str)
+    # serialize s2 messages
+    number_range.to_json()
+    # deserialize s2 messages
+    json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
+    PowerRange.from_json(json_str)
 
 Development
 -------------
