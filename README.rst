@@ -1,13 +1,13 @@
 Python Wrapper for S2 Flexibility Protocol
 ===========================================
 
-.. image:: https://pypip.in/v/s2-python/badge.png
-    :target: https://crate.io/packages/s2-python/
-    :alt: Latest PyPI version
+.. image:: https://img.shields.io/pypi/dm/s2-python
+   :alt: PyPI - Downloads
 
-.. image:: https://pypip.in/d/s2-python/badge.png
-    :target: https://crate.io/packages/s2-python/
-    :alt: Number of PyPI downloads
+
+.. image:: https://img.shields.io/pypi/v/s2-python
+   :alt: PyPI - Version
+
 
 |PyPI pyversions|
 
@@ -34,15 +34,14 @@ Example
 ---------
 Short code snippet:
 
-```python
->> number_range = PowerRange(start_of_range=4.0,
+.. code-block::python
+    >> number_range = PowerRange(start_of_range=4.0,
                             end_of_range=5.0,
                             commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
->> number_range.to_json()
-    {"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}
->> json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
->> PowerRange.from_json(json_str)
-```
+    >> number_range.to_json()
+        {"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}
+    >> json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
+    >> PowerRange.from_json(json_str)
 
 Development
 -------------
