@@ -13,6 +13,14 @@ is based on the asyncapi description of the protocol provided in the `s2-ws-json
 Currently, the package supports the *common* and *FILL RATE BASED CONTROL* types and messages.
 
 
+
+  .. code-block:: JSON
+
+    {
+      "key": "value"
+    }
+
+
 Example
 ---------
 Short code snippet:
