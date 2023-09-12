@@ -15,7 +15,11 @@ Currently, the package supports the *common* and *FILL RATE BASED CONTROL* types
 
 Example
 ---------
-Short code snippet:
+
+.. code-block:: python
+    number_range = PowerRange(start_of_range=4.0, end_of_range=5.0, commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
+  
+
 
 .. code-block:: python
     # create s2 messages as Python objects
