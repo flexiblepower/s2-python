@@ -2,8 +2,8 @@ Python Wrapper for S2 Flexibility Protocol
 ===========================================
 .. image:: https://img.shields.io/pypi/v/s2-python
    :alt: PyPI - Version
-.. image:: https://img.shields.io/pypi/v/s2-python
-   :alt: PyPI - Version
+.. image:: https://img.shields.io/pypi/pyversions/v/s2-python
+   :alt: PyPI - Python Version
 .. image:: https://img.shields.io/pypi/l/s2-python
    :alt: PyPI - License
 
@@ -17,13 +17,15 @@ Example
 ---------
 Short code snippet:
 
-.. code-block::python
+.. code-block:: python
     # create s2 messages as Python objects
     number_range = PowerRange(start_of_range=4.0,
                             end_of_range=5.0,
                             commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
+   
     # serialize s2 messages
     number_range.to_json()
+
     # deserialize s2 messages
     json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
     PowerRange.from_json(json_str)
