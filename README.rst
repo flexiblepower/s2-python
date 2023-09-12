@@ -24,9 +24,9 @@ Example
    }
 
 .. code-block:: python
-    def a():
-        return "a"
-        
+        def a():
+            return "a"
+
 .. code-block::
     number_range = PowerRange(start_of_range=4.0, end_of_range=5.0, commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
   
