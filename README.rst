@@ -15,24 +15,9 @@ Currently, the package supports the *common* and *FILL RATE BASED CONTROL* types
 
 Example
 ---------
-.. code-block:: c
-
-   #include <stdio.h>
-
-   void main() {
-       printf("Hello world!\n");
-   }
 
 .. code-block:: python
-        def a():
-            return "a"
 
-.. code-block::
-    number_range = PowerRange(start_of_range=4.0, end_of_range=5.0, commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
-  
-
-
-.. code-block::
     # create s2 messages as Python objects
     number_range = PowerRange(start_of_range=4.0, end_of_range=5.0, commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
     # serialize s2 messages
