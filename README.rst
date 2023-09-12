@@ -35,13 +35,13 @@ Example
 Short code snippet::
 
 .. code-block:: python
-        >> number_range = PowerRange(start_of_range=4.0,
-                                  end_of_range=5.0,
-                                  commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
-        >> number_range.to_json()
-            {"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}
-        >> json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
-        >> PowerRange.from_json(json_str)
+    >> number_range = PowerRange(start_of_range=4.0,
+                                end_of_range=5.0,
+                                commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
+    >> number_range.to_json()
+        {"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}
+    >> json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
+    >> PowerRange.from_json(json_str)
 
 
 Development
