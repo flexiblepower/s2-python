@@ -1,11 +1,11 @@
 Python Wrapper for S2 Flexibility Protocol
 ===========================================
 
-.. image:: https://pypip.in/v/$REPO/badge.png
+.. image:: https://pypip.in/v/s2-python/badge.png
     :target: https://crate.io/packages/s2-python/
     :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/$REPO/badge.png
+.. image:: https://pypip.in/d/s2-python/badge.png
     :target: https://crate.io/packages/s2-python/
     :alt: Number of PyPI downloads
 
@@ -32,7 +32,7 @@ Currently, the package supports the *common* and *FILL RATE BASED CONTROL* types
 
 Example
 ---------
-Short code snippet::
+Short code snippet:
 
 ```python
 >> number_range = PowerRange(start_of_range=4.0,
