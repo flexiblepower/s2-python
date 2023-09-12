@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from s2python.common import Duration
 
+
 class DurationTest(TestCase):
     def test__from_timedelta__happy_path(self):
         # Arrange

@@ -18,13 +18,18 @@ class SessionRequestTest(TestCase):
         session_request: SessionRequest = SessionRequest.from_json(json_str)
 
         # Assert
-        self.assertEqual(session_request.message_id, uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced5"))
+        self.assertEqual(
+            session_request.message_id,
+            uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
+        )
         self.assertEqual(session_request.request, SessionRequestType.TERMINATE)
 
     def test__to_json__happy_path(self):
         # Arrange
-        session_request = SessionRequest(message_id=uuid.UUID("3bdec96e-be3b-4ba9-afa0-c4a0632cced5"),
-                                         request=SessionRequestType.RECONNECT)
+        session_request = SessionRequest(
+            message_id=uuid.UUID("3bdec96e-be3b-4ba9-afa0-c4a0632cced5"),
+            request=SessionRequestType.RECONNECT,
+        )
 
         # Act
         json_str = session_request.to_json()
@@ -33,6 +38,6 @@ class SessionRequestTest(TestCase):
         expected_json = {
             "request": "RECONNECT",
             "message_id": "3bdec96e-be3b-4ba9-afa0-c4a0632cced5",
-            "message_type": "SessionRequest"
+            "message_type": "SessionRequest",
         }
         self.assertEqual(json.loads(json_str), expected_json)

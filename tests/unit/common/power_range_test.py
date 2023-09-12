@@ -18,7 +18,9 @@ class PowerRangeTest(TestCase):
         expected_end_of_range = 5.0
         self.assertEqual(power_range.start_of_range, expected_start_of_range)
         self.assertEqual(power_range.end_of_range, expected_end_of_range)
-        self.assertEqual(power_range.commodity_quantity, CommodityQuantity.ELECTRIC_POWER_L1)
+        self.assertEqual(
+            power_range.commodity_quantity, CommodityQuantity.ELECTRIC_POWER_L1
+        )
 
     def test__from_json__format_validation_error(self):
         # Arrange
@@ -38,18 +40,28 @@ class PowerRangeTest(TestCase):
 
     def test__to_json__happy_path(self):
         # Arrange
-        number_range = PowerRange(start_of_range=4.0,
-                                  end_of_range=5.0,
-                                  commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
+        number_range = PowerRange(
+            start_of_range=4.0,
+            end_of_range=5.0,
+            commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1,
+        )
 
         # Act
         json_str = number_range.to_json()
 
         # Assert
-        expected_json = {"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}
+        expected_json = {
+            "start_of_range": 4.0,
+            "end_of_range": 5.0,
+            "commodity_quantity": "ELECTRIC.POWER.L1",
+        }
         self.assertEqual(json.loads(json_str), expected_json)
 
     def test__to_json__value_validation_error(self):
         # Arrange/ Act / Assert
         with self.assertRaises(S2ValidationError):
-            PowerRange(start_of_range=6.0, end_of_range=5.0, commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
+            PowerRange(
+                start_of_range=6.0,
+                end_of_range=5.0,
+                commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1,
+            )

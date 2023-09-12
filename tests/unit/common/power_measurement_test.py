@@ -20,25 +20,45 @@ class PowerMeasurementTest(TestCase):
         power_measurement: PowerMeasurement = PowerMeasurement.from_json(json_str)
 
         # Assert
-        self.assertEqual(power_measurement.message_id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced8"))
-        self.assertEqual(power_measurement.measurement_timestamp, datetime(2023, 8, 3, 12, 48, 42, tzinfo=offset(timedelta(hours=1))))
-        self.assertEqual(power_measurement.values, [PowerValue(commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42)])
+        self.assertEqual(
+            power_measurement.message_id,
+            uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced8"),
+        )
+        self.assertEqual(
+            power_measurement.measurement_timestamp,
+            datetime(2023, 8, 3, 12, 48, 42, tzinfo=offset(timedelta(hours=1))),
+        )
+        self.assertEqual(
+            power_measurement.values,
+            [
+                PowerValue(
+                    commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42
+                )
+            ],
+        )
 
     def test__to_json__happy_path(self):
         # Arrange
-        power_measurement = PowerMeasurement(values=[PowerValue(commodity_quantity=CommodityQuantity.OIL_FLOW_RATE,
-                                                                value=42.42)],
-                                             message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced8"),
-                                             measurement_timestamp=datetime(2023, 8, 3, 12, 48, 42,
-                                                                            tzinfo=offset(timedelta(hours=1))))
+        power_measurement = PowerMeasurement(
+            values=[
+                PowerValue(
+                    commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42
+                )
+            ],
+            message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced8"),
+            measurement_timestamp=datetime(
+                2023, 8, 3, 12, 48, 42, tzinfo=offset(timedelta(hours=1))
+            ),
+        )
 
         # Act
         json_str = power_measurement.to_json()
 
         # Assert
-        expected_json = {"values": [{"commodity_quantity": "OIL.FLOW_RATE",
-                                     "value": 42.42}],
-                         "message_id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced8",
-                         "message_type": "PowerMeasurement",
-                         "measurement_timestamp": "2023-08-03T12:48:42+01:00"}
+        expected_json = {
+            "values": [{"commodity_quantity": "OIL.FLOW_RATE", "value": 42.42}],
+            "message_id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced8",
+            "message_type": "PowerMeasurement",
+            "measurement_timestamp": "2023-08-03T12:48:42+01:00",
+        }
         self.assertEqual(json.loads(json_str), expected_json)
