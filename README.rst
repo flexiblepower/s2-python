@@ -13,27 +13,15 @@ is based on the asyncapi description of the protocol provided in the `s2-ws-json
 Currently, the package supports the *common* and *FILL RATE BASED CONTROL* types and messages.
 
 
-
-  .. code-block:: JSON
-
-    {
-      "key": "value"
-    }
-
-
 Example
 ---------
 Short code snippet:
 
 .. code-block:: python
     # create s2 messages as Python objects
-    number_range = PowerRange(start_of_range=4.0,
-                            end_of_range=5.0,
-                            commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
-   
+    number_range = PowerRange(start_of_range=4.0, end_of_range=5.0, commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)
     # serialize s2 messages
     number_range.to_json()
-
     # deserialize s2 messages
     json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
     PowerRange.from_json(json_str)
