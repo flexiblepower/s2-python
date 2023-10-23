@@ -3,10 +3,8 @@ from typing import (
     Generic,
     Protocol,
     Type,
-    Tuple,
     Optional,
     Callable,
-    cast,
     Any,
     Union,
     AbstractSet,
@@ -16,6 +14,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, StrBytes, Protocol as PydanticProtocol, ValidationError
+from pydantic.error_wrappers import display_errors
 
 from s2python.s2_validation_error import S2ValidationError
 
@@ -36,6 +35,10 @@ class SupportsValidation(Protocol[B]):
 
     @classmethod
     def from_json(cls, json_str: str) -> B:
+        ...
+
+    @classmethod
+    def from_dict(cls, json_dict: dict) -> B:
         ...
 
     # Pydantic methods
@@ -101,15 +104,20 @@ class ValidateValuesMixin(Generic[C]):
         gen_model: C = cls.parse_raw(json_str)
         return gen_model
 
+    @classmethod
+    def from_dict(cls: Type[C], json_dict: dict) -> C:
+        gen_model: C = cls.parse_obj(json_dict)
+        return gen_model
+
 
 def convert_to_s2exception(f: Callable) -> Callable:
     def inner(*args: List[Any], **kwargs: Dict[str, Any]) -> Any:
         try:
             return f(*args, **kwargs)
-        except (ValidationError, TypeError) as e:
-            raise S2ValidationError(
-                args, "Pydantic raised a format validation error."
-            ) from e
+        except ValidationError as e:
+            raise S2ValidationError(args, display_errors(e.errors())) from e
+        except TypeError as e:
+            raise S2ValidationError(args, str(e)) from e
 
     inner.__doc__ = f.__doc__
     inner.__annotations__ = f.__annotations__
