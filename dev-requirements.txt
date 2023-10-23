@@ -6,17 +6,17 @@
 #
 alabaster==0.7.13
     # via sphinx
-argcomplete==3.1.1
+argcomplete==3.1.2
     # via datamodel-code-generator
-astroid==2.15.6
+astroid==3.0.1
     # via pylint
 attrs==23.1.0
     # via jsonschema
-babel==2.12.1
+babel==2.13.0
     # via sphinx
-black==23.7.0
+black==23.10.0
     # via datamodel-code-generator
-build==0.10.0
+build==1.0.3
     # via pip-tools
 cachetools==5.3.1
     # via tox
@@ -28,19 +28,19 @@ chardet==5.2.0
     # via
     #   prance
     #   tox
-charset-normalizer==3.2.0
+charset-normalizer==3.3.1
     # via requests
 click==8.1.7
     # via
     #   black
     #   pip-tools
-    #   s2-ws-json-python (setup.cfg)
+    #   s2-python (setup.cfg)
 colorama==0.4.6
     # via tox
-coverage[toml]==7.3.0
+coverage[toml]==7.3.2
     # via pytest-cov
-datamodel-code-generator==0.21.4
-    # via s2-ws-json-python (setup.cfg)
+datamodel-code-generator==0.22.1
+    # via s2-python (setup.cfg)
 dill==0.3.7
     # via pylint
 distlib==0.3.7
@@ -52,17 +52,17 @@ docutils==0.18.1
     #   sphinx
     #   sphinx-rtd-theme
     #   sphinx-tabs
-email-validator==2.0.0.post2
+email-validator==2.1.0.post1
     # via pydantic
 exceptiongroup==1.1.3
     # via pytest
-filelock==3.12.2
+filelock==3.12.4
     # via
     #   tox
     #   virtualenv
 genson==1.2.2
     # via datamodel-code-generator
-identify==2.5.27
+identify==2.5.30
     # via pre-commit
 idna==3.4
     # via
@@ -90,15 +90,13 @@ jsonschema==4.17.3
 jsonschema-spec==0.1.6
     # via openapi-spec-validator
 lazy-object-proxy==1.9.0
-    # via
-    #   astroid
-    #   openapi-spec-validator
+    # via openapi-spec-validator
 markupsafe==2.1.3
     # via jinja2
 mccabe==0.7.0
     # via pylint
-mypy==1.5.1
-    # via s2-ws-json-python (setup.cfg)
+mypy==1.6.1
+    # via s2-python (setup.cfg)
 mypy-extensions==1.0.0
     # via
     #   black
@@ -109,7 +107,7 @@ openapi-schema-validator==0.4.4
     # via openapi-spec-validator
 openapi-spec-validator==0.5.7
     # via datamodel-code-generator
-packaging==23.1
+packaging==23.2
     # via
     #   black
     #   build
@@ -124,8 +122,8 @@ pathable==0.4.3
 pathspec==0.11.2
     # via black
 pip-tools==7.3.0
-    # via s2-ws-json-python (setup.cfg)
-platformdirs==3.10.0
+    # via s2-python (setup.cfg)
+platformdirs==3.11.0
     # via
     #   black
     #   pylint
@@ -137,19 +135,19 @@ pluggy==1.3.0
     #   tox
 prance==23.6.21.0
     # via datamodel-code-generator
-pre-commit==3.3.3
-    # via s2-ws-json-python (setup.cfg)
+pre-commit==3.5.0
+    # via s2-python (setup.cfg)
 pydantic[email]==1.10.7
     # via
     #   datamodel-code-generator
-    #   s2-ws-json-python (setup.cfg)
+    #   s2-python (setup.cfg)
 pygments==2.16.1
     # via
     #   sphinx
     #   sphinx-tabs
-pylint==2.17.5
-    # via s2-ws-json-python (setup.cfg)
-pyproject-api==1.5.4
+pylint==3.0.2
+    # via s2-python (setup.cfg)
+pyproject-api==1.6.1
     # via tox
 pyproject-hooks==1.0.0
     # via build
@@ -157,21 +155,21 @@ pyrsistent==0.19.3
     # via jsonschema
 pysnooper==1.2.0
     # via datamodel-code-generator
-pytest==7.4.0
+pytest==7.4.2
     # via
     #   pytest-cov
     #   pytest-timer
-    #   s2-ws-json-python (setup.cfg)
+    #   s2-python (setup.cfg)
 pytest-cov==4.1.0
     # via pytest-cover
 pytest-cover==3.0.0
     # via pytest-coverage
 pytest-coverage==0.0
-    # via s2-ws-json-python (setup.cfg)
+    # via s2-python (setup.cfg)
 pytest-timer==0.0.11
-    # via s2-ws-json-python (setup.cfg)
-pytz==2023.3
-    # via s2-ws-json-python (setup.cfg)
+    # via s2-python (setup.cfg)
+pytz==2023.3.post1
+    # via s2-python (setup.cfg)
 pyyaml==6.0.1
     # via
     #   jsonschema-spec
@@ -183,9 +181,9 @@ requests==2.31.0
     #   sphinx
 rfc3339-validator==0.1.4
     # via openapi-schema-validator
-ruamel-yaml==0.17.32
+ruamel-yaml==0.17.40
     # via prance
-ruamel-yaml-clib==0.2.7
+ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
 six==1.16.0
     # via
@@ -194,9 +192,9 @@ six==1.16.0
     #   sphinxcontrib-httpdomain
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==7.2.4
+sphinx==7.2.6
     # via
-    #   s2-ws-json-python (setup.cfg)
+    #   s2-python (setup.cfg)
     #   sphinx-copybutton
     #   sphinx-fontawesome
     #   sphinx-rtd-theme
@@ -209,13 +207,13 @@ sphinx==7.2.4
     #   sphinxcontrib-qthelp
     #   sphinxcontrib-serializinghtml
 sphinx-copybutton==0.5.2
-    # via s2-ws-json-python (setup.cfg)
+    # via s2-python (setup.cfg)
 sphinx-fontawesome==0.0.6
-    # via s2-ws-json-python (setup.cfg)
+    # via s2-python (setup.cfg)
 sphinx-rtd-theme==1.3.0
-    # via s2-ws-json-python (setup.cfg)
-sphinx-tabs==3.4.1
-    # via s2-ws-json-python (setup.cfg)
+    # via s2-python (setup.cfg)
+sphinx-tabs==3.4.4
+    # via s2-python (setup.cfg)
 sphinxcontrib-applehelp==1.0.7
     # via sphinx
 sphinxcontrib-devhelp==1.0.5
@@ -223,7 +221,7 @@ sphinxcontrib-devhelp==1.0.5
 sphinxcontrib-htmlhelp==2.0.4
     # via sphinx
 sphinxcontrib-httpdomain==1.8.1
-    # via s2-ws-json-python (setup.cfg)
+    # via s2-python (setup.cfg)
 sphinxcontrib-jquery==4.1
     # via sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
@@ -248,23 +246,25 @@ tomli==2.0.1
     #   tox
 tomlkit==0.12.1
     # via pylint
-tox==4.10.0
-    # via s2-ws-json-python (setup.cfg)
+tox==4.11.3
+    # via s2-python (setup.cfg)
+types-pytz==2023.3.1.1
+    # via s2-python (setup.cfg)
 typing-extensions==4.7.1
     # via
     #   astroid
+    #   black
     #   mypy
     #   pydantic
-urllib3==2.0.4
+    #   s2-python (setup.cfg)
+urllib3==2.0.7
     # via requests
-virtualenv==20.24.3
+virtualenv==20.24.5
     # via
     #   pre-commit
     #   tox
 wheel==0.41.2
     # via pip-tools
-wrapt==1.15.0
-    # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
