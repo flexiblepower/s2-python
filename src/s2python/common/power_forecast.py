@@ -1,7 +1,7 @@
 from typing import List
 import uuid
 
-from s2python.common import PowerForecastElement
+from s2python.common.power_forecast_element import PowerForecastElement
 from s2python.generated.gen_s2 import PowerForecast as GenPowerForecast
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,

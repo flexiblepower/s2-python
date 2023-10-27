@@ -1,7 +1,8 @@
 from typing import List
 import uuid
 
-from s2python.common import Duration, Role
+from s2python.common.duration import Duration
+from s2python.common.role import Role
 from s2python.generated.gen_s2 import (
     ResourceManagerDetails as GenResourceManagerDetails,
 )

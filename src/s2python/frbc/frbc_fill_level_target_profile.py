@@ -1,7 +1,9 @@
 from typing import List
 import uuid
 
-from s2python.frbc import FRBCFillLevelTargetProfileElement
+from s2python.frbc.frbc_fill_level_target_profile_element import (
+    FRBCFillLevelTargetProfileElement,
+)
 from s2python.generated.gen_s2 import (
     FRBCFillLevelTargetProfile as GenFRBCFillLevelTargetProfile,
 )

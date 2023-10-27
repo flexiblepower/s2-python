@@ -6,7 +6,7 @@ from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
     ValidateValuesMixin,
 )
-from s2python.frbc import FRBCUsageForecastElement
+from s2python.frbc.frbc_usage_forecast_element import FRBCUsageForecastElement
 
 
 @catch_and_convert_exceptions

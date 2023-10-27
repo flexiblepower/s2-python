@@ -1,6 +1,3 @@
-from pydantic import ValidationError
-
-
 class S2ValidationError(Exception):
     obj: object
     msg: str

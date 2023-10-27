@@ -5,7 +5,8 @@ from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
     ValidateValuesMixin,
 )
-from s2python.common import Duration, PowerForecastValue
+from s2python.common.duration import Duration
+from s2python.common.power_forecast_value import PowerForecastValue
 
 
 @catch_and_convert_exceptions

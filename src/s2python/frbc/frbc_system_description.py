@@ -6,7 +6,8 @@ from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
     ValidateValuesMixin,
 )
-from s2python.frbc import FRBCActuatorDescription, FRBCStorageDescription
+from s2python.frbc.frbc_actuator_description import FRBCActuatorDescription
+from s2python.frbc.frbc_storage_description import FRBCStorageDescription
 
 
 @catch_and_convert_exceptions

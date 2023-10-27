@@ -1,7 +1,7 @@
 from typing import List
 import uuid
 
-from s2python.frbc import FRBCLeakageBehaviourElement
+from s2python.frbc.frbc_leakage_behaviour_element import FRBCLeakageBehaviourElement
 from s2python.generated.gen_s2 import FRBCLeakageBehaviour as GenFRBCLeakageBehaviour
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,

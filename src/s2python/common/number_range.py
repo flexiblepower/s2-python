@@ -15,7 +15,10 @@ class NumberRange(GenNumberRange, ValidateValuesMixin["NumberRange"]):
         validate_assignment = True
 
     @root_validator(pre=False)
-    def validate_start_end_order(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    @classmethod
+    def validate_start_end_order(  # pylint: disable=duplicate-code
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
         if values.get("start_of_range", 0.0) > values.get("end_of_range", 0.0):
             raise ValueError(
                 cls, "start_of_range should not be higher than end_of_range"
@@ -32,5 +35,5 @@ class NumberRange(GenNumberRange, ValidateValuesMixin["NumberRange"]):
                 self.start_of_range == other.start_of_range
                 and self.end_of_range == other.end_of_range
             )
-        else:
-            return False
+
+        return False
