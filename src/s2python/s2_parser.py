@@ -2,13 +2,34 @@ import json
 import logging
 from typing import Optional, TypeVar
 
+from s2python.common import (
+    Handshake,
+    HandshakeResponse,
+    InstructionStatusUpdate,
+    PowerForecast,
+    PowerMeasurement,
+    ReceptionStatus,
+    ResourceManagerDetails,
+    RevokeObject,
+    SelectControlType,
+    SessionRequest,
+)
+from s2python.frbc import (
+    FRBCActuatorStatus,
+    FRBCFillLevelTargetProfile,
+    FRBCInstruction,
+    FRBCLeakageBehaviour,
+    FRBCStorageStatus,
+    FRBCSystemDescription,
+    FRBCTimerStatus,
+    FRBCUsageForecast,
+)
 from s2python.validate_values_mixin import ValidateValuesMixin
 from s2python.s2_validation_error import S2ValidationError
-from s2python.common import *
-from s2python.frbc import *
+
 
 LOGGER = logging.getLogger(__name__)
-MessageType = str
+S2MessageType = str
 S2Message = ValidateValuesMixin
 
 C = TypeVar("C", bound=S2Message)
@@ -38,54 +59,54 @@ TYPE_TO_MESSAGE_CLASS = {
 
 
 class S2Parser:
-    def __init__(self):
-        pass
+    @staticmethod
+    def _parse_json_if_required(unparsed_message: dict | str) -> dict:
+        if isinstance(unparsed_message, str):
+            return json.loads(unparsed_message)
+        return unparsed_message
 
-    def parse_str_as_any_message(self, message_str: str) -> S2Message:
-        message_dict = json.loads(message_str)
-        message_type = self.get_message_type_from_dict(message_dict)
+    @staticmethod
+    def parse_as_any_message(unparsed_message: dict | str) -> S2Message:
+        """Parse the message as any S2 python message regardless of message type.
+
+        :param unparsed_message: The message as a JSON-formatted string or as a json-parsed dictionary.
+        :raises: S2ValidationError, json.JSONDecodeError
+        :return: The parsed S2 message if no errors were found.
+        """
+        message_json = S2Parser._parse_json_if_required(unparsed_message)
+        message_type = S2Parser.parse_message_type(message_json)
 
         if message_type not in TYPE_TO_MESSAGE_CLASS:
             raise S2ValidationError(
-                message_dict,
+                message_json,
                 f"Unable to parse {message_type} as an S2 message. Type unknown.",
             )
 
-        return TYPE_TO_MESSAGE_CLASS[message_type].parse_obj(message_str)
+        return TYPE_TO_MESSAGE_CLASS[message_type].parse_obj(message_json)
 
-    def parse_dict_as_any_message(self, message_dict: dict) -> S2Message:
-        message_type = self.get_message_type_from_dict(message_dict)
-
-        if message_type not in TYPE_TO_MESSAGE_CLASS:
-            raise S2ValidationError(
-                message_dict,
-                f"Unable to parse {message_type} as an S2 message. Type unknown.",
-            )
-
-        return TYPE_TO_MESSAGE_CLASS[message_type].parse_obj(message_dict)
-
-    def parse_str_as_message(self, message: str, as_message: S2Message[C]) -> C:
+    @staticmethod
+    def parse_as_message(unparsed_message: dict | str, as_message: S2Message[C]) -> C:
         """Parse the message to a specific S2 python message.
 
-        :param message: The message as a JSON-formatted string.
+        :param unparsed_message: The message as a JSON-formatted string or as a JSON-parsed dictionary.
         :param as_message: The type of message that is expected within the `message`
-        :raises: S2ValidationError
-        :return: The parsed message if no errors were found.
+        :raises: S2ValidationError, json.JSONDecodeError
+        :return: The parsed S2 message if no errors were found.
         """
-        return as_message.from_json(message)
+        message_json = S2Parser._parse_json_if_required(unparsed_message)
+        return as_message.from_dict(message_json)
 
-    def parse_dict_as_message(self, message: dict, as_message: S2Message[C]) -> C:
-        """Parse the message to a specific S2 python message.
+    @staticmethod
+    def parse_message_type(unparsed_message: dict | str) -> Optional[S2MessageType]:
+        """Parse only the message type from the unparsed message.
 
-        :param message: The message as a dictionary.
-        :param as_message: The type of message that is expected within the `message`
-        :raises: S2ValidationError
-        :return: The parsed message if no errors were found.
+        This is useful to call before `parse_as_message` to retrieve the message type and allows for strictly-typed
+        parsing.
+
+        :param unparsed_message: The message as a JSON-formatted string or as a JSON-parsed dictionary.
+        :raises: json.JSONDecodeError
+        :return: The parsed S2 message type if no errors were found.
         """
-        return as_message.from_dict(message)
+        message_json = S2Parser._parse_json_if_required(unparsed_message)
 
-    def get_message_type_from_str(self, message: str) -> Optional[MessageType]:
-        return json.loads(message).get("message_type")
-
-    def get_message_type_from_dict(self, message: dict) -> Optional[MessageType]:
-        return message.get("message_type")
+        return message_json.get("message_type")
