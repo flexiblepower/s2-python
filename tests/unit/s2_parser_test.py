@@ -11,7 +11,10 @@ from s2python.s2_validation_error import S2ValidationError
 class S2ParserTest(TestCase):
     def test_parse_as_any_message__str(self):
         # Arrange
-        message_json = '{"message_id": "ca093515-0bb3-4709-bd56-092c1808b791", "message_type": "Handshake", "role": "CEM", "supported_protocol_versions": ["3.0alpha"]}'
+        message_json = (
+            '{"message_id": "ca093515-0bb3-4709-bd56-092c1808b791", "message_type": "Handshake", "role": '
+            '"CEM", "supported_protocol_versions": ["3.0alpha"]}'
+        )
 
         # Act
         parsed_message = S2Parser.parse_as_any_message(message_json)
@@ -63,7 +66,10 @@ class S2ParserTest(TestCase):
 
     def test_parse_as_message__str(self):
         # Arrange
-        message_json = '{"message_id": "ca093515-0bb3-4709-bd56-092c1808b791", "message_type": "Handshake", "role": "CEM", "supported_protocol_versions": ["3.0alpha"]}'
+        message_json = (
+            '{"message_id": "ca093515-0bb3-4709-bd56-092c1808b791", "message_type": "Handshake", "role": '
+            '"CEM", "supported_protocol_versions": ["3.0alpha"]}'
+        )
 
         # Act
         parsed_message = S2Parser.parse_as_message(message_json, Handshake)

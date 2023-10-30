@@ -1,6 +1,6 @@
 import json
 import uuid
-from unittest import TestCase, skip
+from unittest import TestCase
 
 from s2python.common import ReceptionStatus, ReceptionStatusValues
 

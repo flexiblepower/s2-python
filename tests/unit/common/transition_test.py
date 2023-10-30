@@ -110,7 +110,7 @@ class TransitionTest(TestCase):
 
     def test__to_json__happy_path(self):
         # Arrange
-        # TODO We have to resort to using a dict as we HAVE to pass the 'from' key which is a Python reserved keyword.
+        # BUG We have to resort to using a dict as we HAVE to pass the 'from' key which is a Python reserved keyword.
         #  We will fix this by moving to pydantic v2 in which aliases have been fixed in which they may be used to
         #  assign values during init. See: https://github.com/flexiblepower/s2-ws-json-python/issues/10
         transition = Transition(
