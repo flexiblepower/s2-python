@@ -111,4 +111,4 @@ class S2ParserTest(TestCase):
 
         # Act / Assert
         with self.assertRaises(S2ValidationError):
-            parsed_message = S2Parser.parse_as_message(message_json, HandshakeResponse)
+            S2Parser.parse_as_message(message_json, HandshakeResponse)
