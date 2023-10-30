@@ -157,7 +157,7 @@ class FRBCActuatorDescription(
     def validate_unique_supported_commodities(
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
-        supported_commodities: list[CommodityQuantity] = values.get(
+        supported_commodities: List[CommodityQuantity] = values.get(
             "supported_commodities", []
         )
 

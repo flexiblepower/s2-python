@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Union
 
 from s2python.common import (
     Handshake,
@@ -60,13 +60,13 @@ TYPE_TO_MESSAGE_CLASS = {
 
 class S2Parser:
     @staticmethod
-    def _parse_json_if_required(unparsed_message: dict | str) -> dict:
+    def _parse_json_if_required(unparsed_message: Union[dict, str]) -> dict:
         if isinstance(unparsed_message, str):
             return json.loads(unparsed_message)
         return unparsed_message
 
     @staticmethod
-    def parse_as_any_message(unparsed_message: dict | str) -> S2Message:
+    def parse_as_any_message(unparsed_message: Union[dict, str]) -> S2Message:
         """Parse the message as any S2 python message regardless of message type.
 
         :param unparsed_message: The message as a JSON-formatted string or as a json-parsed dictionary.
@@ -85,7 +85,9 @@ class S2Parser:
         return TYPE_TO_MESSAGE_CLASS[message_type].parse_obj(message_json)
 
     @staticmethod
-    def parse_as_message(unparsed_message: dict | str, as_message: S2Message[C]) -> C:
+    def parse_as_message(
+        unparsed_message: Union[dict, str], as_message: S2Message[C]
+    ) -> C:
         """Parse the message to a specific S2 python message.
 
         :param unparsed_message: The message as a JSON-formatted string or as a JSON-parsed dictionary.
@@ -97,7 +99,9 @@ class S2Parser:
         return as_message.from_dict(message_json)
 
     @staticmethod
-    def parse_message_type(unparsed_message: dict | str) -> Optional[S2MessageType]:
+    def parse_message_type(
+        unparsed_message: Union[dict, str]
+    ) -> Optional[S2MessageType]:
         """Parse only the message type from the unparsed message.
 
         This is useful to call before `parse_as_message` to retrieve the message type and allows for strictly-typed
