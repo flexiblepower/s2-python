@@ -119,7 +119,7 @@ jobs:
           tox -e lint --installpkg '${{ needs.prepare.outputs.wheel-distribution }}'
 
   finalize:
-    needs: test
+    needs: [test, lint]
     runs-on: ubuntu-latest
     steps:
       - run: echo "Finished checks"
