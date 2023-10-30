@@ -147,7 +147,7 @@ prance==23.6.21.0
     # via datamodel-code-generator
 pre-commit==3.5.0
     # via s2-python (setup.cfg)
-pydantic[email]==1.10.7
+pydantic[email]==1.10.13
     # via
     #   datamodel-code-generator
     #   s2-python (setup.cfg)
