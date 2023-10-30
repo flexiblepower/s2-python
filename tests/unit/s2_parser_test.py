@@ -8,7 +8,7 @@ from s2python.common.handshake import Handshake
 from s2python.s2_validation_error import S2ValidationError
 
 
-class PairwiseTest(TestCase):
+class S2ParserTest(TestCase):
     def test_parse_as_any_message__str(self):
         # Arrange
         message_json = '{"message_id": "ca093515-0bb3-4709-bd56-092c1808b791", "message_type": "Handshake", "role": "CEM", "supported_protocol_versions": ["3.0alpha"]}'
