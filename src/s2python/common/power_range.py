@@ -16,7 +16,9 @@ class PowerRange(GenPowerRange, ValidateValuesMixin["PowerRange"]):
 
     @root_validator(pre=False)
     @classmethod
-    def validate_start_end_order(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=duplicate-code
+    def validate_start_end_order(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:  # pylint: disable=duplicate-code
         if values.get("start_of_range", 0.0) > values.get("end_of_range", 0.0):
             raise ValueError(
                 cls, "start_of_range should not be higher than end_of_range"
