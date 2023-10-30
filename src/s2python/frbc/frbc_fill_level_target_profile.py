@@ -9,13 +9,13 @@ from s2python.generated.gen_s2 import (
 )
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    ValidateValuesMixin,
+    S2Message,
 )
 
 
 @catch_and_convert_exceptions
 class FRBCFillLevelTargetProfile(
-    GenFRBCFillLevelTargetProfile, ValidateValuesMixin["FRBCFillLevelTargetProfile"]
+    GenFRBCFillLevelTargetProfile, S2Message["FRBCFillLevelTargetProfile"]
 ):
     class Config(GenFRBCFillLevelTargetProfile.Config):
         validate_assignment = True

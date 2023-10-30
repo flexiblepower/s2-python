@@ -88,6 +88,10 @@ class SupportsValidation(Protocol[B_co]):
     ) -> B_co:
         ...
 
+    @classmethod
+    def parse_obj(cls, obj: Any) -> "B_co":
+        ...
+
 
 C = TypeVar("C", bound="SupportsValidation")
 
@@ -113,6 +117,10 @@ class ValidateValuesMixin(Generic[C]):
     def from_dict(cls: Type[C], json_dict: dict) -> C:
         gen_model: C = cls.parse_obj(json_dict)
         return gen_model
+
+
+class S2Message(Generic[C], ValidateValuesMixin[C], BaseModel):
+    pass
 
 
 def convert_to_s2exception(f: Callable) -> Callable:

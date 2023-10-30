@@ -1,3 +1,4 @@
+from typing import List
 from unittest import TestCase
 
 from s2python.utils import pairwise
@@ -6,7 +7,7 @@ from s2python.utils import pairwise
 class PairwiseTest(TestCase):
     def test_empty(self):
         # Arrange
-        input_array = []
+        input_array: List[int] = []
 
         # Act
         pairs = list(pairwise(input_array))

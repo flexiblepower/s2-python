@@ -4,13 +4,13 @@ from typing import Optional, List
 from s2python.common.duration import Duration
 from s2python.generated.gen_s2 import Transition as GenTransition
 from s2python.validate_values_mixin import (
-    ValidateValuesMixin,
+    S2Message,
     catch_and_convert_exceptions,
 )
 
 
 @catch_and_convert_exceptions
-class Transition(GenTransition, ValidateValuesMixin["Transition"]):
+class Transition(GenTransition, S2Message["Transition"]):
     class Config(GenTransition.Config):
         validate_assignment = True
 

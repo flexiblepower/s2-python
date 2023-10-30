@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Optional, TypeVar, Union
+from typing import Optional, TypeVar, Union, Type, Dict
 
 from s2python.common import (
     Handshake,
@@ -24,19 +24,18 @@ from s2python.frbc import (
     FRBCTimerStatus,
     FRBCUsageForecast,
 )
-from s2python.validate_values_mixin import ValidateValuesMixin
+from s2python.validate_values_mixin import S2Message
 from s2python.s2_validation_error import S2ValidationError
 
 
 LOGGER = logging.getLogger(__name__)
 S2MessageType = str
-S2Message = ValidateValuesMixin
 
-C = TypeVar("C", bound=S2Message)
+M = TypeVar("M", bound=S2Message)
 
 
 # May be generated with development_utilities/generate_s2_message_type_to_class.py
-TYPE_TO_MESSAGE_CLASS = {
+TYPE_TO_MESSAGE_CLASS: Dict[str, Type[S2Message]] = {
     "FRBC.ActuatorStatus": FRBCActuatorStatus,
     "FRBC.FillLevelTargetProfile": FRBCFillLevelTargetProfile,
     "FRBC.Instruction": FRBCInstruction,
@@ -85,9 +84,7 @@ class S2Parser:
         return TYPE_TO_MESSAGE_CLASS[message_type].parse_obj(message_json)
 
     @staticmethod
-    def parse_as_message(
-        unparsed_message: Union[dict, str], as_message: S2Message[C]
-    ) -> C:
+    def parse_as_message(unparsed_message: Union[dict, str], as_message: Type[M]) -> M:
         """Parse the message to a specific S2 python message.
 
         :param unparsed_message: The message as a JSON-formatted string or as a JSON-parsed dictionary.

@@ -3,14 +3,14 @@ from typing import Any, Dict
 from pydantic import root_validator
 
 from s2python.validate_values_mixin import (
-    ValidateValuesMixin,
+    S2Message,
     catch_and_convert_exceptions,
 )
 from s2python.generated.gen_s2 import NumberRange as GenNumberRange
 
 
 @catch_and_convert_exceptions
-class NumberRange(GenNumberRange, ValidateValuesMixin["NumberRange"]):
+class NumberRange(GenNumberRange, S2Message["NumberRange"]):
     class Config(GenNumberRange.Config):
         validate_assignment = True
 
@@ -26,10 +26,10 @@ class NumberRange(GenNumberRange, ValidateValuesMixin["NumberRange"]):
 
         return values
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(f"{self.start_of_range}|{self.end_of_range}")
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, NumberRange):
             return (
                 self.start_of_range == other.start_of_range

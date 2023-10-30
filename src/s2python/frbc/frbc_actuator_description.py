@@ -12,14 +12,14 @@ from s2python.generated.gen_s2 import (
     CommodityQuantity,
 )
 from s2python.validate_values_mixin import (
-    ValidateValuesMixin,
+    S2Message,
     catch_and_convert_exceptions,
 )
 
 
 @catch_and_convert_exceptions
 class FRBCActuatorDescription(
-    GenFRBCActuatorDescription, ValidateValuesMixin["FRBCActuatorDescription"]
+    GenFRBCActuatorDescription, S2Message["FRBCActuatorDescription"]
 ):
     class Config(GenFRBCActuatorDescription.Config):
         validate_assignment = True

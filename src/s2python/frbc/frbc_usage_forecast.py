@@ -4,13 +4,13 @@ import uuid
 from s2python.generated.gen_s2 import FRBCUsageForecast as GenFRBCUsageForecast
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    ValidateValuesMixin,
+    S2Message,
 )
 from s2python.frbc.frbc_usage_forecast_element import FRBCUsageForecastElement
 
 
 @catch_and_convert_exceptions
-class FRBCUsageForecast(GenFRBCUsageForecast, ValidateValuesMixin["FRBCUsageForecast"]):
+class FRBCUsageForecast(GenFRBCUsageForecast, S2Message["FRBCUsageForecast"]):
     class Config(GenFRBCUsageForecast.Config):
         validate_assignment = True
 

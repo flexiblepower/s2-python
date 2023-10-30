@@ -4,7 +4,7 @@ import uuid
 from s2python.generated.gen_s2 import FRBCSystemDescription as GenFRBCSystemDescription
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    ValidateValuesMixin,
+    S2Message,
 )
 from s2python.frbc.frbc_actuator_description import FRBCActuatorDescription
 from s2python.frbc.frbc_storage_description import FRBCStorageDescription
@@ -12,7 +12,7 @@ from s2python.frbc.frbc_storage_description import FRBCStorageDescription
 
 @catch_and_convert_exceptions
 class FRBCSystemDescription(
-    GenFRBCSystemDescription, ValidateValuesMixin["FRBCSystemDescription"]
+    GenFRBCSystemDescription, S2Message["FRBCSystemDescription"]
 ):
     class Config(GenFRBCSystemDescription.Config):
         validate_assignment = True

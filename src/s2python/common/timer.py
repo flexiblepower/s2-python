@@ -3,13 +3,13 @@ import uuid
 from s2python.common.duration import Duration
 from s2python.generated.gen_s2 import Timer as GenTimer
 from s2python.validate_values_mixin import (
-    ValidateValuesMixin,
+    S2Message,
     catch_and_convert_exceptions,
 )
 
 
 @catch_and_convert_exceptions
-class Timer(GenTimer, ValidateValuesMixin["Timer"]):
+class Timer(GenTimer, S2Message["Timer"]):
     class Config(GenTimer.Config):
         validate_assignment = True
 
