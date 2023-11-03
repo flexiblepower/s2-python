@@ -1,21 +1,21 @@
 # from itertools import pairwise
 import uuid
-from typing import List, Dict, Any, Generator, Tuple
+from typing import List, Dict, Any
 
 from pydantic import root_validator
 
 from s2python.common import NumberRange
-from s2python.frbc import FRBCOperationModeElement
+from s2python.frbc.frbc_operation_mode_element import FRBCOperationModeElement
 from s2python.generated.gen_s2 import FRBCOperationMode as GenFRBCOperationMode
 from s2python.validate_values_mixin import (
-    ValidateValuesMixin,
+    S2Message,
     catch_and_convert_exceptions,
 )
 from s2python.utils import pairwise
 
 
 @catch_and_convert_exceptions
-class FRBCOperationMode(GenFRBCOperationMode, ValidateValuesMixin["FRBCOperationMode"]):
+class FRBCOperationMode(GenFRBCOperationMode, S2Message["FRBCOperationMode"]):
     class Config(GenFRBCOperationMode.Config):
         validate_assignment = True
 
@@ -25,6 +25,7 @@ class FRBCOperationMode(GenFRBCOperationMode, ValidateValuesMixin["FRBCOperation
     ].field_info  # type: ignore[assignment]
 
     @root_validator(pre=False)
+    @classmethod
     def validate_contiguous_fill_levels_operation_mode_elements(
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:

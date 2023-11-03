@@ -8,7 +8,10 @@ from s2python.common import HandshakeResponse
 class HandshakeResponseTest(TestCase):
     def test__from_json__happy_path(self):
         # Arrange
-        json_str = '{"message_id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced3", "message_type": "HandshakeResponse", "selected_protocol_version": "v1"}'
+        json_str = (
+            '{"message_id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced3", "message_type": "HandshakeResponse", '
+            '"selected_protocol_version": "v1"}'
+        )
 
         # Act
         handshake_response: HandshakeResponse = HandshakeResponse.from_json(json_str)

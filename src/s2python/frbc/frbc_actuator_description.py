@@ -6,20 +6,20 @@ from pydantic import root_validator
 
 from s2python.common import Transition, Timer, Commodity
 from s2python.common.support import commodity_has_quantity
-from s2python.frbc import FRBCOperationMode
+from s2python.frbc.frbc_operation_mode import FRBCOperationMode
 from s2python.generated.gen_s2 import (
     FRBCActuatorDescription as GenFRBCActuatorDescription,
     CommodityQuantity,
 )
 from s2python.validate_values_mixin import (
-    ValidateValuesMixin,
+    S2Message,
     catch_and_convert_exceptions,
 )
 
 
 @catch_and_convert_exceptions
 class FRBCActuatorDescription(
-    GenFRBCActuatorDescription, ValidateValuesMixin["FRBCActuatorDescription"]
+    GenFRBCActuatorDescription, S2Message["FRBCActuatorDescription"]
 ):
     class Config(GenFRBCActuatorDescription.Config):
         validate_assignment = True
@@ -37,6 +37,7 @@ class FRBCActuatorDescription(
     ].field_info  # type: ignore[assignment]
 
     @root_validator(pre=False)
+    @classmethod
     def validate_timers_in_transitions(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         timers_by_id = {timer.id: timer for timer in values.get("timers", {})}
         transition: Transition
@@ -60,6 +61,7 @@ class FRBCActuatorDescription(
         return values
 
     @root_validator(pre=False)
+    @classmethod
     def validate_timers_unique_ids(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         ids = []
         timer: Timer
@@ -73,6 +75,7 @@ class FRBCActuatorDescription(
         return values
 
     @root_validator(pre=False)
+    @classmethod
     def validate_operation_modes_in_transitions(
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -99,6 +102,7 @@ class FRBCActuatorDescription(
         return values
 
     @root_validator(pre=False)
+    @classmethod
     def validate_operation_modes_unique_ids(
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -115,6 +119,7 @@ class FRBCActuatorDescription(
         return values
 
     @root_validator(pre=False)
+    @classmethod
     def validate_operation_mode_elements_have_all_supported_commodities(
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -148,10 +153,11 @@ class FRBCActuatorDescription(
         return values
 
     @root_validator(pre=False)
+    @classmethod
     def validate_unique_supported_commodities(
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
-        supported_commodities: list[CommodityQuantity] = values.get(
+        supported_commodities: List[CommodityQuantity] = values.get(
             "supported_commodities", []
         )
 

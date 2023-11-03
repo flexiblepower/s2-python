@@ -1,0 +1,16 @@
+[Main]
+# Add files or directories matching the regular expressions patterns to the
+# ignore-list. The regex matches against paths and can be in Posix or Windows
+# format. Because '\\' represents the directory delimiter on Windows systems,
+# it can't be used as an escape character.
+ignore-paths=src/s2python/generated/
+
+# Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
+# number of processors available to use, and will cap the count on Windows to
+# avoid hangs.
+jobs=1
+
+disable=missing-class-docstring,missing-module-docstring,too-few-public-methods,missing-function-docstring
+
+[Format]
+max-line-length=120

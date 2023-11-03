@@ -13,7 +13,10 @@ from s2python.common import (
 class PowerForecastElementTest(TestCase):
     def test__from_json__happy_path(self):
         # Arrange
-        json_str = '{"duration": 4000, "power_values": [{"commodity_quantity": "NATURAL_GAS.FLOW_RATE", "value_expected": 500.2}]}'
+        json_str = (
+            '{"duration": 4000, "power_values": [{"commodity_quantity": "NATURAL_GAS.FLOW_RATE", '
+            '"value_expected": 500.2}]}'
+        )
 
         # Act
         power_forecast_element = PowerForecastElement.from_json(json_str)
@@ -51,8 +54,6 @@ class PowerForecastElementTest(TestCase):
         # Assert
         expected_json = {
             "duration": 4000,
-            "power_values": [
-                {"commodity_quantity": "NATURAL_GAS.FLOW_RATE", "value_expected": 500.2}
-            ],
+            "power_values": [{"commodity_quantity": "NATURAL_GAS.FLOW_RATE", "value_expected": 500.2}],
         }
         self.assertEqual(json.loads(json_str), expected_json)

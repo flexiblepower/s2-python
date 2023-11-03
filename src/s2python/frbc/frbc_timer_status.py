@@ -3,12 +3,12 @@ import uuid
 from s2python.generated.gen_s2 import FRBCTimerStatus as GenFRBCTimerStatus
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    ValidateValuesMixin,
+    S2Message,
 )
 
 
 @catch_and_convert_exceptions
-class FRBCTimerStatus(GenFRBCTimerStatus, ValidateValuesMixin["FRBCTimerStatus"]):
+class FRBCTimerStatus(GenFRBCTimerStatus, S2Message["FRBCTimerStatus"]):
     class Config(GenFRBCTimerStatus.Config):
         validate_assignment = True
 

@@ -1,5 +1,5 @@
 import json
-from unittest import TestCase, skip
+from unittest import TestCase
 
 from s2python.common import Role, Commodity, RoleType
 

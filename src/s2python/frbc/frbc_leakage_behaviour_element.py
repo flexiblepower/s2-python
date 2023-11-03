@@ -4,13 +4,13 @@ from s2python.generated.gen_s2 import (
 )
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    ValidateValuesMixin,
+    S2Message,
 )
 
 
 @catch_and_convert_exceptions
 class FRBCLeakageBehaviourElement(
-    GenFRBCLeakageBehaviourElement, ValidateValuesMixin["FRBCLeakageBehaviourElement"]
+    GenFRBCLeakageBehaviourElement, S2Message["FRBCLeakageBehaviourElement"]
 ):
     class Config(GenFRBCLeakageBehaviourElement.Config):
         validate_assignment = True
