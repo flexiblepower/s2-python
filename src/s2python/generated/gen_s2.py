@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 from pydantic import BaseModel, Extra, Field, conint, constr
 
@@ -214,7 +214,7 @@ class InstructionStatusUpdate(BaseModel):
         ..., description="ID of this instruction (as provided by the CEM) "
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("InstructionStatusUpdate", const=True)
+    message_type: Literal["InstructionStatusUpdate"] = Field(default="InstructionStatusUpdate")
     status_type: InstructionStatus = Field(
         ..., description="Present status of this instruction."
     )
@@ -251,7 +251,7 @@ class OMBCInstruction(BaseModel):
         description="ID of the instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("OMBC.Instruction", const=True)
+    message_type: Literal["OMBC.Instruction"] = Field(default="OMBC.Instruction")
     operation_mode_factor: float = Field(
         ...,
         description="The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal than 0 and less or equal to 1.",
@@ -269,7 +269,7 @@ class OMBCStatus(BaseModel):
         ..., description="ID of the active OMBC.OperationMode."
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("OMBC.Status", const=True)
+    message_type: Literal["OMBC.Status"] = Field(default="OMBC.Status")
     operation_mode_factor: float = Field(
         ...,
         description="The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal than 0 and less or equal to 1.",
@@ -293,7 +293,7 @@ class OMBCTimerStatus(BaseModel):
         description="Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("OMBC.TimerStatus", const=True)
+    message_type: Literal["OMBC.TimerStatus"] = Field(default="OMBC.TimerStatus")
     timer_id: ID = Field(..., description="The ID of the timer this message refers to")
 
 
@@ -314,7 +314,7 @@ class PEBCEnergyConstraint(BaseModel):
         description="Lower average power within the time period given by valid_from and valid_until. If the duration is multiplied with this power value, then the associated lower energy content can be derived. This is the lowest amount of energy the resource will consume during that period of time.  ",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PEBC.EnergyConstraint", const=True)
+    message_type: Literal["PEBC.EnergyConstraint"] = Field(default="PEBC.EnergyConstraint")
     upper_average_power: float = Field(
         ...,
         description="Upper average power within the time period given by valid_from and valid_until. If the duration is multiplied with this power value, then the associated upper energy content can be derived. This is the highest amount of energy the resource will consume during that period of time.",
@@ -370,7 +370,7 @@ class PPBCEndInterruptionInstruction(BaseModel):
         description="ID of the Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PPBC.EndInterruptionInstruction", const=True)
+    message_type: Literal["PPBC.EndInterruptionInstruction"] = Field(default="PPBC.EndInterruptionInstruction")
     power_profile_id: ID = Field(
         ...,
         description="ID of the PPBC.PowerProfileDefinition of which the PPBC.PowerSequence interruption is being ended by the CEM.",
@@ -410,7 +410,7 @@ class PPBCScheduleInstruction(BaseModel):
         description="ID of the Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PPBC.ScheduleInstruction", const=True)
+    message_type: Literal["PPBC.ScheduleInstruction"] = Field(default="PPBC.ScheduleInstruction")
     power_profile_id: ID = Field(
         ...,
         description="ID of the PPBC.PowerProfileDefinition of which the PPBC.PowerSequence is being selected and scheduled by the CEM.",
@@ -441,7 +441,7 @@ class PPBCStartInterruptionInstruction(BaseModel):
         description="ID of the Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PPBC.StartInterruptionInstruction", const=True)
+    message_type: Literal["PPBC.StartInterruptionInstruction"] = Field(default="PPBC.StartInterruptionInstruction")
     power_profile_id: ID = Field(
         ...,
         description="ID of the PPBC.PowerProfileDefinition of which the PPBC.PowerSequence is being interrupted by the CEM.",
@@ -547,7 +547,7 @@ class RevokeObject(BaseModel):
         extra = Extra.forbid
 
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("RevokeObject", const=True)
+    message_type: Literal["RevokeObject"] = Field(default="RevokeObject")
     object_id: ID = Field(..., description="The ID of object that needs to be revoked")
     object_type: RevokableObjects = Field(
         ..., description="The type of object that needs to be revoked"
@@ -569,7 +569,7 @@ class SelectControlType(BaseModel):
         description="The ControlType to activate. Must be one of the available ControlTypes as defined in the ResourceManagerDetails",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("SelectControlType", const=True)
+    message_type: Literal["SelectControlType"] = Field(default="SelectControlType")
 
 
 class SessionRequestType(Enum):
@@ -650,7 +650,7 @@ class DDBCActuatorStatus(BaseModel):
         ..., description="ID of the actuator this messages refers to"
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("DDBC.ActuatorStatus", const=True)
+    message_type: Literal["DDBC.ActuatorStatus"] = Field(default="DDBC.ActuatorStatus")
     operation_mode_factor: float = Field(
         ...,
         description="The number indicates the factor with which the DDBC.OperationMode is configured. The factor should be greater than or equal to 0 and less or equal to 1.",
@@ -720,7 +720,7 @@ class DDBCInstruction(BaseModel):
         description="Identifier of this DDBC.Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("DDBC.Instruction", const=True)
+    message_type: Literal["DDBC.Instruction"] = Field(default="DDBC.Instruction")
     operation_mode_factor: float = Field(
         ...,
         description="The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal to 0 and less or equal to 1.",
@@ -772,7 +772,7 @@ class DDBCTimerStatus(BaseModel):
         description="Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("DDBC.TimerStatus", const=True)
+    message_type: Literal["DDBC.TimerStatus"] = Field(default="DDBC.TimerStatus")
     timer_id: ID = Field(..., description="The ID of the timer this message refers to")
 
 
@@ -787,7 +787,7 @@ class FRBCActuatorStatus(BaseModel):
         ..., description="ID of the actuator this messages refers to"
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("FRBC.ActuatorStatus", const=True)
+    message_type: Literal["FRBC.ActuatorStatus"] = Field(default="FRBC.ActuatorStatus")
     operation_mode_factor: float = Field(
         ...,
         description="The number indicates the factor with which the FRBC.OperationMode is configured. The factor should be greater than or equal than 0 and less or equal to 1.",
@@ -832,7 +832,7 @@ class FRBCInstruction(BaseModel):
         description="ID of the instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("FRBC.Instruction", const=True)
+    message_type: Literal["FRBC.Instruction"] = Field(default="FRBC.Instruction")
     operation_mode: ID = Field(
         ..., description="ID of the FRBC.OperationMode that should be activated."
     )
@@ -915,7 +915,7 @@ class FRBCStorageStatus(BaseModel):
         extra = Extra.forbid
 
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("FRBC.StorageStatus", const=True)
+    message_type: Literal["FRBC.StorageStatus"] = Field(default="FRBC.StorageStatus")
     present_fill_level: float = Field(
         ..., description="Present fill level of the Storage"
     )
@@ -933,7 +933,7 @@ class FRBCTimerStatus(BaseModel):
         description="Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("FRBC.TimerStatus", const=True)
+    message_type: Literal["FRBC.TimerStatus"] = Field(default="FRBC.TimerStatus")
     timer_id: ID = Field(..., description="The ID of the timer this message refers to")
 
 
@@ -948,7 +948,7 @@ class FRBCUsageForecast(BaseModel):
         min_items=1,
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("FRBC.UsageForecast", const=True)
+    message_type: Literal["FRBC.UsageForecast"] = Field(default="FRBC.UsageForecast")
     start_time: datetime = Field(
         ..., description="Time at which the FRBC.UsageForecast starts."
     )
@@ -959,7 +959,7 @@ class Handshake(BaseModel):
         extra = Extra.forbid
 
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("Handshake", const=True)
+    message_type: Literal["Handshake"] = Field(default="Handshake")
     role: EnergyManagementRole = Field(
         ..., description="The role of the sender of this message"
     )
@@ -975,7 +975,7 @@ class HandshakeResponse(BaseModel):
         extra = Extra.forbid
 
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("HandshakeResponse", const=True)
+    message_type: Literal["HandshakeResponse"] = Field(default="HandshakeResponse")
     selected_protocol_version: str = Field(
         ..., description="The protocol version the CEM selected for this session"
     )
@@ -1014,7 +1014,7 @@ class OMBCSystemDescription(BaseModel):
         extra = Extra.forbid
 
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("OMBC.SystemDescription", const=True)
+    message_type: Literal["OMBC.SystemDescription"] = Field(default="OMBC.SystemDescription")
     operation_modes: List[OMBCOperationMode] = Field(
         ...,
         description="OMBC.OperationModes available for the CEM in order to coordinate the device behaviour.",
@@ -1078,7 +1078,7 @@ class PEBCPowerConstraints(BaseModel):
         description="Identifier of this PEBC.PowerConstraints. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PEBC.PowerConstraints", const=True)
+    message_type: Literal["PEBC.PowerConstraints"] = Field(default="PEBC.PowerConstraints")
     valid_from: datetime = Field(
         ..., description="Moment this PEBC.PowerConstraints start to be valid"
     )
@@ -1168,7 +1168,7 @@ class PowerMeasurement(BaseModel):
         ..., description="Timestamp when PowerValues were measured."
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PowerMeasurement", const=True)
+    message_type: Literal["PowerMeasurement"] = Field(default="PowerMeasurement")
     values: List[PowerValue] = Field(
         ...,
         description="Array of measured PowerValues. Must contain at least one item and at most one item per ‘commodity_quantity’ (defined inside the PowerValue).",
@@ -1185,7 +1185,7 @@ class ReceptionStatus(BaseModel):
         None,
         description="Diagnostic label that can be used to provide additional information for debugging. However, not for HMI purposes.",
     )
-    message_type: str = Field("ReceptionStatus", const=True)
+    message_type: Literal["ReceptionStatus"] = Field(default="ReceptionStatus")
     status: ReceptionStatusValues = Field(
         ..., description="Enumeration of status values"
     )
@@ -1213,7 +1213,7 @@ class SessionRequest(BaseModel):
         description="Optional field for a human readible descirption for debugging purposes",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("SessionRequest", const=True)
+    message_type: Literal["SessionRequest"] = Field(default="SessionRequest")
     request: SessionRequestType = Field(..., description="The type of request")
 
 
@@ -1266,7 +1266,7 @@ class DDBCAverageDemandRateForecast(BaseModel):
         min_items=1,
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("DDBC.AverageDemandRateForecast", const=True)
+    message_type: Literal["DDBC.AverageDemandRateForecast"] = Field(default="DDBC.AverageDemandRateForecast")
     start_time: datetime = Field(..., description="Start time of the profile.")
 
 
@@ -1281,7 +1281,7 @@ class DDBCSystemDescription(BaseModel):
         min_items=1,
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("DDBC.SystemDescription", const=True)
+    message_type: Literal["DDBC.SystemDescription"] = Field(default="DDBC.SystemDescription")
     present_demand_rate: NumberRange = Field(
         ..., description="Present demand rate that needs to be satisfied by the system"
     )
@@ -1306,7 +1306,7 @@ class FRBCFillLevelTargetProfile(BaseModel):
         min_items=1,
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("FRBC.FillLevelTargetProfile", const=True)
+    message_type: Literal["FRBC.FillLevelTargetProfile"] = Field(default="FRBC.FillLevelTargetProfile")
     start_time: datetime = Field(
         ..., description="Time at which the FRBC.FillLevelTargetProfile starts."
     )
@@ -1323,7 +1323,7 @@ class FRBCLeakageBehaviour(BaseModel):
         min_items=1,
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("FRBC.LeakageBehaviour", const=True)
+    message_type: Literal["FRBC.LeakageBehaviour"] = Field(default="FRBC.LeakageBehaviour")
     valid_from: datetime = Field(
         ...,
         description="Moment this FRBC.LeakageBehaviour starts to be valid. If the FRBC.LeakageBehaviour is immediately valid, the DateTimeStamp should be now or in the past.",
@@ -1371,7 +1371,7 @@ class PEBCInstruction(BaseModel):
         description="Identifier of this PEBC.Instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PEBC.Instruction", const=True)
+    message_type: Literal["PEBC.Instruction"] = Field(default="PEBC.Instruction")
     power_constraints_id: ID = Field(
         ...,
         description="Identifier of the PEBC.PowerConstraints this PEBC.Instruction was based on.",
@@ -1389,7 +1389,7 @@ class PPBCPowerProfileStatus(BaseModel):
         extra = Extra.forbid
 
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PPBC.PowerProfileStatus", const=True)
+    message_type: Literal["PPBC.PowerProfileStatus"] = Field(default="PPBC.PowerProfileStatus")
     sequence_container_status: List[PPBCPowerSequenceContainerStatus] = Field(
         ...,
         description="Array with status information for all PPBC.PowerSequenceContainers in the PPBC.PowerProfileDefinition.",
@@ -1453,7 +1453,7 @@ class PowerForecast(BaseModel):
         min_items=1,
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PowerForecast", const=True)
+    message_type: Literal["PowerForecast"] = Field(default="PowerForecast")
     start_time: datetime = Field(
         ..., description="Start time of time period that is covered by the profile."
     )
@@ -1483,7 +1483,7 @@ class ResourceManagerDetails(BaseModel):
     )
     manufacturer: Optional[str] = Field(None, description="Name of Manufacturer")
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("ResourceManagerDetails", const=True)
+    message_type: Literal["ResourceManagerDetails"] = Field(default="ResourceManagerDetails")
     model: Optional[str] = Field(
         None,
         description="Name of the model of the device (provided by the manufacturer)",
@@ -1557,7 +1557,7 @@ class FRBCSystemDescription(BaseModel):
         ..., description="Details of all Actuators.", max_items=10, min_items=1
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("FRBC.SystemDescription", const=True)
+    message_type: Literal["FRBC.SystemDescription"] = Field(default="FRBC.SystemDescription")
     storage: FRBCStorageDescription = Field(..., description="Details of the storage.")
     valid_from: datetime = Field(
         ...,
@@ -1578,7 +1578,7 @@ class PPBCPowerProfileDefinition(BaseModel):
         description="ID of the PPBC.PowerProfileDefinition. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
     message_id: ID = Field(..., description="ID of this message")
-    message_type: str = Field("PPBC.PowerProfileDefinition", const=True)
+    message_type: Literal["PPBC.PowerProfileDefinition"] = Field(default="PPBC.PowerProfileDefinition")
     power_sequences_containers: List[PPBCPowerSequenceContainer] = Field(
         ...,
         description="The PPBC.PowerSequenceContainers that make up this PPBC.PowerProfileDefinition. There shall be at least one PPBC.PowerSequenceContainer that includes at least one PPBC.PowerSequence. PPBC.PowerSequenceContainers must be placed in chronological order.",
