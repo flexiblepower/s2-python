@@ -1,5 +1,5 @@
 import json
-import uuid
+
 from unittest import TestCase
 
 from s2python.common import HandshakeResponse
@@ -19,7 +19,7 @@ class HandshakeResponseTest(TestCase):
         # Assert
         self.assertEqual(
             handshake_response.message_id,
-            uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
+            "2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
         )
         self.assertEqual(handshake_response.message_type, "HandshakeResponse")
         self.assertEqual(handshake_response.selected_protocol_version, "v1")
@@ -27,7 +27,7 @@ class HandshakeResponseTest(TestCase):
     def test__to_json__happy_path(self):
         # Arrange
         handshake_response = HandshakeResponse(
-            message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
+            message_id="2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
             selected_protocol_version="v1",
         )
 

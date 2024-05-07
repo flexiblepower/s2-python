@@ -1,6 +1,5 @@
 from pydantic import Field
 from typing import List, Literal
-import uuid
 
 from s2python.generated.gen_s2 import FRBCSystemDescription as GenFRBCSystemDescription
 from s2python.validate_values_mixin import (
@@ -21,7 +20,6 @@ class FRBCSystemDescription(
     actuators: List[FRBCActuatorDescription] = GenFRBCSystemDescription.__fields__[
         "actuators"
     ].field_info  # type: ignore[assignment]
-    message_id: uuid.UUID = GenFRBCSystemDescription.__fields__["message_id"].field_info  # type: ignore[assignment]
     storage: FRBCStorageDescription = GenFRBCSystemDescription.__fields__[
         "storage"
     ].field_info  # type: ignore[assignment]

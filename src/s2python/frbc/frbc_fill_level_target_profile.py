@@ -1,6 +1,5 @@
 from pydantic import Field
 from typing import List, Literal
-import uuid
 
 from s2python.frbc.frbc_fill_level_target_profile_element import (
     FRBCFillLevelTargetProfileElement,
@@ -25,8 +24,5 @@ class FRBCFillLevelTargetProfile(
         FRBCFillLevelTargetProfileElement
     ] = GenFRBCFillLevelTargetProfile.__fields__[
         "elements"
-    ].field_info  # type: ignore[assignment]
-    message_id: uuid.UUID = GenFRBCFillLevelTargetProfile.__fields__[
-        "message_id"
     ].field_info  # type: ignore[assignment]
     message_type: Literal["FRBCFillLevelTargetProfile"] = Field(default="FRBCFillLevelTargetProfile")

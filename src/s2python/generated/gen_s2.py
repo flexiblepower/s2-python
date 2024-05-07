@@ -398,6 +398,9 @@ class CommodityQuantity(Enum):
     OIL_FLOW_RATE = 'OIL.FLOW_RATE'
 
 
+ID = constr(regex=r"[a-zA-Z0-9\-_:]{2,64}")
+
+
 class InstructionStatus(Enum):
     NEW = 'NEW'
     ACCEPTED = 'ACCEPTED'
