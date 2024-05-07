@@ -1,5 +1,5 @@
 import json
-import uuid
+
 from unittest import TestCase
 
 from s2python.common import ReceptionStatus, ReceptionStatusValues
@@ -23,7 +23,7 @@ class ReceptionStatusTest(TestCase):
         self.assertEqual(reception_status.status, ReceptionStatusValues.TEMPORARY_ERROR)
         self.assertEqual(
             reception_status.subject_message_id,
-            uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
+            "2bdec96b-be3b-4ba9-afa0-c4a0632cced5",
         )
 
     def test__to_json__happy_path(self):
@@ -32,7 +32,7 @@ class ReceptionStatusTest(TestCase):
             diagnostic_label="Dagobert Duck is king!",
             message_type="ReceptionStatus",
             status=ReceptionStatusValues.OK,
-            subject_message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
+            subject_message_id="2bdec96b-be3b-4ba9-afa0-c4a0632cced5",
         )
 
         # Act

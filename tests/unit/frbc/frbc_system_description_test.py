@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
-import uuid
+
 
 from s2python.common import *
 from s2python.frbc import *
@@ -100,11 +100,11 @@ class FRBCSystemDescriptionTest(TestCase):
         #  assign values during init. See: https://github.com/flexiblepower/s2-ws-json-python/issues/10
         transition = Transition(
             **{
-                "id": uuid.UUID("c32cc1d3-4722-41e3-a8de-55307c723611"),
-                "from": uuid.UUID("2795136c-eb30-4f8a-bdaa-61feba1e71b6"),
-                "to": uuid.UUID("2795136c-eb30-4f8a-bdaa-61feba1e71b6"),
-                "start_timers": [uuid.UUID("e1ff9e58-935b-4765-92e3-5e7679f73eb6")],
-                "blocking_timers": [uuid.UUID("e1ff9e58-935b-4765-92e3-5e7679f73eb6")],
+                "id": "c32cc1d3-4722-41e3-a8de-55307c723611",
+                "from": "2795136c-eb30-4f8a-bdaa-61feba1e71b6",
+                "to": "2795136c-eb30-4f8a-bdaa-61feba1e71b6",
+                "start_timers": ["e1ff9e58-935b-4765-92e3-5e7679f73eb6"],
+                "blocking_timers": ["e1ff9e58-935b-4765-92e3-5e7679f73eb6"],
                 "transition_costs": 1018.4228054114793,
                 "transition_duration": Duration.from_milliseconds(11988),
                 "abnormal_condition_only": True,
@@ -116,7 +116,7 @@ class FRBCSystemDescriptionTest(TestCase):
             [
                 FRBCActuatorDescription(
                     diagnostic_label="some-test-string2728",
-                    id=uuid.UUID("a1061148-f19e-4b1b-8fe3-b506583ce61e"),
+                    id="a1061148-f19e-4b1b-8fe3-b506583ce61e",
                     operation_modes=[
                         FRBCOperationMode(
                             abnormal_condition_only=False,
@@ -144,7 +144,7 @@ class FRBCSystemDescriptionTest(TestCase):
                                     ),
                                 )
                             ],
-                            id=uuid.UUID("2795136c-eb30-4f8a-bdaa-61feba1e71b6"),
+                            id="2795136c-eb30-4f8a-bdaa-61feba1e71b6",
                         )
                     ],
                     supported_commodities=[Commodity.ELECTRICITY],
@@ -154,7 +154,7 @@ class FRBCSystemDescriptionTest(TestCase):
                             duration=Duration.from_timedelta(
                                 timedelta(milliseconds=14099)
                             ),
-                            id=uuid.UUID("e1ff9e58-935b-4765-92e3-5e7679f73eb6"),
+                            id="e1ff9e58-935b-4765-92e3-5e7679f73eb6",
                         )
                     ],
                     transitions=[transition],
@@ -163,7 +163,7 @@ class FRBCSystemDescriptionTest(TestCase):
         )
         self.assertEqual(
             frbc_system_description.message_id,
-            uuid.UUID("97256813-de70-4640-a992-9ae0b2d8e4d1"),
+            "97256813-de70-4640-a992-9ae0b2d8e4d1",
         )
         self.assertEqual(frbc_system_description.message_type, "FRBC.SystemDescription")
         self.assertEqual(
@@ -199,11 +199,11 @@ class FRBCSystemDescriptionTest(TestCase):
         #  assign values during init. See: https://github.com/flexiblepower/s2-ws-json-python/issues/10
         transition = Transition(
             **{
-                "id": uuid.UUID("c32cc1d3-4722-41e3-a8de-55307c723611"),
-                "from": uuid.UUID("2795136c-eb30-4f8a-bdaa-61feba1e71b6"),
-                "to": uuid.UUID("2795136c-eb30-4f8a-bdaa-61feba1e71b6"),
-                "start_timers": [uuid.UUID("e1ff9e58-935b-4765-92e3-5e7679f73eb6")],
-                "blocking_timers": [uuid.UUID("e1ff9e58-935b-4765-92e3-5e7679f73eb6")],
+                "id": "c32cc1d3-4722-41e3-a8de-55307c723611",
+                "from": "2795136c-eb30-4f8a-bdaa-61feba1e71b6",
+                "to": "2795136c-eb30-4f8a-bdaa-61feba1e71b6",
+                "start_timers": ["e1ff9e58-935b-4765-92e3-5e7679f73eb6"],
+                "blocking_timers": ["e1ff9e58-935b-4765-92e3-5e7679f73eb6"],
                 "transition_costs": 1018.4228054114793,
                 "transition_duration": Duration.from_milliseconds(11988),
                 "abnormal_condition_only": True,
@@ -213,7 +213,7 @@ class FRBCSystemDescriptionTest(TestCase):
             actuators=[
                 FRBCActuatorDescription(
                     diagnostic_label="some-test-string2728",
-                    id=uuid.UUID("a1061148-f19e-4b1b-8fe3-b506583ce61e"),
+                    id="a1061148-f19e-4b1b-8fe3-b506583ce61e",
                     operation_modes=[
                         FRBCOperationMode(
                             abnormal_condition_only=False,
@@ -241,7 +241,7 @@ class FRBCSystemDescriptionTest(TestCase):
                                     ),
                                 )
                             ],
-                            id=uuid.UUID("2795136c-eb30-4f8a-bdaa-61feba1e71b6"),
+                            id="2795136c-eb30-4f8a-bdaa-61feba1e71b6",
                         )
                     ],
                     supported_commodities=[Commodity.ELECTRICITY],
@@ -251,13 +251,13 @@ class FRBCSystemDescriptionTest(TestCase):
                             duration=Duration.from_timedelta(
                                 timedelta(milliseconds=14099)
                             ),
-                            id=uuid.UUID("e1ff9e58-935b-4765-92e3-5e7679f73eb6"),
+                            id="e1ff9e58-935b-4765-92e3-5e7679f73eb6",
                         )
                     ],
                     transitions=[transition],
                 )
             ],
-            message_id=uuid.UUID("97256813-de70-4640-a992-9ae0b2d8e4d1"),
+            message_id="97256813-de70-4640-a992-9ae0b2d8e4d1",
             message_type="FRBC.SystemDescription",
             storage=FRBCStorageDescription(
                 diagnostic_label="some-test-string8418",
