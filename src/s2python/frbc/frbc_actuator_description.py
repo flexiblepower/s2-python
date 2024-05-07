@@ -1,5 +1,3 @@
-import uuid
-
 from typing import List, Any, Dict
 
 from pydantic import root_validator
@@ -24,7 +22,6 @@ class FRBCActuatorDescription(
     class Config(GenFRBCActuatorDescription.Config):
         validate_assignment = True
 
-    id: uuid.UUID = GenFRBCActuatorDescription.__fields__["id"].field_info  # type: ignore[assignment]
     operation_modes: List[FRBCOperationMode] = GenFRBCActuatorDescription.__fields__[
         "operation_modes"
     ].field_info  # type: ignore[assignment]

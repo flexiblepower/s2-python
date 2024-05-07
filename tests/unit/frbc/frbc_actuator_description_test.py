@@ -1,5 +1,5 @@
 import json
-import uuid
+
 from datetime import timedelta
 from unittest import TestCase
 
@@ -58,7 +58,7 @@ class FRBCActuatorDescriptionTest(TestCase):
 
         # Assert
         expected_timer = Timer(
-            id=uuid.UUID("3bdec10b-be3b-4ba9-afa0-c4a0632ffed6"),
+            id="3bdec10b-be3b-4ba9-afa0-c4a0632ffed6",
             diagnostic_label="timer1",
             duration=Duration.from_timedelta(timedelta(seconds=2.3)),
         )
@@ -68,11 +68,11 @@ class FRBCActuatorDescriptionTest(TestCase):
         #  assign values during init. See: https://github.com/flexiblepower/s2-ws-json-python/issues/10
         expected_transition = Transition(
             **{
-                "id": uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
-                "from": uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632ffed5"),
-                "to": uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632ffed5"),
-                "start_timers": [uuid.UUID("3bdec10b-be3b-4ba9-afa0-c4a0632ffed6")],
-                "blocking_timers": [uuid.UUID("3bdec10b-be3b-4ba9-afa0-c4a0632ffed6")],
+                "id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
+                "from": "3bdec96b-be3b-4ba9-afa0-c4a0632ffed5",
+                "to": "3bdec96b-be3b-4ba9-afa0-c4a0632ffed5",
+                "start_timers": ["3bdec10b-be3b-4ba9-afa0-c4a0632ffed6"],
+                "blocking_timers": ["3bdec10b-be3b-4ba9-afa0-c4a0632ffed6"],
                 "transition_costs": 4.3,
                 "transition_duration": Duration.from_milliseconds(1500),
                 "abnormal_condition_only": False,
@@ -98,7 +98,7 @@ class FRBCActuatorDescriptionTest(TestCase):
         expected_operation_mode = FRBCOperationMode(
             abnormal_condition_only=False,
             diagnostic_label="om1",
-            id=uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632ffed5"),
+            id="3bdec96b-be3b-4ba9-afa0-c4a0632ffed5",
             elements=[expected_operation_mode_element],
         )
 
@@ -107,7 +107,7 @@ class FRBCActuatorDescriptionTest(TestCase):
         )
         self.assertEqual(
             frbc_actuator_description.id,
-            uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632dded5"),
+            "3bdec96b-be3b-4ba9-afa0-c4a0632dded5",
         )
         self.assertEqual(
             frbc_actuator_description.supported_commodities,
@@ -122,7 +122,7 @@ class FRBCActuatorDescriptionTest(TestCase):
     def test__to_json__happy_path(self):
         # Arrange
         timer = Timer(
-            id=uuid.UUID("3bdec10b-be3b-4ba9-afa0-c4a0632ffed6"),
+            id="3bdec10b-be3b-4ba9-afa0-c4a0632ffed6",
             diagnostic_label="timer1",
             duration=Duration.from_timedelta(timedelta(seconds=2.3)),
         )
@@ -132,11 +132,11 @@ class FRBCActuatorDescriptionTest(TestCase):
         #  assign values during init. See: https://github.com/flexiblepower/s2-ws-json-python/issues/10
         transition = Transition(
             **{
-                "id": uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
-                "from": uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632ffed5"),
-                "to": uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632ffed5"),
-                "start_timers": [uuid.UUID("3bdec10b-be3b-4ba9-afa0-c4a0632ffed6")],
-                "blocking_timers": [uuid.UUID("3bdec10b-be3b-4ba9-afa0-c4a0632ffed6")],
+                "id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
+                "from": "3bdec96b-be3b-4ba9-afa0-c4a0632ffed5",
+                "to": "3bdec96b-be3b-4ba9-afa0-c4a0632ffed5",
+                "start_timers": ["3bdec10b-be3b-4ba9-afa0-c4a0632ffed6"],
+                "blocking_timers": ["3bdec10b-be3b-4ba9-afa0-c4a0632ffed6"],
                 "transition_costs": 4.3,
                 "transition_duration": Duration.from_milliseconds(1500),
                 "abnormal_condition_only": False,
@@ -162,13 +162,13 @@ class FRBCActuatorDescriptionTest(TestCase):
         operation_mode = FRBCOperationMode(
             abnormal_condition_only=False,
             diagnostic_label="om1",
-            id=uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632ffed5"),
+            id="3bdec96b-be3b-4ba9-afa0-c4a0632ffed5",
             elements=[operation_mode_element],
         )
 
         frbc_actuator_description = FRBCActuatorDescription(
             diagnostic_label="some name of actuator",
-            id=uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632dded5"),
+            id="3bdec96b-be3b-4ba9-afa0-c4a0632dded5",
             supported_commodities=[Commodity.HEAT, Commodity.ELECTRICITY],
             operation_modes=[operation_mode],
             timers=[timer],

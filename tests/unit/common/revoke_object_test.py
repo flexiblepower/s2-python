@@ -1,5 +1,5 @@
 import json
-import uuid
+
 from unittest import TestCase
 
 from s2python.common import RevokeObject, RevokableObjects
@@ -21,18 +21,18 @@ class RevokeObjectTest(TestCase):
 
         # Assert
         self.assertEqual(
-            revoke_object.message_id, uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced5")
+            revoke_object.message_id, "3bdec96b-be3b-4ba9-afa0-c4a0632cced5"
         )
         self.assertEqual(
-            revoke_object.object_id, uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced6")
+            revoke_object.object_id, "3bdec96b-be3b-4ba9-afa0-c4a0632cced6"
         )
         self.assertEqual(revoke_object.object_type, RevokableObjects.FRBC_Instruction)
 
     def test__to_json__happy_path(self):
         # Arrange
         revoke_object = RevokeObject(
-            message_id=uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
-            object_id=uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced6"),
+            message_id="3bdec96b-be3b-4ba9-afa0-c4a0632cced5",
+            object_id="3bdec96b-be3b-4ba9-afa0-c4a0632cced6",
             object_type=RevokableObjects.FRBC_Instruction,
         )
 

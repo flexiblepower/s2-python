@@ -1,6 +1,7 @@
 import datetime
 import json
 from enum import Enum
+import uuid
 import inspect
 import pprint
 import random
@@ -14,7 +15,7 @@ from typing import (
     Callable,
     Sequence,
 )
-import uuid
+
 
 import pydantic
 
@@ -172,7 +173,7 @@ def dump_test_data_as_constructor_field_for(test_data, field_type: Type) -> str:
         offset: datetime.timedelta = test_data.tzinfo.utcoffset(None)
         value = f"datetime(year={test_data.year}, month={test_data.month}, day={test_data.day}, hour={test_data.hour}, minute={test_data.minute}, second={test_data.second}, tzinfo=offset(offset=timedelta(seconds={offset.total_seconds()})))"
     elif field_type is uuid.UUID:
-        value = f'uuid.UUID("{test_data}")'
+        value = f'"{test_data}"'
     else:
         raise RuntimeError(
             f"Please implement dump test data for field type {field_type}"
@@ -260,7 +261,7 @@ for class_name, class_ in inspect.getmembers(frbc):
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
-import uuid
+
 
 from s2python.common import *
 from s2python.frbc import *

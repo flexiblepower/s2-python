@@ -1,5 +1,4 @@
 from unittest import TestCase
-from uuid import UUID
 
 from s2python.common import HandshakeResponse
 from s2python.generated.gen_s2 import EnergyManagementRole
@@ -23,7 +22,7 @@ class S2ParserTest(TestCase):
         self.assertEqual(
             parsed_message,
             Handshake(
-                message_id=UUID("ca093515-0bb3-4709-bd56-092c1808b791"),
+                message_id="ca093515-0bb3-4709-bd56-092c1808b791",
                 role=EnergyManagementRole.CEM,
                 supported_protocol_versions=["3.0alpha"],
             ),
@@ -45,7 +44,7 @@ class S2ParserTest(TestCase):
         self.assertEqual(
             parsed_message,
             Handshake(
-                message_id=UUID("ca093515-0bb3-4709-bd56-092c1808b791"),
+                message_id="ca093515-0bb3-4709-bd56-092c1808b791",
                 role=EnergyManagementRole.CEM,
                 supported_protocol_versions=["3.0alpha"],
             ),
@@ -78,7 +77,7 @@ class S2ParserTest(TestCase):
         self.assertEqual(
             parsed_message,
             Handshake(
-                message_id=UUID("ca093515-0bb3-4709-bd56-092c1808b791"),
+                message_id="ca093515-0bb3-4709-bd56-092c1808b791",
                 role=EnergyManagementRole.CEM,
                 supported_protocol_versions=["3.0alpha"],
             ),
@@ -100,7 +99,7 @@ class S2ParserTest(TestCase):
         self.assertEqual(
             parsed_message,
             Handshake(
-                message_id=UUID("ca093515-0bb3-4709-bd56-092c1808b791"),
+                message_id="ca093515-0bb3-4709-bd56-092c1808b791",
                 role=EnergyManagementRole.CEM,
                 supported_protocol_versions=["3.0alpha"],
             ),

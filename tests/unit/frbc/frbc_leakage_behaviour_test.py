@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
-import uuid
+
 
 from s2python.common import *
 from s2python.frbc import *
@@ -45,7 +45,7 @@ class FRBCLeakageBehaviourTest(TestCase):
         )
         self.assertEqual(
             frbc_leakage_behaviour.message_id,
-            uuid.UUID("b3e9604a-1127-4ecc-9f9e-336047fde285"),
+            "b3e9604a-1127-4ecc-9f9e-336047fde285",
         )
         self.assertEqual(frbc_leakage_behaviour.message_type, "FRBC.LeakageBehaviour")
         self.assertEqual(
@@ -73,7 +73,7 @@ class FRBCLeakageBehaviourTest(TestCase):
                     leakage_rate=1225.9695121338086,
                 )
             ],
-            message_id=uuid.UUID("b3e9604a-1127-4ecc-9f9e-336047fde285"),
+            message_id="b3e9604a-1127-4ecc-9f9e-336047fde285",
             message_type="FRBC.LeakageBehaviour",
             valid_from=datetime(
                 year=2022,

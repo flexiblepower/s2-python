@@ -190,10 +190,7 @@ class FRBCUsageForecastElement(BaseModel):
     )
 
 
-class ID(BaseModel):
-    __root__: constr(regex=r"[a-zA-Z0-9\-_:]{2,64}") = Field(
-        ..., description="An identifier expressed as a UUID"
-    )
+ID = constr(regex=r"[a-zA-Z0-9\-_:]{2,64}")
 
 
 class InstructionStatus(Enum):
