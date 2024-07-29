@@ -9,7 +9,7 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class Handshake(GenHandshake, S2Message["Handshake"]):
-    class Config(GenHandshake.Config):
-        validate_assignment = True
+    model_config = GenHandshake.model_config
+    model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenHandshake.__fields__["message_id"].field_info  # type: ignore[assignment]
+    message_id: uuid.UUID = GenHandshake.model_fields["message_id"]  # type: ignore[assignment]

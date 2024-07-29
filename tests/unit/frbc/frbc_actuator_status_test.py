@@ -18,7 +18,7 @@ class FRBCActuatorStatusTest(TestCase):
     "message_type": "FRBC.ActuatorStatus",
     "operation_mode_factor": 6919.960475850124,
     "previous_operation_mode_id": "2ed8f7de-cbaa-4cab-9d25-6792317aa284",
-    "transition_timestamp": "2020-01-02T07:56:46+00:00"
+    "transition_timestamp": "2020-01-02T07:56:46Z"
 }
         """
 
@@ -65,9 +65,7 @@ class FRBCActuatorStatusTest(TestCase):
             message_id=uuid.UUID("07f3d559-63c5-4369-a9e0-deed4195f651"),
             message_type="FRBC.ActuatorStatus",
             operation_mode_factor=6919.960475850124,
-            previous_operation_mode_id=uuid.UUID(
-                "2ed8f7de-cbaa-4cab-9d25-6792317aa284"
-            ),
+            previous_operation_mode_id=uuid.UUID("2ed8f7de-cbaa-4cab-9d25-6792317aa284"),
             transition_timestamp=datetime(
                 year=2020,
                 month=1,
@@ -90,6 +88,6 @@ class FRBCActuatorStatusTest(TestCase):
             "message_type": "FRBC.ActuatorStatus",
             "operation_mode_factor": 6919.960475850124,
             "previous_operation_mode_id": "2ed8f7de-cbaa-4cab-9d25-6792317aa284",
-            "transition_timestamp": "2020-01-02T07:56:46+00:00",
+            "transition_timestamp": "2020-01-02T07:56:46Z",
         }
         self.assertEqual(json.loads(json_str), expected_json)

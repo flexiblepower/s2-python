@@ -1,3 +1,4 @@
+import inspect
 from typing import (
     TypeVar,
     Generic,
@@ -15,11 +16,11 @@ from typing import (
 
 from pydantic import (  # pylint: disable=no-name-in-module
     BaseModel,
-    StrBytes,
-    Protocol as PydanticProtocol,
     ValidationError,
+    RootModel,
 )
-from pydantic.error_wrappers import display_errors  # pylint: disable=no-name-in-module
+from pydantic.deprecated.parse import Protocol as PydanticProtocol
+from pydantic.v1.error_wrappers import display_errors  # pylint: disable=no-name-in-module
 
 from s2python.s2_validation_error import S2ValidationError
 
@@ -32,19 +33,15 @@ MappingIntStrAny = Mapping[IntStr, Any]
 
 class SupportsValidation(Protocol[B_co]):
     # ValidateValuesMixin methods
-    def to_json(self) -> str:
-        ...
+    def to_json(self) -> str: ...
 
-    def to_dict(self) -> Dict:
-        ...
+    def to_dict(self) -> Dict: ...
 
     @classmethod
-    def from_json(cls, json_str: str) -> B_co:
-        ...
+    def from_json(cls, json_str: str) -> B_co: ...
 
     @classmethod
-    def from_dict(cls, json_dict: Dict) -> B_co:
-        ...
+    def from_dict(cls, json_dict: Dict) -> B_co: ...
 
     # Pydantic methods
     def json(  # pylint: disable=too-many-arguments
@@ -60,8 +57,7 @@ class SupportsValidation(Protocol[B_co]):
         encoder: Optional[Callable[[Any], Any]] = None,
         models_as_dict: bool = True,
         **dumps_kwargs: Any,
-    ) -> str:
-        ...
+    ) -> str: ...
 
     def dict(  # pylint: disable=too-many-arguments
         self,
@@ -73,24 +69,21 @@ class SupportsValidation(Protocol[B_co]):
         exclude_unset: bool = False,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
-    ) -> Dict[str, Any]:
-        ...
+    ) -> Dict[str, Any]: ...
 
     @classmethod
-    def parse_raw(  # pylint: disable=too-many-arguments
+    def model_validate_json(  # pylint: disable=too-many-arguments
         cls,
-        b: StrBytes,
+        b: Union[str, bytes],
         *,
-        content_type: str = ...,
+        content_type: Optional[str] = ...,
         encoding: str = ...,
         proto: PydanticProtocol = ...,
         allow_pickle: bool = ...,
-    ) -> B_co:
-        ...
+    ) -> B_co: ...
 
     @classmethod
-    def parse_obj(cls, obj: Any) -> "B_co":
-        ...
+    def model_validate(cls, obj: Any) -> "B_co": ...
 
 
 C = TypeVar("C", bound="SupportsValidation")
@@ -99,27 +92,25 @@ C = TypeVar("C", bound="SupportsValidation")
 class ValidateValuesMixin(Generic[C]):
     def to_json(self: C) -> str:
         try:
-            return self.json(by_alias=True, exclude_none=True)
+            return self.model_dump_json(by_alias=True, exclude_none=True)
         except (ValidationError, TypeError) as e:
-            raise S2ValidationError(
-                self, "Pydantic raised a format validation error."
-            ) from e
+            raise S2ValidationError(type(self), self, "Pydantic raised a format validation error.", e) from e
 
     def to_dict(self: C) -> dict:
         return self.dict()
 
     @classmethod
     def from_json(cls: Type[C], json_str: str) -> C:
-        gen_model: C = cls.parse_raw(json_str)
+        gen_model: C = cls.model_validate_json(json_str)
         return gen_model
 
     @classmethod
     def from_dict(cls: Type[C], json_dict: dict) -> C:
-        gen_model: C = cls.parse_obj(json_dict)
+        gen_model: C = cls.model_validate(json_dict)
         return gen_model
 
 
-class S2Message(Generic[C], ValidateValuesMixin[C], BaseModel):
+class S2Message(Generic[C], ValidateValuesMixin[C]):
     pass
 
 
@@ -128,9 +119,15 @@ def convert_to_s2exception(f: Callable) -> Callable:
         try:
             return f(*args, **kwargs)
         except ValidationError as e:
-            raise S2ValidationError(args, display_errors(e.errors())) from e
+            if isinstance(args[0], BaseModel):
+                class_type = type(args[0])
+                args = args[1:]
+            else:
+                class_type = None
+
+            raise S2ValidationError(class_type, args, display_errors(e.errors()), e) from e
         except TypeError as e:
-            raise S2ValidationError(args, str(e)) from e
+            raise S2ValidationError(None, args, str(e), e) from e
 
     inner.__doc__ = f.__doc__
     inner.__annotations__ = f.__annotations__
@@ -143,6 +140,7 @@ def catch_and_convert_exceptions(
 ) -> Type[SupportsValidation[B_co]]:
     input_class.__init__ = convert_to_s2exception(input_class.__init__)  # type: ignore[method-assign]
     input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)  # type: ignore[method-assign]
-    input_class.parse_raw = convert_to_s2exception(input_class.parse_raw)  # type: ignore[method-assign]
+    input_class.model_validate_json = convert_to_s2exception(input_class.model_validate_json)  # type: ignore[method-assign]
+    input_class.model_validate = convert_to_s2exception(input_class.model_validate)  # type: ignore[method-assign]
 
     return input_class

@@ -81,7 +81,7 @@ class S2Parser:
                 f"Unable to parse {message_type} as an S2 message. Type unknown.",
             )
 
-        return TYPE_TO_MESSAGE_CLASS[message_type].parse_obj(message_json)
+        return TYPE_TO_MESSAGE_CLASS[message_type].model_validate(message_json)
 
     @staticmethod
     def parse_as_message(unparsed_message: Union[dict, str], as_message: Type[M]) -> M:
@@ -96,9 +96,7 @@ class S2Parser:
         return as_message.from_dict(message_json)
 
     @staticmethod
-    def parse_message_type(
-        unparsed_message: Union[dict, str]
-    ) -> Optional[S2MessageType]:
+    def parse_message_type(unparsed_message: Union[dict, str]) -> Optional[S2MessageType]:
         """Parse only the message type from the unparsed message.
 
         This is useful to call before `parse_as_message` to retrieve the message type and allows for strictly-typed

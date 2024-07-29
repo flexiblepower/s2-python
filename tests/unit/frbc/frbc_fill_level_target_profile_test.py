@@ -23,7 +23,7 @@ class FRBCFillLevelTargetProfileTest(TestCase):
     ],
     "message_id": "04a6c8af-ca8d-420c-9c11-e96a70fe82b1",
     "message_type": "FRBC.FillLevelTargetProfile",
-    "start_time": "2021-04-17T00:19:20+00:00"
+    "start_time": "2021-04-17T00:19:20Z"
 }
         """
 
@@ -47,9 +47,7 @@ class FRBCFillLevelTargetProfileTest(TestCase):
             frbc_fill_level_target_profile.message_id,
             uuid.UUID("04a6c8af-ca8d-420c-9c11-e96a70fe82b1"),
         )
-        self.assertEqual(
-            frbc_fill_level_target_profile.message_type, "FRBC.FillLevelTargetProfile"
-        )
+        self.assertEqual(frbc_fill_level_target_profile.message_type, "FRBC.FillLevelTargetProfile")
         self.assertEqual(
             frbc_fill_level_target_profile.start_time,
             datetime(
@@ -104,6 +102,6 @@ class FRBCFillLevelTargetProfileTest(TestCase):
             ],
             "message_id": "04a6c8af-ca8d-420c-9c11-e96a70fe82b1",
             "message_type": "FRBC.FillLevelTargetProfile",
-            "start_time": "2021-04-17T00:19:20+00:00",
+            "start_time": "2021-04-17T00:19:20Z",
         }
         self.assertEqual(json.loads(json_str), expected_json)

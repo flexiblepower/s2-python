@@ -9,7 +9,7 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class SelectControlType(GenSelectControlType, S2Message["SelectControlType"]):
-    class Config(GenSelectControlType.Config):
-        validate_assignment = True
+    model_config = GenSelectControlType.model_config
+    model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenSelectControlType.__fields__["message_id"].field_info  # type: ignore[assignment]
+    message_id: uuid.UUID = GenSelectControlType.model_fields["message_id"]  # type: ignore[assignment]
