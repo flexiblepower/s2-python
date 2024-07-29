@@ -135,6 +135,6 @@ class TransitionTest(TestCase):
                 to=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1"),
                 start_timers=[],
                 blocking_timers=[],
-                transition_duration=Duration(-5000),
+                transition_duration=Duration(root=-5000),
                 abnormal_condition_only=False,
             )

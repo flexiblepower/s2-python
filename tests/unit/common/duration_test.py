@@ -17,7 +17,7 @@ class DurationTest(TestCase):
 
     def test__to_timedelta__happy_path(self):
         # Arrange
-        duration = Duration(20_000)
+        duration = Duration(root=20_000)
 
         # Act
         duration_timedelta = duration.to_timedelta()

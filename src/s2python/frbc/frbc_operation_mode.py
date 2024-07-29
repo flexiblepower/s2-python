@@ -1,6 +1,7 @@
 # from itertools import pairwise
 import uuid
 from typing import List, Dict
+from typing_extensions import Self
 
 from pydantic import model_validator
 
@@ -23,12 +24,9 @@ class FRBCOperationMode(GenFRBCOperationMode, S2Message["FRBCOperationMode"]):
     elements: List[FRBCOperationModeElement] = GenFRBCOperationMode.model_fields["elements"]  # type: ignore[assignment]
 
     @model_validator(mode="after")
-    @classmethod
-    def validate_contiguous_fill_levels_operation_mode_elements(
-        cls, frbc_operation_mode: "FRBCOperationMode"
-    ) -> "FRBCOperationMode":
+    def validate_contiguous_fill_levels_operation_mode_elements(self) -> Self:
         elements_by_fill_level_range: Dict[NumberRange, FRBCOperationModeElement]
-        elements_by_fill_level_range = {element.fill_level_range: element for element in frbc_operation_mode.elements}
+        elements_by_fill_level_range = {element.fill_level_range: element for element in self.elements}
 
         sorted_fill_level_ranges: List[NumberRange]
         sorted_fill_level_ranges = list(elements_by_fill_level_range.keys())
@@ -37,8 +35,8 @@ class FRBCOperationMode(GenFRBCOperationMode, S2Message["FRBCOperationMode"]):
         for current_fill_level_range, next_fill_level_range in pairwise(sorted_fill_level_ranges):
             if current_fill_level_range.end_of_range != next_fill_level_range.start_of_range:
                 raise ValueError(
-                    cls,
+                    self,
                     f"Elements with fill level ranges {current_fill_level_range} and "
                     f"{next_fill_level_range} are closest match to each other but not contiguous.",
                 )
-        return frbc_operation_mode
+        return self

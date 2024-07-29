@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from pydantic import model_validator
 
 from s2python.generated.gen_s2 import PowerRange as GenPowerRange
@@ -13,9 +15,8 @@ class PowerRange(GenPowerRange, S2Message["PowerRange"]):
     model_config["validate_assignment"] = True
 
     @model_validator(mode="after")
-    @classmethod
-    def validate_start_end_order(cls, power_range: "PowerRange") -> "PowerRange":  # pylint: disable=duplicate-code
-        if power_range.start_of_range > power_range.end_of_range:
-            raise ValueError(cls, "start_of_range should not be higher than end_of_range")
+    def validate_start_end_order(self) -> Self:
+        if self.start_of_range > self.end_of_range:
+            raise ValueError(self, "start_of_range should not be higher than end_of_range")
 
-        return power_range
+        return self

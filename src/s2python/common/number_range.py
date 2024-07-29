@@ -1,4 +1,5 @@
 from typing import Any
+from typing_extensions import Self
 
 from pydantic import model_validator
 
@@ -15,12 +16,11 @@ class NumberRange(GenNumberRange, S2Message["NumberRange"]):
     model_config["validate_assignment"] = True
 
     @model_validator(mode="after")
-    @classmethod
-    def validate_start_end_order(cls, number_range: "NumberRange") -> "NumberRange":  # pylint: disable=duplicate-code
-        if number_range.start_of_range > number_range.end_of_range:
-            raise ValueError(cls, "start_of_range should not be higher than end_of_range")
+    def validate_start_end_order(self) -> Self:  # pylint: disable=duplicate-code
+        if self.start_of_range > self.end_of_range:
+            raise ValueError(self, "start_of_range should not be higher than end_of_range")
 
-        return number_range
+        return self
 
     def __hash__(self) -> int:
         return hash(f"{self.start_of_range}|{self.end_of_range}")

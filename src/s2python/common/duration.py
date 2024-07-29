@@ -15,8 +15,8 @@ class Duration(GenDuration, S2Message["Duration"]):
 
     @staticmethod
     def from_timedelta(duration: timedelta) -> "Duration":
-        return Duration(math.ceil(duration.total_seconds() * 1000))
+        return Duration(root=math.ceil(duration.total_seconds() * 1000))
 
     @staticmethod
     def from_milliseconds(milliseconds: int) -> "Duration":
-        return Duration(milliseconds)
+        return Duration(root=milliseconds)
