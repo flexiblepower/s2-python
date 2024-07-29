@@ -1,5 +1,3 @@
-from typing import Any, Dict
-
 from pydantic import model_validator
 
 from s2python.generated.gen_s2 import PowerRange as GenPowerRange

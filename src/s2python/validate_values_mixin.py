@@ -1,4 +1,3 @@
-import inspect
 from typing import (
     TypeVar,
     Generic,
@@ -17,7 +16,6 @@ from typing import (
 from pydantic import (  # pylint: disable=no-name-in-module
     BaseModel,
     ValidationError,
-    RootModel,
 )
 from pydantic.deprecated.parse import Protocol as PydanticProtocol
 from pydantic.v1.error_wrappers import display_errors  # pylint: disable=no-name-in-module
@@ -140,7 +138,7 @@ def catch_and_convert_exceptions(
 ) -> Type[SupportsValidation[B_co]]:
     input_class.__init__ = convert_to_s2exception(input_class.__init__)  # type: ignore[method-assign]
     input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)  # type: ignore[method-assign]
-    input_class.model_validate_json = convert_to_s2exception(input_class.model_validate_json)  # type: ignore[method-assign]
+    input_class.model_validate_json = convert_to_s2exception(input_class.model_validate_json)
     input_class.model_validate = convert_to_s2exception(input_class.model_validate)  # type: ignore[method-assign]
 
     return input_class

@@ -77,8 +77,7 @@ class S2Parser:
 
         if message_type not in TYPE_TO_MESSAGE_CLASS:
             raise S2ValidationError(
-                message_json,
-                f"Unable to parse {message_type} as an S2 message. Type unknown.",
+                None, message_json, f"Unable to parse {message_type} as an S2 message. Type unknown.", None
             )
 
         return TYPE_TO_MESSAGE_CLASS[message_type].model_validate(message_json)

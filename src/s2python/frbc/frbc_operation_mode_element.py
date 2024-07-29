@@ -19,7 +19,9 @@ class FRBCOperationModeElement(GenFRBCOperationModeElement, S2Message["FRBCOpera
         "fill_level_range"
     ]  # type: ignore[assignment]
     fill_rate: NumberRange = GenFRBCOperationModeElement.model_fields["fill_rate"]  # type: ignore[assignment]
-    power_ranges: List[PowerRange] = GenFRBCOperationModeElement.model_fields["power_ranges"]  # type: ignore[assignment]
+    power_ranges: List[PowerRange] = GenFRBCOperationModeElement.model_fields[
+        "power_ranges"
+    ]  # type: ignore[assignment]
     running_costs: Optional[NumberRange] = GenFRBCOperationModeElement.model_fields[
         "running_costs"
     ]  # type: ignore[assignment]

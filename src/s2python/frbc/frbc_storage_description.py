@@ -13,4 +13,6 @@ class FRBCStorageDescription(GenFRBCStorageDescription, S2Message["FRBCStorageDe
     model_config = GenFRBCStorageDescription.model_config
     model_config["validate_assignment"] = True
 
-    fill_level_range: NumberRange = GenFRBCStorageDescription.model_fields["fill_level_range"]  # type: ignore[assignment]
+    fill_level_range: NumberRange = GenFRBCStorageDescription.model_fields[
+        "fill_level_range"
+    ]  # type: ignore[assignment]
