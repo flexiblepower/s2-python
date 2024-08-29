@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
-import uuid
+
 
 from s2python.common import NumberRange, PowerRange
 from s2python.frbc.frbc_operation_mode_element import FRBCOperationModeElement

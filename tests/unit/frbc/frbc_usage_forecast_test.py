@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
-import uuid
+
 
 from s2python.common import *
 from s2python.frbc import *
@@ -51,7 +51,7 @@ class FRBCUsageForecastTest(TestCase):
         )
         self.assertEqual(
             frbc_usage_forecast.message_id,
-            uuid.UUID("4a91b4ab-21fb-42ae-b97d-6170f8b922cc"),
+            "4a91b4ab-21fb-42ae-b97d-6170f8b922cc",
         )
         self.assertEqual(frbc_usage_forecast.message_type, "FRBC.UsageForecast")
         self.assertEqual(
@@ -82,7 +82,7 @@ class FRBCUsageForecastTest(TestCase):
                     usage_rate_upper_limit=8477.800850190179,
                 )
             ],
-            message_id=uuid.UUID("4a91b4ab-21fb-42ae-b97d-6170f8b922cc"),
+            message_id="4a91b4ab-21fb-42ae-b97d-6170f8b922cc",
             message_type="FRBC.UsageForecast",
             start_time=datetime(
                 year=2023,

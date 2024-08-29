@@ -1,5 +1,5 @@
 import json
-import uuid
+
 from unittest import TestCase
 
 from s2python.common import SessionRequest, SessionRequestType
@@ -20,14 +20,14 @@ class SessionRequestTest(TestCase):
         # Assert
         self.assertEqual(
             session_request.message_id,
-            uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
+            "3bdec96b-be3b-4ba9-afa0-c4a0632cced5",
         )
         self.assertEqual(session_request.request, SessionRequestType.TERMINATE)
 
     def test__to_json__happy_path(self):
         # Arrange
         session_request = SessionRequest(
-            message_id=uuid.UUID("3bdec96e-be3b-4ba9-afa0-c4a0632cced5"),
+            message_id="3bdec96e-be3b-4ba9-afa0-c4a0632cced5",
             request=SessionRequestType.RECONNECT,
         )
 

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone as offset, timedelta
 import json
-import uuid
+
 from unittest import TestCase
 
 from s2python.common import PowerMeasurement, PowerValue, CommodityQuantity
@@ -22,7 +22,7 @@ class PowerMeasurementTest(TestCase):
         # Assert
         self.assertEqual(
             power_measurement.message_id,
-            uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced8"),
+            "2bdec96b-be3b-4ba9-afa0-c4a0632cced8",
         )
         self.assertEqual(
             power_measurement.measurement_timestamp,
@@ -30,15 +30,25 @@ class PowerMeasurementTest(TestCase):
         )
         self.assertEqual(
             power_measurement.values,
-            [PowerValue(commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42)],
+            [
+                PowerValue(
+                    commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42
+                )
+            ],
         )
 
     def test__to_json__happy_path(self):
         # Arrange
         power_measurement = PowerMeasurement(
-            values=[PowerValue(commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42)],
-            message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced8"),
-            measurement_timestamp=datetime(2023, 8, 3, 12, 48, 42, tzinfo=offset(timedelta(hours=1))),
+            values=[
+                PowerValue(
+                    commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42
+                )
+            ],
+            message_id="2bdec96b-be3b-4ba9-afa0-c4a0632cced8",
+            measurement_timestamp=datetime(
+                2023, 8, 3, 12, 48, 42, tzinfo=offset(timedelta(hours=1))
+            ),
         )
 
         # Act

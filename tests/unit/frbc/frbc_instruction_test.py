@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
-import uuid
+
 
 from s2python.common import *
 from s2python.frbc import *
@@ -30,7 +30,7 @@ class FRBCInstructionTest(TestCase):
         self.assertEqual(frbc_instruction.abnormal_condition, True)
         self.assertEqual(
             frbc_instruction.actuator_id,
-            uuid.UUID("db7855dd-05c4-4ba8-81e2-d10001c5bc3f"),
+            "db7855dd-05c4-4ba8-81e2-d10001c5bc3f",
         )
         self.assertEqual(
             frbc_instruction.execution_time,
@@ -44,17 +44,15 @@ class FRBCInstructionTest(TestCase):
                 tzinfo=offset(offset=timedelta(seconds=3600.0)),
             ),
         )
-        self.assertEqual(
-            frbc_instruction.id, uuid.UUID("9ffd68cd-b0e2-44a6-aded-4dce6c18247e")
-        )
+        self.assertEqual(frbc_instruction.id, "9ffd68cd-b0e2-44a6-aded-4dce6c18247e")
         self.assertEqual(
             frbc_instruction.message_id,
-            uuid.UUID("bcb3e1da-e797-4951-86be-5e5d9136c63f"),
+            "bcb3e1da-e797-4951-86be-5e5d9136c63f",
         )
         self.assertEqual(frbc_instruction.message_type, "FRBC.Instruction")
         self.assertEqual(
             frbc_instruction.operation_mode,
-            uuid.UUID("e7bf29a7-4ebc-49c1-a1fb-20725f450c91"),
+            "e7bf29a7-4ebc-49c1-a1fb-20725f450c91",
         )
         self.assertEqual(frbc_instruction.operation_mode_factor, 2303.58902271682)
 
@@ -62,7 +60,7 @@ class FRBCInstructionTest(TestCase):
         # Arrange
         frbc_instruction = FRBCInstruction(
             abnormal_condition=True,
-            actuator_id=uuid.UUID("db7855dd-05c4-4ba8-81e2-d10001c5bc3f"),
+            actuator_id="db7855dd-05c4-4ba8-81e2-d10001c5bc3f",
             execution_time=datetime(
                 year=2023,
                 month=4,
@@ -72,10 +70,10 @@ class FRBCInstructionTest(TestCase):
                 second=33,
                 tzinfo=offset(offset=timedelta(seconds=3600.0)),
             ),
-            id=uuid.UUID("9ffd68cd-b0e2-44a6-aded-4dce6c18247e"),
-            message_id=uuid.UUID("bcb3e1da-e797-4951-86be-5e5d9136c63f"),
+            id="9ffd68cd-b0e2-44a6-aded-4dce6c18247e",
+            message_id="bcb3e1da-e797-4951-86be-5e5d9136c63f",
             message_type="FRBC.Instruction",
-            operation_mode=uuid.UUID("e7bf29a7-4ebc-49c1-a1fb-20725f450c91"),
+            operation_mode="e7bf29a7-4ebc-49c1-a1fb-20725f450c91",
             operation_mode_factor=2303.58902271682,
         )
 

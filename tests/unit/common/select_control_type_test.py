@@ -1,5 +1,5 @@
 import json
-import uuid
+
 from unittest import TestCase
 
 from s2python.common import SelectControlType, ControlType
@@ -20,7 +20,7 @@ class SelectControlTypeTest(TestCase):
         # Assert
         self.assertEqual(
             select_control_type.message_id,
-            uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
+            "3bdec96b-be3b-4ba9-afa0-c4a0632cced5",
         )
         self.assertEqual(
             select_control_type.control_type, ControlType.OPERATION_MODE_BASED_CONTROL

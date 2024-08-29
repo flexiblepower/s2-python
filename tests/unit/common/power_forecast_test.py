@@ -1,4 +1,3 @@
-import uuid
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
@@ -37,7 +36,7 @@ class PowerForecastTest(TestCase):
         )
         self.assertEqual(power_forecast.elements, [power_forecast_element])
         self.assertEqual(
-            power_forecast.message_id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced9")
+            power_forecast.message_id, "2bdec96b-be3b-4ba9-afa0-c4a0632cced9"
         )
         self.assertEqual(
             power_forecast.start_time,
@@ -57,7 +56,7 @@ class PowerForecastTest(TestCase):
         )
         power_forecast = PowerForecast(
             elements=[power_forecast_element],
-            message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced9"),
+            message_id="2bdec96b-be3b-4ba9-afa0-c4a0632cced9",
             start_time=datetime(
                 2023, 8, 2, 12, 48, 42, tzinfo=offset(timedelta(hours=2))
             ),

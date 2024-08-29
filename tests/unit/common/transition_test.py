@@ -1,4 +1,3 @@
-import uuid
 from datetime import timedelta
 import json
 from unittest import TestCase
@@ -25,25 +24,19 @@ class TransitionTest(TestCase):
         transition: Transition = Transition.from_json(json_str)
 
         # Assert
-        self.assertEqual(
-            transition.id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3")
-        )
-        self.assertEqual(
-            transition.from_, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced2")
-        )
-        self.assertEqual(
-            transition.to, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1")
-        )
+        self.assertEqual(transition.id, "2bdec96b-be3b-4ba9-afa0-c4a0632cced3")
+        self.assertEqual(transition.from_, "2bdec96b-be3b-4ba9-afa0-c4a0632cced2")
+        self.assertEqual(transition.to, "2bdec96b-be3b-4ba9-afa0-c4a0632cced1")
         self.assertEqual(
             transition.start_timers,
             [
-                uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced4"),
-                uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
+                "2bdec96b-be3b-4ba9-afa0-c4a0632cced4",
+                "2bdec96b-be3b-4ba9-afa0-c4a0632cced5",
             ],
         )
         self.assertEqual(
             transition.blocking_timers,
-            [uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced4")],
+            ["2bdec96b-be3b-4ba9-afa0-c4a0632cced4"],
         )
         self.assertEqual(transition.transition_costs, 4.3)
         assert transition.transition_duration is not None
@@ -67,15 +60,9 @@ class TransitionTest(TestCase):
         transition: Transition = Transition.from_json(json_str)
 
         # Assert
-        self.assertEqual(
-            transition.id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3")
-        )
-        self.assertEqual(
-            transition.from_, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced2")
-        )
-        self.assertEqual(
-            transition.to, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1")
-        )
+        self.assertEqual(transition.id, "2bdec96b-be3b-4ba9-afa0-c4a0632cced3")
+        self.assertEqual(transition.from_, "2bdec96b-be3b-4ba9-afa0-c4a0632cced2")
+        self.assertEqual(transition.to, "2bdec96b-be3b-4ba9-afa0-c4a0632cced1")
         self.assertEqual(transition.start_timers, [])
         self.assertEqual(transition.blocking_timers, [])
         self.assertEqual(transition.transition_costs, None)
@@ -115,9 +102,9 @@ class TransitionTest(TestCase):
         #  assign values during init. See: https://github.com/flexiblepower/s2-ws-json-python/issues/10
         transition = Transition(
             **{
-                "id": uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
-                "from": uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced2"),
-                "to": uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1"),
+                "id": "2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
+                "from": "2bdec96b-be3b-4ba9-afa0-c4a0632cced2",
+                "to": "2bdec96b-be3b-4ba9-afa0-c4a0632cced1",
                 "start_timers": [],
                 "blocking_timers": [],
                 "transition_duration": Duration.from_timedelta(
@@ -146,9 +133,9 @@ class TransitionTest(TestCase):
         # Arrange/ Act / Assert
         with self.assertRaises(S2ValidationError):
             Transition(
-                id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
-                from_=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced2"),
-                to=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1"),
+                id="2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
+                from_="2bdec96b-be3b-4ba9-afa0-c4a0632cced2",
+                to="2bdec96b-be3b-4ba9-afa0-c4a0632cced1",
                 start_timers=[],
                 blocking_timers=[],
                 transition_duration=Duration(__root__=-5000),

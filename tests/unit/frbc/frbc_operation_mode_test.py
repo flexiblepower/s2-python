@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
-import uuid
+
 
 from s2python.common import *
 from s2python.frbc import *
@@ -71,9 +71,7 @@ class FRBCOperationModeTest(TestCase):
                 )
             ],
         )
-        self.assertEqual(
-            frbc_operation_mode.id, uuid.UUID("b1255236-475c-4dc7-a728-afb620a99ec8")
-        )
+        self.assertEqual(frbc_operation_mode.id, "b1255236-475c-4dc7-a728-afb620a99ec8")
 
     def test__to_json__happy_path_full(self):
         # Arrange
@@ -101,7 +99,7 @@ class FRBCOperationModeTest(TestCase):
                     ),
                 )
             ],
-            id=uuid.UUID("b1255236-475c-4dc7-a728-afb620a99ec8"),
+            id="b1255236-475c-4dc7-a728-afb620a99ec8",
         )
 
         # Act

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone as offset, timedelta
 import json
-import uuid
+
 from unittest import TestCase
 
 from pytz import timezone
@@ -24,13 +24,15 @@ class InstructionStatusUpdateTest(TestCase):
         # Assert
         self.assertEqual(
             instruction_status_update.message_id,
-            uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
+            "2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
         )
         self.assertEqual(
             instruction_status_update.instruction_id,
-            uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced4"),
+            "2bdec96b-be3b-4ba9-afa0-c4a0632cced4",
         )
-        self.assertEqual(instruction_status_update.status_type, InstructionStatus.SUCCEEDED)
+        self.assertEqual(
+            instruction_status_update.status_type, InstructionStatus.SUCCEEDED
+        )
         self.assertEqual(
             instruction_status_update.timestamp,
             datetime(2023, 8, 2, 12, 48, 42, tzinfo=offset(timedelta(hours=1))),
@@ -39,10 +41,12 @@ class InstructionStatusUpdateTest(TestCase):
     def test__to_json__happy_path(self):
         # Arrange
         instruction_status_update = InstructionStatusUpdate(
-            message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
-            instruction_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced4"),
+            message_id="2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
+            instruction_id="2bdec96b-be3b-4ba9-afa0-c4a0632cced4",
             status_type=InstructionStatus.SUCCEEDED,
-            timestamp=timezone("Europe/Amsterdam").localize(datetime(2023, 8, 2, 12, 48, 42)),
+            timestamp=timezone("Europe/Amsterdam").localize(
+                datetime(2023, 8, 2, 12, 48, 42)
+            ),
         )
 
         # Act
