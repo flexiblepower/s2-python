@@ -1,5 +1,6 @@
 from s2python.generated.gen_s2 import (
     RoleType,
+    Currency,
     CommodityQuantity,
     Commodity,
     InstructionStatus,

@@ -1,0 +1,60 @@
+"""ReceptationStatusAwaiter class which notifies any coroutine waiting for a certain reception status message.
+
+Copied from https://github.com/flexiblepower/s2-analyzer/blob/main/backend/s2_analyzer_backend/reception_status_awaiter.py under Apache2 license on 31-08-2024.
+"""
+
+import asyncio
+import uuid
+from typing import Dict
+
+from s2python.common import ReceptionStatus
+from s2python.validate_values_mixin import S2Message
+
+
+class ReceptionStatusAwaiter:
+    received: Dict[uuid.UUID, S2Message]
+    awaiting: Dict[uuid.UUID, asyncio.Event]
+
+    def __init__(self):
+        self.received = {}
+        self.awaiting = {}
+
+    async def wait_for_reception_status(
+        self, message_id: uuid.UUID, timeout_reception_status: float
+    ) -> ReceptionStatus:
+        # TODO Add timeout
+        if message_id in self.received:
+            reception_status = self.received[message_id]
+        else:
+            if message_id in self.awaiting:
+                received_event = self.awaiting[message_id]
+            else:
+                received_event = asyncio.Event()
+                self.awaiting[message_id] = received_event
+
+            async with asyncio.timeout(timeout_reception_status):
+                await received_event.wait()
+            reception_status = self.received.get(message_id)
+
+            if message_id in self.awaiting:
+                del self.awaiting[message_id]
+
+        return reception_status
+
+    async def receive_reception_status(self, reception_status: ReceptionStatus) -> None:
+        if reception_status.get("message_type") != "ReceptionStatus":
+            raise RuntimeError(
+                f"Expected a ReceptionStatus but received message {reception_status}"
+            )
+        message_id = reception_status["subject_message_id"]
+
+        if reception_status.subject_message_id in self.received:
+            raise RuntimeError(
+                f"ReceptationStatus for message_subject_id {message_id} has already been received!"
+            )
+        self.received[message_id] = reception_status
+        awaiting = self.awaiting.get(message_id)
+
+        if awaiting:
+            awaiting.set()
+            del self.awaiting[message_id]

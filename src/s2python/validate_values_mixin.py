@@ -30,70 +30,73 @@ AbstractSetIntStr = AbstractSet[IntStr]
 MappingIntStrAny = Mapping[IntStr, Any]
 
 
-class SupportsValidation(Protocol[B_co]):
-    # ValidateValuesMixin methods
-    def to_json(self) -> str:
-        ...
-
-    def to_dict(self) -> Dict:
-        ...
-
-    @classmethod
-    def from_json(cls, json_str: str) -> B_co:
-        ...
-
-    @classmethod
-    def from_dict(cls, json_dict: Dict) -> B_co:
-        ...
-
-    # Pydantic methods
-    def json(  # pylint: disable=too-many-arguments
-        self,
-        *,
-        include: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
-        exclude: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
-        by_alias: bool = False,
-        skip_defaults: Optional[bool] = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-        encoder: Optional[Callable[[Any], Any]] = None,
-        models_as_dict: bool = True,
-        **dumps_kwargs: Any,
-    ) -> str:
-        ...
-
-    def dict(  # pylint: disable=too-many-arguments
-        self,
-        *,
-        include: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
-        exclude: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
-        by_alias: bool = False,
-        skip_defaults: Optional[bool] = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-    ) -> Dict[str, Any]:
-        ...
-
-    @classmethod
-    def parse_raw(  # pylint: disable=too-many-arguments
-        cls,
-        b: StrBytes,
-        *,
-        content_type: str = ...,
-        encoding: str = ...,
-        proto: PydanticProtocol = ...,
-        allow_pickle: bool = ...,
-    ) -> B_co:
-        ...
-
-    @classmethod
-    def parse_obj(cls, obj: Any) -> "B_co":
-        ...
-
-
-C = TypeVar("C", bound="SupportsValidation")
+# class SupportsValidation(Protocol[B_co]):
+#     def lets_disable_this(self) -> None:
+#         pass
+#
+#     # ValidateValuesMixin methods
+#     def to_json(self) -> str:
+#         ...
+#
+#     def to_dict(self) -> Dict:
+#         ...
+#
+#     @classmethod
+#     def from_json(cls, json_str: str) -> B_co:
+#         ...
+#
+#     @classmethod
+#     def from_dict(cls, json_dict: Dict) -> B_co:
+#         ...
+#
+#     # Pydantic methods
+#     def json(  # pylint: disable=too-many-arguments
+#         self,
+#         *,
+#         include: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
+#         exclude: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
+#         by_alias: bool = False,
+#         skip_defaults: Optional[bool] = None,
+#         exclude_unset: bool = False,
+#         exclude_defaults: bool = False,
+#         exclude_none: bool = False,
+#         encoder: Optional[Callable[[Any], Any]] = None,
+#         models_as_dict: bool = True,
+#         **dumps_kwargs: Any,
+#     ) -> str:
+#         ...
+#
+#     def dict(  # pylint: disable=too-many-arguments
+#         self,
+#         *,
+#         include: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
+#         exclude: Optional[Union["AbstractSetIntStr", "MappingIntStrAny"]] = None,
+#         by_alias: bool = False,
+#         skip_defaults: Optional[bool] = None,
+#         exclude_unset: bool = False,
+#         exclude_defaults: bool = False,
+#         exclude_none: bool = False,
+#     ) -> Dict[str, Any]:
+#         ...
+#
+#     @classmethod
+#     def parse_raw(  # pylint: disable=too-many-arguments
+#         cls,
+#         b: StrBytes,
+#         *,
+#         content_type: str = ...,
+#         encoding: str = ...,
+#         proto: PydanticProtocol = ...,
+#         allow_pickle: bool = ...,
+#     ) -> B_co:
+#         ...
+#
+#     @classmethod
+#     def parse_obj(cls, obj: Any) -> "B_co":
+#         ...
+#
+#
+C = TypeVar("C")  # , bound="SupportsValidation")
 
 
 class ValidateValuesMixin(Generic[C]):
@@ -101,9 +104,7 @@ class ValidateValuesMixin(Generic[C]):
         try:
             return self.json(by_alias=True, exclude_none=True)
         except (ValidationError, TypeError) as e:
-            raise S2ValidationError(
-                self, "Pydantic raised a format validation error."
-            ) from e
+            raise S2ValidationError(self, "Pydantic raised a format validation error.") from e
 
     def to_dict(self: C) -> dict:
         return self.dict()
