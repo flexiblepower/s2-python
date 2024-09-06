@@ -24,18 +24,18 @@ from s2python.frbc import (
     FRBCTimerStatus,
     FRBCUsageForecast,
 )
-from s2python.validate_values_mixin import S2Message
+from s2python.validate_values_mixin import SupportsValidation
 from s2python.s2_validation_error import S2ValidationError
 
 
 LOGGER = logging.getLogger(__name__)
 S2MessageType = str
 
-M = TypeVar("M", bound=S2Message)
+M = TypeVar("M", bound=SupportsValidation)
 
 
 # May be generated with development_utilities/generate_s2_message_type_to_class.py
-TYPE_TO_MESSAGE_CLASS: Dict[str, Type[S2Message]] = {
+TYPE_TO_MESSAGE_CLASS: Dict[str, Type[SupportsValidation]] = {
     "FRBC.ActuatorStatus": FRBCActuatorStatus,
     "FRBC.FillLevelTargetProfile": FRBCFillLevelTargetProfile,
     "FRBC.Instruction": FRBCInstruction,
@@ -65,7 +65,7 @@ class S2Parser:
         return unparsed_message
 
     @staticmethod
-    def parse_as_any_message(unparsed_message: Union[dict, str]) -> S2Message:
+    def parse_as_any_message(unparsed_message: Union[dict, str]) -> SupportsValidation:
         """Parse the message as any S2 python message regardless of message type.
 
         :param unparsed_message: The message as a JSON-formatted string or as a json-parsed dictionary.
@@ -77,11 +77,10 @@ class S2Parser:
 
         if message_type not in TYPE_TO_MESSAGE_CLASS:
             raise S2ValidationError(
-                message_json,
-                f"Unable to parse {message_type} as an S2 message. Type unknown.",
+                None, message_json, f"Unable to parse {message_type} as an S2 message. Type unknown.", None
             )
 
-        return TYPE_TO_MESSAGE_CLASS[message_type].parse_obj(message_json)
+        return TYPE_TO_MESSAGE_CLASS[message_type].model_validate(message_json)
 
     @staticmethod
     def parse_as_message(unparsed_message: Union[dict, str], as_message: Type[M]) -> M:
@@ -96,9 +95,7 @@ class S2Parser:
         return as_message.from_dict(message_json)
 
     @staticmethod
-    def parse_message_type(
-        unparsed_message: Union[dict, str]
-    ) -> Optional[S2MessageType]:
+    def parse_message_type(unparsed_message: Union[dict, str]) -> Optional[S2MessageType]:
         """Parse only the message type from the unparsed message.
 
         This is useful to call before `parse_as_message` to retrieve the message type and allows for strictly-typed

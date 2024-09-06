@@ -23,7 +23,7 @@ class FRBCLeakageBehaviourTest(TestCase):
     ],
     "message_id": "b3e9604a-1127-4ecc-9f9e-336047fde285",
     "message_type": "FRBC.LeakageBehaviour",
-    "valid_from": "2022-05-26T15:02:32+00:00"
+    "valid_from": "2022-05-26T15:02:32Z"
 }
         """
 
@@ -102,6 +102,6 @@ class FRBCLeakageBehaviourTest(TestCase):
             ],
             "message_id": "b3e9604a-1127-4ecc-9f9e-336047fde285",
             "message_type": "FRBC.LeakageBehaviour",
-            "valid_from": "2022-05-26T15:02:32+00:00",
+            "valid_from": "2022-05-26T15:02:32Z",
         }
         self.assertEqual(json.loads(json_str), expected_json)
