@@ -14,12 +14,10 @@ class FRBCFillLevelTargetProfileElement(
     GenFRBCFillLevelTargetProfileElement,
     S2Message["FRBCFillLevelTargetProfileElement"],
 ):
-    class Config(GenFRBCFillLevelTargetProfileElement.Config):
-        validate_assignment = True
+    model_config = GenFRBCFillLevelTargetProfileElement.model_config
+    model_config["validate_assignment"] = True
 
-    duration: Duration = GenFRBCFillLevelTargetProfileElement.__fields__[
-        "duration"
-    ].field_info  # type: ignore[assignment]
-    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.__fields__[
+    duration: Duration = GenFRBCFillLevelTargetProfileElement.model_fields["duration"]  # type: ignore[assignment]
+    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.model_fields[
         "fill_level_range"
-    ].field_info  # type: ignore[assignment]
+    ]  # type: ignore[assignment]

@@ -7,5 +7,5 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class PowerValue(GenPowerValue, S2Message["PowerValue"]):
-    class Config(GenPowerValue.Config):
-        validate_assignment = True
+    model_config = GenPowerValue.model_config
+    model_config["validate_assignment"] = True

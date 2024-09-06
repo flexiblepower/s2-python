@@ -11,16 +11,14 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class Transition(GenTransition, S2Message["Transition"]):
-    class Config(GenTransition.Config):
-        validate_assignment = True
+    model_config = GenTransition.model_config
+    model_config["validate_assignment"] = True
 
-    id: uuid.UUID = GenTransition.__fields__["id"].field_info  # type: ignore[assignment]
-    from_: uuid.UUID = GenTransition.__fields__["from_"].field_info  # type: ignore[assignment]
-    to: uuid.UUID = GenTransition.__fields__["to"].field_info  # type: ignore[assignment]
-    start_timers: List[uuid.UUID] = GenTransition.__fields__["start_timers"].field_info  # type: ignore[assignment]
-    blocking_timers: List[uuid.UUID] = GenTransition.__fields__[
-        "blocking_timers"
-    ].field_info  # type: ignore[assignment]
-    transition_duration: Optional[Duration] = GenTransition.__fields__[
+    id: uuid.UUID = GenTransition.model_fields["id"]  # type: ignore[assignment]
+    from_: uuid.UUID = GenTransition.model_fields["from_"]  # type: ignore[assignment]
+    to: uuid.UUID = GenTransition.model_fields["to"]  # type: ignore[assignment]
+    start_timers: List[uuid.UUID] = GenTransition.model_fields["start_timers"]  # type: ignore[assignment]
+    blocking_timers: List[uuid.UUID] = GenTransition.model_fields["blocking_timers"]  # type: ignore[assignment]
+    transition_duration: Optional[Duration] = GenTransition.model_fields[
         "transition_duration"
-    ].field_info  # type: ignore[assignment]
+    ]  # type: ignore[assignment]

@@ -6,6 +6,8 @@
 #
 alabaster==0.7.13
     # via sphinx
+annotated-types==0.7.0
+    # via pydantic
 argcomplete==3.5.0
     # via datamodel-code-generator
 astroid==3.2.4
@@ -35,7 +37,7 @@ colorama==0.4.6
     # via tox
 coverage[toml]==7.6.1
     # via pytest-cov
-datamodel-code-generator==0.25.9
+datamodel-code-generator==0.26.0
     # via s2-python (setup.cfg)
 dill==0.3.8
     # via pylint
@@ -119,15 +121,17 @@ pluggy==1.5.0
     #   tox
 pre-commit==3.5.0
     # via s2-python (setup.cfg)
-pydantic[email]==1.10.18
+pydantic[email]==2.8.2
     # via
     #   datamodel-code-generator
     #   s2-python (setup.cfg)
+pydantic-core==2.20.1
+    # via pydantic
 pygments==2.18.0
     # via
     #   sphinx
     #   sphinx-tabs
-pylint==3.2.6
+pylint==3.2.7
     # via s2-python (setup.cfg)
 pyproject-api==1.7.1
     # via tox
@@ -216,10 +220,12 @@ types-pytz==2024.1.0.20240417
     # via s2-python (setup.cfg)
 typing-extensions==4.12.2
     # via
+    #   annotated-types
     #   astroid
     #   black
     #   mypy
     #   pydantic
+    #   pydantic-core
     #   pylint
 urllib3==2.2.2
     # via requests

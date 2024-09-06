@@ -11,10 +11,8 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class PowerForecast(GenPowerForecast, S2Message["PowerForecast"]):
-    class Config(GenPowerForecast.Config):
-        validate_assignment = True
+    model_config = GenPowerForecast.model_config
+    model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenPowerForecast.__fields__["message_id"].field_info  # type: ignore[assignment]
-    elements: List[PowerForecastElement] = GenPowerForecast.__fields__[
-        "elements"
-    ].field_info  # type: ignore[assignment]
+    message_id: uuid.UUID = GenPowerForecast.model_fields["message_id"]  # type: ignore[assignment]
+    elements: List[PowerForecastElement] = GenPowerForecast.model_fields["elements"]  # type: ignore[assignment]

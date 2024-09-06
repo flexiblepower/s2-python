@@ -11,8 +11,8 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class PowerMeasurement(GenPowerMeasurement, S2Message["PowerMeasurement"]):
-    class Config(GenPowerMeasurement.Config):
-        validate_assignment = True
+    model_config = GenPowerMeasurement.model_config
+    model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenPowerMeasurement.__fields__["message_id"].field_info  # type: ignore[assignment]
-    values: List[PowerValue] = GenPowerMeasurement.__fields__["values"].field_info  # type: ignore[assignment]
+    message_id: uuid.UUID = GenPowerMeasurement.model_fields["message_id"]  # type: ignore[assignment]
+    values: List[PowerValue] = GenPowerMeasurement.model_fields["values"]  # type: ignore[assignment]
