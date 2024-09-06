@@ -6,29 +6,25 @@
 #
 alabaster==0.7.13
     # via sphinx
-argcomplete==3.1.2
+argcomplete==3.4.0
     # via datamodel-code-generator
-astroid==3.0.1
+astroid==3.2.4
     # via pylint
-attrs==23.1.0
-    # via jsonschema
-babel==2.13.1
+babel==2.15.0
     # via sphinx
-black==23.10.1
+black==24.4.2
     # via datamodel-code-generator
-build==1.0.3
+build==1.2.1
     # via pip-tools
-cachetools==5.3.2
+cachetools==5.4.0
     # via tox
-certifi==2023.7.22
+certifi==2024.7.4
     # via requests
 cfgv==3.4.0
     # via pre-commit
 chardet==5.2.0
-    # via
-    #   prance
-    #   tox
-charset-normalizer==3.3.1
+    # via tox
+charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via
@@ -37,171 +33,135 @@ click==8.1.7
     #   s2-python (setup.cfg)
 colorama==0.4.6
     # via tox
-coverage[toml]==7.3.2
-    # via pytest-cov
-datamodel-code-generator==0.22.1
+coverage[toml]==7.6.0
+    # via
+    #   coverage
+    #   pytest-cov
+datamodel-code-generator==0.25.8
     # via s2-python (setup.cfg)
-dill==0.3.7
+dill==0.3.8
     # via pylint
-distlib==0.3.7
+distlib==0.3.8
     # via virtualenv
-dnspython==2.4.2
+dnspython==2.6.1
     # via email-validator
-docutils==0.18.1
+docutils==0.20.1
     # via
     #   sphinx
     #   sphinx-rtd-theme
     #   sphinx-tabs
-email-validator==2.1.0.post1
+email-validator==2.2.0
     # via pydantic
-exceptiongroup==1.1.3
+exceptiongroup==1.2.2
     # via pytest
-filelock==3.13.0
+filelock==3.15.4
     # via
     #   tox
     #   virtualenv
-genson==1.2.2
+genson==1.3.0
     # via datamodel-code-generator
-identify==2.5.31
+identify==2.6.0
     # via pre-commit
-idna==3.4
+idna==3.7
     # via
     #   email-validator
     #   requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.8.0
+importlib-metadata==8.2.0
     # via
     #   build
     #   sphinx
-importlib-resources==5.13.0
-    # via
-    #   jsonschema
-    #   openapi-spec-validator
 inflect==5.6.2
     # via datamodel-code-generator
 iniconfig==2.0.0
     # via pytest
-isort==5.12.0
+isort==5.13.2
     # via
     #   datamodel-code-generator
     #   pylint
-jinja2==3.1.2
+jinja2==3.1.4
     # via
     #   datamodel-code-generator
     #   sphinx
-jsonschema==4.17.3
-    # via
-    #   jsonschema-spec
-    #   openapi-schema-validator
-    #   openapi-spec-validator
-jsonschema-spec==0.1.6
-    # via openapi-spec-validator
-lazy-object-proxy==1.9.0
-    # via openapi-spec-validator
-markupsafe==2.1.3
+markupsafe==2.1.5
     # via jinja2
 mccabe==0.7.0
     # via pylint
-mypy==1.6.1
+mypy==1.11.0
     # via s2-python (setup.cfg)
 mypy-extensions==1.0.0
     # via
     #   black
     #   mypy
-nodeenv==1.8.0
+nodeenv==1.9.1
     # via pre-commit
-openapi-schema-validator==0.4.4
-    # via openapi-spec-validator
-openapi-spec-validator==0.5.7
-    # via datamodel-code-generator
-packaging==23.2
+packaging==24.1
     # via
     #   black
     #   build
     #   datamodel-code-generator
-    #   prance
     #   pyproject-api
     #   pytest
     #   sphinx
     #   tox
-pathable==0.4.3
-    # via jsonschema-spec
-pathspec==0.11.2
+pathspec==0.12.1
     # via black
-pip-tools==7.3.0
+pip-tools==7.4.1
     # via s2-python (setup.cfg)
-pkgutil-resolve-name==1.3.10
-    # via jsonschema
-platformdirs==3.11.0
+platformdirs==4.2.2
     # via
     #   black
     #   pylint
     #   tox
     #   virtualenv
-pluggy==1.3.0
+pluggy==1.5.0
     # via
     #   pytest
     #   tox
-prance==23.6.21.0
-    # via datamodel-code-generator
 pre-commit==3.5.0
     # via s2-python (setup.cfg)
-pydantic[email]==1.10.13
+pydantic[email]==1.10.17
     # via
     #   datamodel-code-generator
     #   s2-python (setup.cfg)
-pygments==2.16.1
+pygments==2.18.0
     # via
     #   sphinx
     #   sphinx-tabs
-pylint==3.0.2
+pylint==3.2.6
     # via s2-python (setup.cfg)
-pyproject-api==1.6.1
+pyproject-api==1.7.1
     # via tox
-pyproject-hooks==1.0.0
-    # via build
-pyrsistent==0.20.0
-    # via jsonschema
-pysnooper==1.2.0
-    # via datamodel-code-generator
-pytest==7.4.3
+pyproject-hooks==1.1.0
+    # via
+    #   build
+    #   pip-tools
+pytest==8.3.2
     # via
     #   pytest-cov
     #   pytest-timer
     #   s2-python (setup.cfg)
-pytest-cov==4.1.0
+pytest-cov==5.0.0
     # via pytest-cover
 pytest-cover==3.0.0
     # via pytest-coverage
 pytest-coverage==0.0
     # via s2-python (setup.cfg)
-pytest-timer==0.0.11
+pytest-timer==1.0.0
     # via s2-python (setup.cfg)
-pytz==2023.3.post1
+pytz==2024.1
     # via
     #   babel
     #   s2-python (setup.cfg)
 pyyaml==6.0.1
     # via
-    #   jsonschema-spec
+    #   datamodel-code-generator
     #   pre-commit
-requests==2.31.0
-    # via
-    #   jsonschema-spec
-    #   prance
-    #   sphinx
-rfc3339-validator==0.1.4
-    # via openapi-schema-validator
-ruamel-yaml==0.18.3
-    # via prance
-ruamel-yaml-clib==0.2.8
-    # via ruamel-yaml
+requests==2.32.3
+    # via sphinx
 six==1.16.0
-    # via
-    #   prance
-    #   rfc3339-validator
-    #   sphinxcontrib-httpdomain
+    # via sphinxcontrib-httpdomain
 snowballstemmer==2.2.0
     # via sphinx
 sphinx==7.1.2
@@ -217,9 +177,9 @@ sphinx-copybutton==0.5.2
     # via s2-python (setup.cfg)
 sphinx-fontawesome==0.0.6
     # via s2-python (setup.cfg)
-sphinx-rtd-theme==1.3.0
+sphinx-rtd-theme==2.0.0
     # via s2-python (setup.cfg)
-sphinx-tabs==3.4.4
+sphinx-tabs==3.4.5
     # via s2-python (setup.cfg)
 sphinxcontrib-applehelp==1.0.4
     # via sphinx
@@ -248,34 +208,31 @@ tomli==2.0.1
     #   pip-tools
     #   pylint
     #   pyproject-api
-    #   pyproject-hooks
     #   pytest
     #   tox
-tomlkit==0.12.1
+tomlkit==0.13.0
     # via pylint
-tox==4.11.3
+tox==4.16.0
     # via s2-python (setup.cfg)
-types-pytz==2023.3.1.1
+types-pytz==2024.1.0.20240417
     # via s2-python (setup.cfg)
-typing-extensions==4.8.0
+typing-extensions==4.12.2
     # via
     #   astroid
     #   black
     #   mypy
     #   pydantic
     #   pylint
-urllib3==2.0.7
+urllib3==2.2.2
     # via requests
-virtualenv==20.24.6
+virtualenv==20.26.3
     # via
     #   pre-commit
     #   tox
-wheel==0.41.3
+wheel==0.43.0
     # via pip-tools
-zipp==3.17.0
-    # via
-    #   importlib-metadata
-    #   importlib-resources
+zipp==3.19.2
+    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
