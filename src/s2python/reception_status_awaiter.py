@@ -22,7 +22,6 @@ class ReceptionStatusAwaiter:
     async def wait_for_reception_status(
         self, message_id: uuid.UUID, timeout_reception_status: float
     ) -> ReceptionStatus:
-        # TODO Add timeout
         if message_id in self.received:
             reception_status = self.received[message_id]
         else:
@@ -32,8 +31,7 @@ class ReceptionStatusAwaiter:
                 received_event = asyncio.Event()
                 self.awaiting[message_id] = received_event
 
-            async with asyncio.timeout(timeout_reception_status):
-                await received_event.wait()
+            await asyncio.wait_for(received_event.wait(), timeout_reception_status)
             reception_status = self.received.get(message_id)
 
             if message_id in self.awaiting:
@@ -42,19 +40,19 @@ class ReceptionStatusAwaiter:
         return reception_status
 
     async def receive_reception_status(self, reception_status: ReceptionStatus) -> None:
-        if reception_status.get("message_type") != "ReceptionStatus":
+        if not isinstance(reception_status, ReceptionStatus):
             raise RuntimeError(
                 f"Expected a ReceptionStatus but received message {reception_status}"
             )
-        message_id = reception_status["subject_message_id"]
 
         if reception_status.subject_message_id in self.received:
             raise RuntimeError(
-                f"ReceptationStatus for message_subject_id {message_id} has already been received!"
+                f"ReceptationStatus for message_subject_id {reception_status.subject_message_id} has already been received!"
             )
-        self.received[message_id] = reception_status
-        awaiting = self.awaiting.get(message_id)
+
+        self.received[reception_status.subject_message_id] = reception_status
+        awaiting = self.awaiting.get(reception_status.subject_message_id)
 
         if awaiting:
             awaiting.set()
-            del self.awaiting[message_id]
+            del self.awaiting[reception_status.subject_message_id]

@@ -1,5 +1,6 @@
 import asyncio
 import inspect
+import json
 import logging
 import threading
 import uuid
@@ -20,11 +21,13 @@ from s2python.common import (
     Currency,
     SelectControlType,
 )
+from s2python.generated.gen_s2 import CommodityQuantity
 from s2python.reception_status_awaiter import ReceptionStatusAwaiter
 from s2python.s2_control_type import S2ControlType
 from s2python.s2_parser import S2Parser
+from s2python.s2_validation_error import S2ValidationError
 from s2python.validate_values_mixin import S2Message
-
+from s2python.version import S2_VERSION
 
 logger = logging.getLogger("s2python")
 
@@ -58,7 +61,7 @@ class AssetDetails:
             model=self.model,
             name=self.name,
             provides_forecast=True,  # TODO
-            provides_power_measurement_types=[],  # TODO
+            provides_power_measurement_types=[CommodityQuantity.ELECTRIC_POWER_L1],  # TODO
             resource_id=self.resource_id,
             roles=self.roles,
             serial_number=self.serial_number,
@@ -66,8 +69,8 @@ class AssetDetails:
 
 
 S2MessageHandler = Union[
-    Callable[["S2Connection", S2Message], None],
-    Callable[["S2Connection", S2Message], Awaitable[None]],
+    Callable[["S2Connection", S2Message, Callable[[], None]], None],
+    Callable[["S2Connection", S2Message, Awaitable[None]], Awaitable[None]],
 ]
 
 
@@ -84,12 +87,62 @@ class MessageHandlers:
         :param msg: The S2 message
         """
         handler = self.handlers.get(type(msg))
-
         if handler:
-            if inspect.iscoroutinefunction(handler):
-                await handler(connection, msg)
-            else:
-                handler(connection, msg)
+            status_is_send = threading.Event()
+
+            try:
+                if inspect.iscoroutinefunction(handler):
+
+                    async def send_okay():
+                        status_is_send.set()
+
+                        await connection.respond_with_reception_status(
+                            subject_message_id=str(msg.message_id),
+                            status=ReceptionStatusValues.OK,
+                            diagnostic_label="Processed okay.",
+                        )
+
+                    await handler(connection, msg, send_okay())
+
+                    if not status_is_send.is_set():
+                        logger.warning(
+                            "Handler for message %s did not call send_okay / function to send the ReceptionStatus. "
+                            "Sending it now.",
+                            type(msg),
+                        )
+                        await send_okay()
+                else:
+                    eventloop = asyncio.get_event_loop()
+
+                    def do_message():
+                        def send_okay():
+                            status_is_send.set()
+
+                            connection.respond_with_reception_status_sync(
+                                subject_message_id=str(msg.message_id),
+                                status=ReceptionStatusValues.OK,
+                                diagnostic_label="Processed okay.",
+                            )
+
+                        handler(connection, msg, send_okay)
+
+                        if not status_is_send.is_set():
+                            logger.warning(
+                                "Handler for message %s did not call send_okay / function to send the ReceptionStatus. "
+                                "Sending it now.",
+                                type(msg),
+                            )
+                            send_okay()
+
+                    await eventloop.run_in_executor(executor=None, func=do_message)
+            except Exception:
+                if not status_is_send.is_set():
+                    await connection.respond_with_reception_status(
+                        subject_message_id=str(msg.message_id),
+                        status=ReceptionStatusValues.PERMANENT_ERROR,
+                        diagnostic_label=f"While processing message {msg.message_id} an unrecoverable error occurred.",
+                    )
+                raise
         else:
             logger.warning(
                 "Received a message of type %s but no handler is registered. Ignoring the message.",
@@ -115,10 +168,15 @@ class S2Connection:
     asset_details: AssetDetails
 
     _thread: threading.Thread
-    _received_messages: asyncio.Queue
+
     _handlers: MessageHandlers
-    _receiver_task: asyncio.Task
     _current_control_type: Optional[S2ControlType]
+    _received_messages: asyncio.Queue
+
+    _eventloop: asyncio.AbstractEventLoop
+    _receiver_task: Optional[asyncio.Task]
+    _handle_messages_task: Optional[asyncio.Task]
+    _stop_event: asyncio.Event
 
     def __init__(
         self,
@@ -131,54 +189,125 @@ class S2Connection:
         self.reception_status_awaiter = ReceptionStatusAwaiter()
         self.s2_parser = S2Parser()
 
-        self._received_messages = asyncio.Queue()
         self._handlers = MessageHandlers()
         self._current_control_type = None
+
+        self._eventloop = asyncio.new_event_loop()
+        self._receiver_task = None
+        self._handle_messages_task = None
 
         self.control_types = control_types
         self.role = role
         self.asset_details = asset_details
 
-        self._handlers.register_handler(SelectControlType, self.handle_select_control_type)
+        self._handlers.register_handler(SelectControlType, self.handle_select_control_type_as_rm)
+        self._handlers.register_handler(Handshake, self.handle_handshake)
+        self._handlers.register_handler(HandshakeResponse, self.handle_handshake_response_as_rm)
 
     def start_as_rm(self) -> None:
-        self._thread = threading.Thread(target=self._run_as_rm())
+        self._thread = threading.Thread(target=self._run_eventloop)
         self._thread.start()
+        logger.debug("Started eventloop thread!")
 
-    def _run_as_rm(self):
-        eventloop = asyncio.new_event_loop()
-        eventloop.run_until_complete(self.connect_as_rm())
-        eventloop.run_until_complete(self._handle_received_messages())
+    def _run_eventloop(self) -> None:
+        logger.debug("Starting eventloop")
+        self._eventloop.run_until_complete(self._run_as_rm())
+
+    def stop(self) -> None:
+        asyncio.run_coroutine_threadsafe(self._do_stop(), self._eventloop)  # TODO .result()
+
+    async def _do_stop(self):
+        logger.info("Will stop the S2 connection.")
+        if self._background_tasks:
+            self._background_tasks.cancel()
+            self._background_tasks = None
+
+        if self.ws:
+            await self.ws.close()
+            await self.ws.wait_closed()
+
+    async def _run_as_rm(self):
+        logger.debug("Connecting as S2 resource manager.")
+        self._received_messages = asyncio.Queue()
+        await self.connect_ws()
+
+        self._background_tasks = self._eventloop.create_task(
+            asyncio.wait(
+                (self._receive_messages(), self._handle_received_messages()),
+                return_when=asyncio.FIRST_EXCEPTION,
+            )
+        )
+
+        await self.connect_as_rm()
+        done: List[asyncio.Task]
+        pending: List[asyncio.Task]
+        (done, pending) = await self._background_tasks
+
+        for task in done:
+            task.result()
+
+        for task in pending:
+            task.cancel()
+
+    async def connect_ws(self) -> None:
+        self.ws = await ws_connect(uri=self.url)
 
     async def connect_as_rm(self) -> None:
-        self.ws = await ws_connect(uri=self.url)
-        self._receiver_task = asyncio.create_task(self._received_messages)
+        await self.send_msg_and_await_reception_status_async(
+            Handshake(
+                message_id=uuid.uuid4(), role=self.role, supported_protocol_versions=[S2_VERSION]
+            )
+        )
+        logger.debug("Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM.")
 
-        await self.send_msg_and_await_reception_status(
-            Handshake(message_id=uuid.uuid4(), role=self.role, supported_protocol_versions=[])
-        )
-
-        logger.debug("Send handshake to CEM. Waiting for Handshake and HandshakeResponse from CEM.")
-        cem_handshake_responses = [self._receive_next_message(), self._receive_next_message()]
-        handshake_response = next(
-            filter(lambda m: isinstance(m, HandshakeResponse), cem_handshake_responses), None
-        )
-        cem_handshake = next(
-            filter(lambda m: isinstance(m, Handshake), cem_handshake_responses), None
-        )
+    async def handle_handshake(
+        self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
+    ) -> None:
+        if not isinstance(message, Handshake):
+            logger.error(
+                "Handler for Handshake received a message of the wrong type: %s", type(message)
+            )
+            return
 
         logger.debug(
-            "CEM supports S2 protocol versions: %s. CEM selected to use version %s",
-            cem_handshake.supported_protocol_versions,
-            handshake_response.selected_protocol_version,
+            "%s supports S2 protocol versions: %s",
+            message.role,
+            message.supported_protocol_versions,
         )
+        await send_okay
+
+    async def handle_handshake_response_as_rm(
+        self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
+    ) -> None:
+        if not isinstance(message, HandshakeResponse):
+            logger.error(
+                "Handler for HandshakeResponse received a message of the wrong type: %s",
+                type(message),
+            )
+            return
+
+        logger.debug("Received HandshakeResponse %s", message.to_json())
+
+        logger.debug("CEM selected to use version %s", message.selected_protocol_version)
+        await send_okay
         logger.debug("Handshake complete. Sending first ResourceManagerDetails.")
 
-        await self.send_msg_and_await_reception_status(
+        await self.send_msg_and_await_reception_status_async(
             self.asset_details.to_resource_manager_details(self.control_types)
         )
 
-    async def handle_select_control_type(self, _: "S2Connection", message: S2Message) -> None:
+    async def handle_select_control_type_as_rm(
+        self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
+    ) -> None:
+        if not isinstance(message, SelectControlType):
+            logger.error(
+                "Handler for SelectControlType received a message of the wrong type: %s",
+                type(message),
+            )
+            return
+
+        await send_okay
+
         logger.debug("CEM selected control type %s. Activating control type.", message.control_type)
 
         selected_control_type: S2ControlType = next(
@@ -189,20 +318,13 @@ class S2Connection:
         )
 
         if self._current_control_type is not None:
-            self._current_control_type.deactivate()
+            await self._eventloop.run_in_executor(None, self._current_control_type.deactivate, self)
 
         self._current_control_type = selected_control_type
 
         if self._current_control_type is not None:
-            self._current_control_type.activate()
+            await self._eventloop.run_in_executor(None, self._current_control_type.activate, self)
             self._current_control_type.register_handlers(self._handlers)
-
-    async def _receive_next_message(self) -> S2Message:
-        """Receive next non-ReceptionStatus message.
-
-        :return: The next S2 message which is not a ReceptionStatus.
-        """
-        return await self._received_messages.get()
 
     async def _receive_messages(self) -> None:
         """Receives all incoming messages in the form of a generator.
@@ -210,21 +332,79 @@ class S2Connection:
         Will also receive the ReceptionStatus messages but instead of yielding these messages, they are routed
         to any calls of `send_msg_and_await_reception_status`.
         """
+        logger.info("S2 connection has started to receive messages.")
         async for message in self.ws:
-            s2_msg: S2Message = self.s2_parser.parse_as_any_message(message)
-
-            if isinstance(s2_msg, ReceptionStatus):
-                await self.reception_status_awaiter.receive_reception_status(s2_msg)
+            try:
+                s2_msg: S2Message = self.s2_parser.parse_as_any_message(message)
+            except json.JSONDecodeError:
+                await self._send_and_forget(
+                    ReceptionStatus(
+                        subject_message_id="00000000-0000-0000-0000-000000000000",
+                        status=ReceptionStatusValues.INVALID_DATA,
+                        diagnostic_label="Not valid json.",
+                    )
+                )
+            except S2ValidationError as e:
+                json_msg = json.load(message)
+                message_id = json_msg.get("message_id")
+                if message_id:
+                    await self.respond_with_reception_status(
+                        subject_message_id=message_id,
+                        status=ReceptionStatusValues.INVALID_MESSAGE,
+                        diagnostic_label=str(e),
+                    )
+                else:
+                    await self.respond_with_reception_status(
+                        subject_message_id="00000000-0000-0000-0000-000000000000",
+                        status=ReceptionStatusValues.INVALID_DATA,
+                        diagnostic_label="Message appears valid json but could not find a message_id field.",
+                    )
             else:
-                await self._received_messages.put(s2_msg)
+                logger.debug("Received message %s", s2_msg.to_json())
+
+                if isinstance(s2_msg, ReceptionStatus):
+                    logger.debug(
+                        "Message is a reception status for %s so registering in cache.",
+                        s2_msg.subject_message_id,
+                    )
+                    await self.reception_status_awaiter.receive_reception_status(s2_msg)
+                else:
+                    await self._received_messages.put(s2_msg)
 
     async def _send_and_forget(self, s2_msg: S2Message) -> None:
-        await self.ws.send(s2_msg.to_json())
+        json_msg = s2_msg.to_json()
+        logger.debug("Sending message %s", json_msg)
+        await self.ws.send(json_msg)
 
-    async def send_msg_and_await_reception_status(
+    async def respond_with_reception_status(
+        self, subject_message_id: str, status: ReceptionStatusValues, diagnostic_label: str
+    ) -> None:
+        logger.debug("Responding to message %s with status %s", subject_message_id, status)
+        await self._send_and_forget(
+            ReceptionStatus(
+                subject_message_id=subject_message_id,
+                status=status,
+                diagnostic_label=diagnostic_label,
+            )
+        )
+
+    def respond_with_reception_status_sync(
+        self, subject_message_id: str, status: ReceptionStatusValues, diagnostic_label: str
+    ) -> None:
+        asyncio.run_coroutine_threadsafe(
+            self.respond_with_reception_status(subject_message_id, status, diagnostic_label),
+            self._eventloop,
+        ).result()
+
+    async def send_msg_and_await_reception_status_async(
         self, s2_msg: S2Message, timeout_reception_status: float = 5.0, raise_on_error: bool = True
     ) -> S2Message:
         await self._send_and_forget(s2_msg)
+        logger.debug(
+            "Waiting for ReceptionStatus for %s %s seconds",
+            s2_msg.message_id,
+            timeout_reception_status,
+        )
         reception_status = await self.reception_status_awaiter.wait_for_reception_status(
             s2_msg.message_id, timeout_reception_status
         )
@@ -233,6 +413,16 @@ class S2Connection:
             raise RuntimeError(f"ReceptionStatus was not OK but rather {reception_status.status}")
 
         return reception_status
+
+    def send_msg_and_await_reception_status_sync(
+        self, s2_msg: S2Message, timeout_reception_status: float = 5.0, raise_on_error: bool = True
+    ) -> S2Message:
+        asyncio.run_coroutine_threadsafe(
+            self.send_msg_and_await_reception_status_async(
+                s2_msg, timeout_reception_status, raise_on_error
+            ),
+            self._eventloop,
+        ).result()
 
     async def _handle_received_messages(self) -> None:
         while True:

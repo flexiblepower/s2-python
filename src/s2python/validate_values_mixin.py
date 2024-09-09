@@ -1,3 +1,4 @@
+import uuid
 from typing import (
     TypeVar,
     Generic,
@@ -15,10 +16,7 @@ from typing import (
 )
 from typing_extensions import Self
 
-from pydantic import (  # pylint: disable=no-name-in-module
-    BaseModel,
-    ValidationError,
-)
+from pydantic import BaseModel, ValidationError  # pylint: disable=no-name-in-module
 from pydantic.main import IncEx
 from pydantic.v1.error_wrappers import display_errors  # pylint: disable=no-name-in-module
 
@@ -104,7 +102,9 @@ class S2Message(Generic[C]):
         try:
             return self.model_dump_json(by_alias=True, exclude_none=True)
         except (ValidationError, TypeError) as e:
-            raise S2ValidationError(type(self), self, "Pydantic raised a format validation error.", e) from e
+            raise S2ValidationError(
+                type(self), self, "Pydantic raised a format validation error.", e
+            ) from e
 
     def to_dict(self: C) -> Dict:
         return self.model_dump()
