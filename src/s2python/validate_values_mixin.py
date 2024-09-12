@@ -1,25 +1,6 @@
-from typing import (
-    TypeVar,
-    Generic,
-    Protocol,
-    Type,
-    Optional,
-    Callable,
-    Any,
-    Union,
-    AbstractSet,
-    Mapping,
-    List,
-    Dict,
-    Literal,
-)
-from typing_extensions import Self
+from typing import TypeVar, Generic, Type, Callable, Any, Union, AbstractSet, Mapping, List, Dict
 
-from pydantic import (  # pylint: disable=no-name-in-module
-    BaseModel,
-    ValidationError,
-)
-from pydantic.main import IncEx
+from pydantic import BaseModel, ValidationError  # pylint: disable=no-name-in-module
 from pydantic.v1.error_wrappers import display_errors  # pylint: disable=no-name-in-module
 
 from s2python.s2_validation_error import S2ValidationError
@@ -31,80 +12,17 @@ AbstractSetIntStr = AbstractSet[IntStr]
 MappingIntStrAny = Mapping[IntStr, Any]
 
 
-class SupportsValidation(Protocol[B_co]):
-    # ValidateValuesMixin methods
-    def to_json(self) -> str: ...
-
-    def to_dict(self) -> Dict: ...
-
-    @classmethod
-    def from_json(cls, json_str: str) -> B_co: ...
-
-    @classmethod
-    def from_dict(cls, json_dict: Dict) -> B_co: ...
-
-    # Pydantic methods
-    @classmethod
-    def model_validate_json(
-        cls,
-        json_data: Union[str, bytes, bytearray],
-        *,
-        strict: Optional[bool] = None,
-        context: Optional[Any] = None,
-    ) -> Self: ...
-
-    @classmethod
-    def model_validate(
-        cls,
-        obj: Any,
-        *,
-        strict: Optional[bool] = None,
-        from_attributes: Optional[bool] = None,
-        context: Optional[Any] = None,
-    ) -> Self: ...
-
-    def model_dump(  # pylint: disable=too-many-arguments
-        self,
-        *,
-        mode: Union[Literal["json", "python"], str] = "python",
-        include: IncEx = None,
-        exclude: IncEx = None,
-        context: Optional[Any] = None,
-        by_alias: bool = False,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-        round_trip: bool = False,
-        warnings: Union[bool, Literal["none", "warn", "error"]] = True,
-        serialize_as_any: bool = False,
-    ) -> Dict[str, Any]: ...
-
-    def model_dump_json(  # pylint: disable=too-many-arguments
-        self,
-        *,
-        indent: Optional[int] = None,
-        include: IncEx = None,
-        exclude: IncEx = None,
-        context: Optional[Any] = None,
-        by_alias: bool = False,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-        round_trip: bool = False,
-        warnings: Union[bool, Literal["none", "warn", "error"]] = True,
-        serialize_as_any: bool = False,
-    ) -> str: ...
+C = TypeVar("C", bound="BaseModel")
 
 
-C = TypeVar("C", bound="SupportsValidation")
-
-
-class S2Message(Generic[C]):
+class S2Message(BaseModel, Generic[C]):
     def to_json(self: C) -> str:
         try:
             return self.model_dump_json(by_alias=True, exclude_none=True)
         except (ValidationError, TypeError) as e:
-            raise S2ValidationError(type(self), self, "Pydantic raised a format validation error.", e) from e
+            raise S2ValidationError(
+                type(self), self, "Pydantic raised a format validation error.", e
+            ) from e
 
     def to_dict(self: C) -> Dict:
         return self.model_dump()
@@ -141,9 +59,7 @@ def convert_to_s2exception(f: Callable) -> Callable:
     return inner
 
 
-def catch_and_convert_exceptions(
-    input_class: Type[SupportsValidation[B_co]],
-) -> Type[SupportsValidation[B_co]]:
+def catch_and_convert_exceptions(input_class: Type[S2Message[B_co]]) -> Type[S2Message[B_co]]:
     input_class.__init__ = convert_to_s2exception(input_class.__init__)  # type: ignore[method-assign]
     input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)  # type: ignore[method-assign]
     input_class.model_validate_json = convert_to_s2exception(  # type: ignore[method-assign]
