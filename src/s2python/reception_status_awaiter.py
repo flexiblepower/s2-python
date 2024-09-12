@@ -1,6 +1,8 @@
 """ReceptationStatusAwaiter class which notifies any coroutine waiting for a certain reception status message.
 
-Copied from https://github.com/flexiblepower/s2-analyzer/blob/main/backend/s2_analyzer_backend/reception_status_awaiter.py under Apache2 license on 31-08-2024.
+Copied from
+https://github.com/flexiblepower/s2-analyzer/blob/main/backend/s2_analyzer_backend/reception_status_awaiter.py under
+Apache2 license on 31-08-2024.
 """
 
 import asyncio
@@ -8,14 +10,13 @@ import uuid
 from typing import Dict
 
 from s2python.common import ReceptionStatus
-from s2python.validate_values_mixin import S2Message
 
 
 class ReceptionStatusAwaiter:
-    received: Dict[uuid.UUID, S2Message]
+    received: Dict[uuid.UUID, ReceptionStatus]
     awaiting: Dict[uuid.UUID, asyncio.Event]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.received = {}
         self.awaiting = {}
 
@@ -32,7 +33,7 @@ class ReceptionStatusAwaiter:
                 self.awaiting[message_id] = received_event
 
             await asyncio.wait_for(received_event.wait(), timeout_reception_status)
-            reception_status = self.received.get(message_id)
+            reception_status = self.received[message_id]
 
             if message_id in self.awaiting:
                 del self.awaiting[message_id]
@@ -47,7 +48,8 @@ class ReceptionStatusAwaiter:
 
         if reception_status.subject_message_id in self.received:
             raise RuntimeError(
-                f"ReceptationStatus for message_subject_id {reception_status.subject_message_id} has already been received!"
+                f"ReceptationStatus for message_subject_id {reception_status.subject_message_id} has already "
+                f"been received!"
             )
 
         self.received[reception_status.subject_message_id] = reception_status

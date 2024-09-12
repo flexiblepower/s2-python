@@ -8,7 +8,6 @@ from s2python.generated.gen_s2 import (
     EnergyManagementRole,
     SessionRequestType,
     ControlType,
-    Currency,
     RevokableObjects,
 )
 

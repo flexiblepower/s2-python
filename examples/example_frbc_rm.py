@@ -30,7 +30,7 @@ from s2python.frbc import (
 )
 from s2python.s2_connection import S2Connection, AssetDetails
 from s2python.s2_control_type import FRBCControlType, NoControlControlType
-
+from s2python.validate_values_mixin import S2Message
 
 logger = logging.getLogger("s2python")
 logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -39,8 +39,12 @@ logger.setLevel(logging.DEBUG)
 
 class MyFRBCControlType(FRBCControlType):
     def handle_instruction(
-        self, conn: S2Connection, msg: FRBCInstruction, send_okay: Callable[[], None]
+        self, conn: S2Connection, msg: S2Message, send_okay: Callable[[], None]
     ) -> None:
+        if not isinstance(msg, FRBCInstruction):
+            raise RuntimeError(
+                f"Expected an FRBCInstruction but received a message of type {type(msg)}."
+            )
         print(f"I have received the message {msg} from {conn}")
 
     def activate(self, conn: S2Connection) -> None:
@@ -151,6 +155,8 @@ s2_conn = S2Connection(
         instruction_processing_delay=Duration.from_milliseconds(20),
         roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
         currency=Currency.EUR,
+        provides_forecast=False,
+        provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
     ),
 )
 
