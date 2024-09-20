@@ -6,6 +6,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Optional, List, Type, Dict, Callable, Awaitable, Union
 
+import websockets
 from websockets.asyncio.client import ClientConnection as WSConnection, connect as ws_connect
 
 from s2python.common import (
@@ -193,7 +194,6 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     _received_messages: asyncio.Queue
 
     _eventloop: asyncio.AbstractEventLoop
-    _background_tasks: Optional[asyncio.Task]
     _stop_event: asyncio.Event
 
     def __init__(
@@ -211,7 +211,6 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self._current_control_type = None
 
         self._eventloop = asyncio.new_event_loop()
-        self._background_tasks = None
 
         self.control_types = control_types
         self.role = role
@@ -222,13 +221,17 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self._handlers.register_handler(HandshakeResponse, self.handle_handshake_response_as_rm)
 
     def start_as_rm(self) -> None:
-        self._thread = threading.Thread(target=self._run_eventloop)
+        self._thread = threading.Thread(target=self._run_eventloop, daemon=False)
         self._thread.start()
         logger.debug("Started eventloop thread!")
 
     def _run_eventloop(self) -> None:
         logger.debug("Starting eventloop")
-        self._eventloop.run_until_complete(self._run_as_rm())
+        try:
+            self._eventloop.run_until_complete(self._run_as_rm())
+        except asyncio.CancelledError:
+            pass
+        logger.debug("S2 connection thread has stopped.")
 
     def stop(self) -> None:
         """Stops the S2 connection.
@@ -242,41 +245,51 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 "Do not call stop from the thread running the S2 connection. This results in an "
                 "infinite block!"
             )
-
-        asyncio.run_coroutine_threadsafe(self._do_stop(), self._eventloop).result()
+        if self._eventloop.is_running():
+            asyncio.run_coroutine_threadsafe(self._do_stop(), self._eventloop).result()
+        self._thread.join()
+        logger.info("Stopped the S2 connection.")
 
     async def _do_stop(self) -> None:
         logger.info("Will stop the S2 connection.")
-        if self._background_tasks:
-            self._background_tasks.cancel()
-            self._background_tasks = None
-
-        if self.ws:
-            await self.ws.close()
-            await self.ws.wait_closed()
+        self._stop_event.set()
 
     async def _run_as_rm(self) -> None:
         logger.debug("Connecting as S2 resource manager.")
         self._received_messages = asyncio.Queue()
+        self._stop_event = asyncio.Event()
         await self.connect_ws()
 
-        self._background_tasks = self._eventloop.create_task(
-            asyncio.wait(
-                (self._receive_messages(), self._handle_received_messages()),
-                return_when=asyncio.FIRST_EXCEPTION,
-            )
-        )
+        background_tasks = []
+        background_tasks.append(self._eventloop.create_task(self._receive_messages()))
+        background_tasks.append(self._eventloop.create_task(self._handle_received_messages()))
+
+        async def wait_till_stop() -> None:
+            await self._stop_event.wait()
+
+        background_tasks.append(self._eventloop.create_task(wait_till_stop()))
 
         await self.connect_as_rm()
-        done: List[asyncio.Task]
-        pending: List[asyncio.Task]
-        (done, pending) = await self._background_tasks
-
+        (done, pending) = await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
         for task in done:
-            task.result()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+            except websockets.ConnectionClosedError:
+                logger.info("The other party closed the websocket connection.c")
 
         for task in pending:
-            task.cancel()
+            try:
+                task.cancel()
+                await task
+            except asyncio.CancelledError:
+                pass
+
+        if self.ws:
+            await self.ws.close()
+            await self.ws.wait_closed()
+        logger.debug("Finished S2 connection eventloop.")
 
     async def connect_ws(self) -> None:
         self.ws = await ws_connect(uri=self.url)
