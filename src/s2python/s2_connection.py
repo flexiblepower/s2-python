@@ -6,6 +6,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Optional, List, Type, Dict, Callable, Awaitable, Union
 
+import websockets
 from websockets.asyncio.client import ClientConnection as WSConnection, connect as ws_connect
 
 from s2python.common import (
@@ -271,6 +272,8 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 await task
             except asyncio.CancelledError:
                 pass
+            except websockets.ConnectionClosedError:
+                logger.info("The other party closed the websocket connection.c")
 
         for task in pending:
             try:
