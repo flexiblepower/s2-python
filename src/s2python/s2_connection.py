@@ -263,7 +263,11 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         background_tasks = []
         background_tasks.append(self._eventloop.create_task(self._receive_messages()))
         background_tasks.append(self._eventloop.create_task(self._handle_received_messages()))
-        background_tasks.append(self._eventloop.create_task(self._stop_event.wait()))
+
+        async def wait_till_stop() -> None:
+            await self._stop_event.wait()
+
+        background_tasks.append(self._eventloop.create_task(wait_till_stop()))
 
         await self.connect_as_rm()
         (done, pending) = await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
