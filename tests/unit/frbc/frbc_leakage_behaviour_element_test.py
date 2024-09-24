@@ -5,6 +5,7 @@ import uuid
 
 from s2python.common import *
 from s2python.frbc import *
+from s2python.s2_validation_error import S2ValidationError
 
 
 class FRBCLeakageBehaviourElementTest(TestCase):
@@ -26,13 +27,9 @@ class FRBCLeakageBehaviourElementTest(TestCase):
         # Assert
         self.assertEqual(
             frbc_leakage_behaviour_element.fill_level_range,
-            NumberRange(
-                end_of_range=40192.498918818455, start_of_range=29234.82582981918
-            ),
+            NumberRange(end_of_range=40192.498918818455, start_of_range=29234.82582981918),
         )
-        self.assertEqual(
-            frbc_leakage_behaviour_element.leakage_rate, 1170.4041485129987
-        )
+        self.assertEqual(frbc_leakage_behaviour_element.leakage_rate, 1170.4041485129987)
 
     def test__to_json__happy_path_full(self):
         # Arrange
@@ -55,3 +52,13 @@ class FRBCLeakageBehaviourElementTest(TestCase):
             "leakage_rate": 1170.4041485129987,
         }
         self.assertEqual(json.loads(json_str), expected_json)
+
+    def test__init__fill_level_range_end_is_smaller_than_start(self):
+        # Arrange / Act / Assert
+        with self.assertRaises(S2ValidationError):
+            FRBCLeakageBehaviourElement(
+                fill_level_range=NumberRange(
+                    end_of_range=29234.82582981918, start_of_range=40192.498918818455
+                ),
+                leakage_rate=1170.4041485129987,
+            )

@@ -1,10 +1,10 @@
-from datetime import timedelta, datetime, timezone as offset
+from datetime import timedelta
 import json
 from unittest import TestCase
-import uuid
 
 from s2python.common import *
 from s2python.frbc import *
+from s2python.s2_validation_error import S2ValidationError
 
 
 class FRBCFillLevelTargetProfileElementTest(TestCase):
@@ -21,8 +21,8 @@ class FRBCFillLevelTargetProfileElementTest(TestCase):
         """
 
         # Act
-        frbc_fill_level_target_profile_element = (
-            FRBCFillLevelTargetProfileElement.from_json(json_str)
+        frbc_fill_level_target_profile_element = FRBCFillLevelTargetProfileElement.from_json(
+            json_str
         )
 
         # Assert
@@ -51,3 +51,11 @@ class FRBCFillLevelTargetProfileElementTest(TestCase):
             "fill_level_range": {"end_of_range": 8176, "start_of_range": 6207},
         }
         self.assertEqual(json.loads(json_str), expected_json)
+
+    def test__init__fill_level_range_end_is_smaller_than_start(self):
+        # Arrange / Act / Assert
+        with self.assertRaises(S2ValidationError):
+            FRBCFillLevelTargetProfileElement(
+                duration=Duration.from_timedelta(timedelta(milliseconds=12950)),
+                fill_level_range=NumberRange(end_of_range=6000, start_of_range=8176),
+            )
