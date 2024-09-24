@@ -22,6 +22,18 @@ You can install this package using pip or any Python dependency manager that col
 
 The packages on Pypi may be found `here <https://pypi.org/project/s2-python/>`_
 
+Mypy support
+------------
+s2-python uses pydantic at its core to define the various S2 messages. As such, the pydantic mypy plugin is required
+for type checking to succeed.
+
+Add to your pyproject.toml:
+
+.. code-block:: toml
+
+    [tool.mypy]
+    plugins = ['pydantic.mypy']
+
 Example
 ---------
 
