@@ -197,8 +197,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
     _eventloop: asyncio.AbstractEventLoop
     _stop_event: asyncio.Event
+    _restart_connection_event: asyncio.Event
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         url: str,
         role: EnergyManagementRole,
@@ -497,7 +498,10 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 s2_msg.message_id, timeout_reception_status  # type: ignore[attr-defined]
             )
         except TimeoutError:
-            logger.error("Did not receive a reception status on time for %s", s2_msg.message_id)
+            logger.error(
+                "Did not receive a reception status on time for %s",
+                s2_msg.message_id,  # type: ignore[attr-defined]
+            )
             self._stop_event.set()
             raise
 

@@ -1,6 +1,5 @@
 import logging
 import sys
-import threading
 import uuid
 import signal
 import datetime
