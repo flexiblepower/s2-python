@@ -1,6 +1,5 @@
 import logging
 import sys
-import threading
 import uuid
 import signal
 import datetime
@@ -159,20 +158,16 @@ s2_conn = S2Connection(
         provides_forecast=False,
         provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
     ),
+    reconnect=True,
 )
-
-
-stop_event = threading.Event()
 
 
 def stop(signal_num, _current_stack_frame):
     print(f"Received signal {signal_num}. Will stop S2 connection.")
-    stop_event.set()
+    s2_conn.stop()
 
 
 signal.signal(signal.SIGINT, stop)
 signal.signal(signal.SIGTERM, stop)
 
 s2_conn.start_as_rm()
-stop_event.wait()
-s2_conn.stop()
