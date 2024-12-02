@@ -1,3 +1,5 @@
+from pydantic import Field
+from typing import Literal
 import uuid
 
 from s2python.generated.gen_s2 import HandshakeResponse as GenHandshakeResponse
@@ -13,3 +15,4 @@ class HandshakeResponse(GenHandshakeResponse, S2Message["HandshakeResponse"]):
         validate_assignment = True
 
     message_id: uuid.UUID = GenHandshakeResponse.__fields__["message_id"].field_info  # type: ignore[assignment]
+    message_type: Literal["HandshakeResponse"] = Field(default="HandshakeResponse")

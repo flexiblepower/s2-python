@@ -1,4 +1,5 @@
-from typing import List
+from pydantic import Field
+from typing import List, Literal
 import uuid
 
 from s2python.common.power_forecast_element import PowerForecastElement
@@ -18,3 +19,4 @@ class PowerForecast(GenPowerForecast, S2Message["PowerForecast"]):
     elements: List[PowerForecastElement] = GenPowerForecast.__fields__[
         "elements"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["PowerForecast"] = Field(default="PowerForecast")

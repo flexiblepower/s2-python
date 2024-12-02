@@ -1,4 +1,5 @@
-from typing import List
+from pydantic import Field
+from typing import List, Literal
 import uuid
 
 from s2python.frbc.frbc_leakage_behaviour_element import FRBCLeakageBehaviourElement
@@ -18,3 +19,4 @@ class FRBCLeakageBehaviour(GenFRBCLeakageBehaviour, S2Message["FRBCLeakageBehavi
         "elements"
     ].field_info  # type: ignore[assignment]
     message_id: uuid.UUID = GenFRBCLeakageBehaviour.__fields__["message_id"].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCLeakageBehaviour"] = Field(default="FRBCLeakageBehaviour")

@@ -1,4 +1,5 @@
-from typing import List
+from pydantic import Field
+from typing import List, Literal
 import uuid
 
 from s2python.common.duration import Duration
@@ -25,3 +26,4 @@ class ResourceManagerDetails(
     message_id: uuid.UUID = GenResourceManagerDetails.__fields__["message_id"].field_info  # type: ignore[assignment]
     resource_id: uuid.UUID = GenResourceManagerDetails.__fields__["resource_id"].field_info  # type: ignore[assignment]
     roles: List[Role] = GenResourceManagerDetails.__fields__["roles"].field_info  # type: ignore[assignment]
+    message_type: Literal["ResourceManagerDetails"] = Field(default="ResourceManagerDetails")

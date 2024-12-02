@@ -1,3 +1,5 @@
+from pydantic import Field
+from typing import Literal
 import uuid
 
 from s2python.generated.gen_s2 import RevokeObject as GenRevokeObject
@@ -14,3 +16,4 @@ class RevokeObject(GenRevokeObject, S2Message["RevokeObject"]):
 
     message_id: uuid.UUID = GenRevokeObject.__fields__["message_id"].field_info  # type: ignore[assignment]
     object_id: uuid.UUID = GenRevokeObject.__fields__["object_id"].field_info  # type: ignore[assignment]
+    message_type: Literal["RevokeObject"] = Field(default="RevokeObject")

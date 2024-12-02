@@ -1,3 +1,6 @@
+from pydantic import Field
+from typing import Literal
+
 from s2python.common import Duration
 
 from s2python.generated.gen_s2 import (
@@ -17,3 +20,4 @@ class FRBCUsageForecastElement(
         validate_assignment = True
 
     duration: Duration = GenFRBCUsageForecastElement.__fields__["duration"].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCUsageForecastElement"] = Field(default="FRBCUsageForecastElement")

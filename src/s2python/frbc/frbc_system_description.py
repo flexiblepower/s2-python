@@ -1,4 +1,5 @@
-from typing import List
+from pydantic import Field
+from typing import List, Literal
 import uuid
 
 from s2python.generated.gen_s2 import FRBCSystemDescription as GenFRBCSystemDescription
@@ -24,3 +25,4 @@ class FRBCSystemDescription(
     storage: FRBCStorageDescription = GenFRBCSystemDescription.__fields__[
         "storage"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCSystemDescription"] = Field(default="FRBCSystemDescription")

@@ -1,3 +1,5 @@
+from pydantic import Field
+from typing import Literal
 import uuid
 
 from s2python.generated.gen_s2 import (
@@ -20,3 +22,4 @@ class InstructionStatusUpdate(
     instruction_id: uuid.UUID = GenInstructionStatusUpdate.__fields__[
         "instruction_id"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["InstructionStatusUpdate"] = Field(default="InstructionStatusUpdate")

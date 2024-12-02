@@ -1,5 +1,6 @@
+from pydantic import Field
 import uuid
-from typing import Optional, List
+from typing import Optional, List, Literal
 
 from s2python.common.duration import Duration
 from s2python.generated.gen_s2 import Transition as GenTransition
@@ -24,3 +25,4 @@ class Transition(GenTransition, S2Message["Transition"]):
     transition_duration: Optional[Duration] = GenTransition.__fields__[
         "transition_duration"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["Transition"] = Field(default="Transition")

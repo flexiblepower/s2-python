@@ -1,3 +1,5 @@
+from pydantic import Field
+from typing import Literal
 import uuid
 
 from s2python.generated.gen_s2 import ReceptionStatus as GenReceptionStatus
@@ -15,3 +17,4 @@ class ReceptionStatus(GenReceptionStatus, S2Message["ReceptionStatus"]):
     subject_message_id: uuid.UUID = GenReceptionStatus.__fields__[
         "subject_message_id"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["ReceptionStatus"] = Field(default="ReceptionStatus")

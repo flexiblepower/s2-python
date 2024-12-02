@@ -1,3 +1,5 @@
+from pydantic import Field
+from typing import Literal
 import uuid
 
 from s2python.generated.gen_s2 import FRBCInstruction as GenFRBCInstruction
@@ -16,3 +18,4 @@ class FRBCInstruction(GenFRBCInstruction, S2Message["FRBCInstruction"]):
     id: uuid.UUID = GenFRBCInstruction.__fields__["id"].field_info  # type: ignore[assignment]
     message_id: uuid.UUID = GenFRBCInstruction.__fields__["message_id"].field_info  # type: ignore[assignment]
     operation_mode: uuid.UUID = GenFRBCInstruction.__fields__["operation_mode"].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCInstruction"] = Field(default="FRBCInstruction")

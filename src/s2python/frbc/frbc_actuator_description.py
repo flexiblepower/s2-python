@@ -1,6 +1,6 @@
 import uuid
-
-from typing import List, Any, Dict
+from pydantic import Field
+from typing import List, Any, Dict, Literal
 
 from pydantic import root_validator
 
@@ -35,6 +35,7 @@ class FRBCActuatorDescription(
     supported_commodities: List[Commodity] = GenFRBCActuatorDescription.__fields__[
         "supported_commodities"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCActuatorDescription"] = Field(default="FRBCActuatorDescription")
 
     @root_validator(pre=False)
     @classmethod

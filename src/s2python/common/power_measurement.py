@@ -1,4 +1,5 @@
-from typing import List
+from  pydantic import Field
+from typing import List, Literal
 import uuid
 
 from s2python.common.power_value import PowerValue
@@ -16,3 +17,4 @@ class PowerMeasurement(GenPowerMeasurement, S2Message["PowerMeasurement"]):
 
     message_id: uuid.UUID = GenPowerMeasurement.__fields__["message_id"].field_info  # type: ignore[assignment]
     values: List[PowerValue] = GenPowerMeasurement.__fields__["values"].field_info  # type: ignore[assignment]
+    message_type: Literal["PowerMeasurement"] = Field(default="PowerMeasurement")

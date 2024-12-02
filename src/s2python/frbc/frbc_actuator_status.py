@@ -1,4 +1,5 @@
-from typing import Optional
+from pydantic import Field
+from typing import Literal, Optional
 import uuid
 
 from s2python.generated.gen_s2 import FRBCActuatorStatus as GenFRBCActuatorStatus
@@ -21,3 +22,4 @@ class FRBCActuatorStatus(GenFRBCActuatorStatus, S2Message["FRBCActuatorStatus"])
     previous_operation_mode_id: Optional[uuid.UUID] = GenFRBCActuatorStatus.__fields__[
         "previous_operation_mode_id"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCActuatorStatus"] = Field(default="FRBCActuatorStatus")

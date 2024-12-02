@@ -1,3 +1,5 @@
+from pydantic import Field
+from typing import Literal
 import uuid
 
 from s2python.generated.gen_s2 import FRBCStorageStatus as GenFRBCStorageStatus
@@ -13,3 +15,4 @@ class FRBCStorageStatus(GenFRBCStorageStatus, S2Message["FRBCStorageStatus"]):
         validate_assignment = True
 
     message_id: uuid.UUID = GenFRBCStorageStatus.__fields__["message_id"].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCStorageStatus"] = Field(default="FRBCStorageStatus")

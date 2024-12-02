@@ -1,3 +1,5 @@
+from pydantic import Field
+from typing import Literal
 import uuid
 
 from s2python.common.duration import Duration
@@ -15,3 +17,4 @@ class Timer(GenTimer, S2Message["Timer"]):
 
     id: uuid.UUID = GenTimer.__fields__["id"].field_info  # type: ignore[assignment]
     duration: Duration = GenTimer.__fields__["duration"].field_info  # type: ignore[assignment]
+    message_type: Literal["Timer"] = Field(default="Timer")

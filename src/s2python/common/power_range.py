@@ -1,4 +1,5 @@
-from typing import Any, Dict
+from pydantic import Field
+from typing import Any, Dict, Literal
 
 from pydantic import root_validator
 
@@ -25,3 +26,5 @@ class PowerRange(GenPowerRange, S2Message["PowerRange"]):
             )
 
         return values
+
+    message_type: Literal["PowerRange"] = Field(default="PowerRange")
