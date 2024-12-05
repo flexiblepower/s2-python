@@ -25,4 +25,4 @@ class FRBCFillLevelTargetProfile(
     ] = GenFRBCFillLevelTargetProfile.__fields__[
         "elements"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCFillLevelTargetProfile"] = Field(default="FRBCFillLevelTargetProfile")
+    message_type: Literal["FRBC.FillLevelTargetProfile"] = Field(default="FRBC.FillLevelTargetProfile")

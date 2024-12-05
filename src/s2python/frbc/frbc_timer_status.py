@@ -13,4 +13,4 @@ class FRBCTimerStatus(GenFRBCTimerStatus, S2Message["FRBCTimerStatus"]):
     class Config(GenFRBCTimerStatus.Config):
         validate_assignment = True
 
-    message_type: Literal["FRBCTimerStatus"] = Field(default="FRBCTimerStatus")
+    message_type: Literal["FRBC.TimerStatus"] = Field(default="FRBC.TimerStatus")

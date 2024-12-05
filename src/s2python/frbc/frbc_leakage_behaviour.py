@@ -17,4 +17,4 @@ class FRBCLeakageBehaviour(GenFRBCLeakageBehaviour, S2Message["FRBCLeakageBehavi
     elements: List[FRBCLeakageBehaviourElement] = GenFRBCLeakageBehaviour.__fields__[
         "elements"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCLeakageBehaviour"] = Field(default="FRBCLeakageBehaviour")
+    message_type: Literal["FRBC.LeakageBehaviour"] = Field(default="FRBC.LeakageBehaviour")

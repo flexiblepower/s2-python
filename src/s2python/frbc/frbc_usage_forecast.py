@@ -17,4 +17,4 @@ class FRBCUsageForecast(GenFRBCUsageForecast, S2Message["FRBCUsageForecast"]):
     elements: List[FRBCUsageForecastElement] = GenFRBCUsageForecast.__fields__[
         "elements"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCUsageForecast"] = Field(default="FRBCUsageForecast")
+    message_type: Literal["FRBC.UsageForecast"] = Field(default="FRBC.UsageForecast")

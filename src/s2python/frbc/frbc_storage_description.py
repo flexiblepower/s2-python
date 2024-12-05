@@ -21,4 +21,4 @@ class FRBCStorageDescription(
     fill_level_range: NumberRange = GenFRBCStorageDescription.__fields__[
         "fill_level_range"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCStorageDescription"] = Field(default="FRBCStorageDescription")
+    message_type: Literal["FRBC.StorageDescription"] = Field(default="FRBC.StorageDescription")

@@ -13,4 +13,4 @@ class FRBCStorageStatus(GenFRBCStorageStatus, S2Message["FRBCStorageStatus"]):
     class Config(GenFRBCStorageStatus.Config):
         validate_assignment = True
 
-    message_type: Literal["FRBCStorageStatus"] = Field(default="FRBCStorageStatus")
+    message_type: Literal["FRBC.StorageStatus"] = Field(default="FRBC.StorageStatus")

@@ -23,4 +23,4 @@ class FRBCSystemDescription(
     storage: FRBCStorageDescription = GenFRBCSystemDescription.__fields__[
         "storage"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCSystemDescription"] = Field(default="FRBCSystemDescription")
+    message_type: Literal["FRBC.SystemDescription"] = Field(default="FRBC.SystemDescription")

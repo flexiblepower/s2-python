@@ -21,4 +21,4 @@ class FRBCLeakageBehaviourElement(
     fill_level_range: NumberRange = GenFRBCLeakageBehaviourElement.__fields__[
         "fill_level_range"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCLeakageBehaviourElement"] = Field(default="FRBCLeakageBehaviourElement")
+    message_type: Literal["FRBC.LeakageBehaviourElement"] = Field(default="FRBC.LeakageBehaviourElement")

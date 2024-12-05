@@ -13,4 +13,4 @@ class FRBCInstruction(GenFRBCInstruction, S2Message["FRBCInstruction"]):
     class Config(GenFRBCInstruction.Config):
         validate_assignment = True
 
-    message_type: Literal["FRBCInstruction"] = Field(default="FRBCInstruction")
+    message_type: Literal["FRBC.Instruction"] = Field(default="FRBC.Instruction")

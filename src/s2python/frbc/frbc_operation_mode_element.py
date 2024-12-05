@@ -28,4 +28,4 @@ class FRBCOperationModeElement(
     running_costs: Optional[NumberRange] = GenFRBCOperationModeElement.__fields__[
         "running_costs"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCOperationModeElement"] = Field(default="FRBCOperationModeElement")
+    message_type: Literal["FRBC.OperationModeElement"] = Field(default="FRBC.OperationModeElement")

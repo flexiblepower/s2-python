@@ -13,4 +13,4 @@ class FRBCActuatorStatus(GenFRBCActuatorStatus, S2Message["FRBCActuatorStatus"])
     class Config(GenFRBCActuatorStatus.Config):
         validate_assignment = True
 
-    message_type: Literal["FRBCActuatorStatus"] = Field(default="FRBCActuatorStatus")
+    message_type: Literal["FRBC.ActuatorStatus"] = Field(default="FRBC.ActuatorStatus")
