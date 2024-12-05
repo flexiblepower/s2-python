@@ -1,5 +1,5 @@
-from typing import List
-import uuid
+from pydantic import Field
+from typing import List, Literal
 
 from s2python.generated.gen_s2 import FRBCUsageForecast as GenFRBCUsageForecast
 from s2python.validate_values_mixin import (
@@ -17,4 +17,4 @@ class FRBCUsageForecast(GenFRBCUsageForecast, S2Message["FRBCUsageForecast"]):
     elements: List[FRBCUsageForecastElement] = GenFRBCUsageForecast.__fields__[
         "elements"
     ].field_info  # type: ignore[assignment]
-    message_id: uuid.UUID = GenFRBCUsageForecast.__fields__["message_id"].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCUsageForecast"] = Field(default="FRBCUsageForecast")

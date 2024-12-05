@@ -1,4 +1,5 @@
-from typing import Optional, List
+from pydantic import Field
+from typing import Optional, List, Literal
 
 from s2python.common import NumberRange, PowerRange
 from s2python.generated.gen_s2 import (
@@ -27,3 +28,4 @@ class FRBCOperationModeElement(
     running_costs: Optional[NumberRange] = GenFRBCOperationModeElement.__fields__[
         "running_costs"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCOperationModeElement"] = Field(default="FRBCOperationModeElement")

@@ -1,6 +1,6 @@
 # from itertools import pairwise
-import uuid
-from typing import List, Dict, Any
+from pydantic import Field
+from typing import List, Dict, Any, Literal
 
 from pydantic import root_validator
 
@@ -19,10 +19,10 @@ class FRBCOperationMode(GenFRBCOperationMode, S2Message["FRBCOperationMode"]):
     class Config(GenFRBCOperationMode.Config):
         validate_assignment = True
 
-    id: uuid.UUID = GenFRBCOperationMode.__fields__["id"].field_info  # type: ignore[assignment]
     elements: List[FRBCOperationModeElement] = GenFRBCOperationMode.__fields__[
         "elements"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCOperationMode"] = Field(default="FRBCOperationMode")
 
     @root_validator(pre=False)
     @classmethod

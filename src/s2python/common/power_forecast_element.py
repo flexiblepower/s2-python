@@ -1,4 +1,5 @@
-from typing import List
+from  pydantic import Field
+from typing import List, Literal
 
 from s2python.generated.gen_s2 import PowerForecastElement as GenPowerForecastElement
 from s2python.validate_values_mixin import (
@@ -18,3 +19,4 @@ class PowerForecastElement(GenPowerForecastElement, S2Message["PowerForecastElem
     power_values: List[PowerForecastValue] = GenPowerForecastElement.__fields__[
         "power_values"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["NumberRange"] = Field(default="NumberRange")

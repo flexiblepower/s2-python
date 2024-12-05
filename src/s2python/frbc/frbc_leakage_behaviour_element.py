@@ -1,3 +1,6 @@
+from pydantic import Field
+from typing import Literal
+
 from s2python.common import NumberRange
 from s2python.generated.gen_s2 import (
     FRBCLeakageBehaviourElement as GenFRBCLeakageBehaviourElement,
@@ -18,3 +21,4 @@ class FRBCLeakageBehaviourElement(
     fill_level_range: NumberRange = GenFRBCLeakageBehaviourElement.__fields__[
         "fill_level_range"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCLeakageBehaviourElement"] = Field(default="FRBCLeakageBehaviourElement")

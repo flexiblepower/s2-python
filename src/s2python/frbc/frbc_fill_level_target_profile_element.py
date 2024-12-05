@@ -1,3 +1,6 @@
+from pydantic import Field
+from typing import Literal
+
 from s2python.common import Duration, NumberRange
 
 from s2python.generated.gen_s2 import (
@@ -23,3 +26,4 @@ class FRBCFillLevelTargetProfileElement(
     fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.__fields__[
         "fill_level_range"
     ].field_info  # type: ignore[assignment]
+    message_type: Literal["FRBCFillLevelTargetProfileElement"] = Field(default="FRBCFillLevelTargetProfileElement")

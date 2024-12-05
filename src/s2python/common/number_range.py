@@ -1,4 +1,5 @@
-from typing import Any, Dict
+from  pydantic import Field
+from typing import Any, Dict, Literal
 
 from pydantic import root_validator
 
@@ -37,3 +38,5 @@ class NumberRange(GenNumberRange, S2Message["NumberRange"]):
             )
 
         return False
+
+    message_type: Literal["NumberRange"] = Field(default="NumberRange")

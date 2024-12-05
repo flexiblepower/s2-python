@@ -54,6 +54,8 @@ class PowerForecastElementTest(TestCase):
         # Assert
         expected_json = {
             "duration": 4000,
-            "power_values": [{"commodity_quantity": "NATURAL_GAS.FLOW_RATE", "value_expected": 500.2}],
+            "power_values": [
+                {"commodity_quantity": "NATURAL_GAS.FLOW_RATE", "value_expected": 500.2}
+            ],
         }
         self.assertEqual(json.loads(json_str), expected_json)
