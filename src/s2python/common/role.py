@@ -12,5 +12,3 @@ from s2python.validate_values_mixin import (
 class Role(GenRole, S2Message["Role"]):
     class Config(GenRole.Config):
         validate_assignment = True
-
-    message_type: Literal["Role"] = Field(default="Role")

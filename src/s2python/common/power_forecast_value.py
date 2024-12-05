@@ -12,4 +12,3 @@ from s2python.validate_values_mixin import (
 class PowerForecastValue(GenPowerForecastValue, S2Message["PowerForecastValue"]):
     class Config(GenPowerForecastValue.Config):
         validate_assignment = True
-    message_type: Literal["PowerMeasurement"] = Field(default="PowerMeasurement")

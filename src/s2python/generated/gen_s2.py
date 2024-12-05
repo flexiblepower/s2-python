@@ -18,6 +18,14 @@ class Duration(BaseModel):
 class ID(BaseModel):
     __root__: constr(regex=r'[a-zA-Z0-9\-_:]{2,64}') = Field(..., description='UUID')
 
+    def __eq__(self, __value: object) -> bool:
+        if isinstance(__value, str):
+            return self.__root__ == __value
+        else:
+            return super().__eq__(__value)
+
+    def __hash__(self) -> int:
+        return hash(self.__root__)
 
 class Currency(Enum):
     AED = 'AED'

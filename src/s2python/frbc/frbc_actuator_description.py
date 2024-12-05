@@ -33,7 +33,6 @@ class FRBCActuatorDescription(
     supported_commodities: List[Commodity] = GenFRBCActuatorDescription.__fields__[
         "supported_commodities"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBC.ActuatorDescription"] = Field(default="FRBC.ActuatorDescription")
 
     @root_validator(pre=False)
     @classmethod

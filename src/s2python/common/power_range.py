@@ -26,5 +26,3 @@ class PowerRange(GenPowerRange, S2Message["PowerRange"]):
             )
 
         return values
-
-    message_type: Literal["PowerRange"] = Field(default="PowerRange")

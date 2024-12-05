@@ -20,4 +20,3 @@ class FRBCUsageForecastElement(
         validate_assignment = True
 
     duration: Duration = GenFRBCUsageForecastElement.__fields__["duration"].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBC.UsageForecastElement"] = Field(default="FRBC.UsageForecastElement")

@@ -15,4 +15,3 @@ class Timer(GenTimer, S2Message["Timer"]):
         validate_assignment = True
 
     duration: Duration = GenTimer.__fields__["duration"].field_info  # type: ignore[assignment]
-    message_type: Literal["Timer"] = Field(default="Timer")

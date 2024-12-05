@@ -17,4 +17,3 @@ class Transition(GenTransition, S2Message["Transition"]):
     transition_duration: Optional[Duration] = GenTransition.__fields__[
         "transition_duration"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["Transition"] = Field(default="Transition")

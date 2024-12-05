@@ -22,7 +22,6 @@ class FRBCOperationMode(GenFRBCOperationMode, S2Message["FRBCOperationMode"]):
     elements: List[FRBCOperationModeElement] = GenFRBCOperationMode.__fields__[
         "elements"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBC.OperationMode"] = Field(default="FRBC.OperationMode")
 
     @root_validator(pre=False)
     @classmethod

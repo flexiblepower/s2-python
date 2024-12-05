@@ -12,5 +12,3 @@ from s2python.validate_values_mixin import (
 class PowerValue(GenPowerValue, S2Message["PowerValue"]):
     class Config(GenPowerValue.Config):
         validate_assignment = True
-
-    message_type: Literal["PowerValue"] = Field(default="PowerValue")

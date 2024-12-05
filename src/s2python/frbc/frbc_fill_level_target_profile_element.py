@@ -26,4 +26,3 @@ class FRBCFillLevelTargetProfileElement(
     fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.__fields__[
         "fill_level_range"
     ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBC.FillLevelTargetProfileElement"] = Field(default="FRBC.FillLevelTargetProfileElement")

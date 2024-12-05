@@ -38,5 +38,3 @@ class NumberRange(GenNumberRange, S2Message["NumberRange"]):
             )
 
         return False
-
-    message_type: Literal["NumberRange"] = Field(default="NumberRange")
