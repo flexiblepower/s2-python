@@ -25,7 +25,7 @@ class TransitionTest(TestCase):
 
         # Assert
         self.assertEqual(transition.id, "2bdec96b-be3b-4ba9-afa0-c4a0632cced3")
-        self.assertEqual(transition.from_, "2bdec96b-be3b-4ba9-afa0-c4a0632cced2")
+        self.assertEqual(transition.from_, "2bdec96b-be3b-4ba9-afa0-c4a0632cced2")  # type: ignore
         self.assertEqual(transition.to, "2bdec96b-be3b-4ba9-afa0-c4a0632cced1")
         self.assertEqual(
             transition.start_timers,
