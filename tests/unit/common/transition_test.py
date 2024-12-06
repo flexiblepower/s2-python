@@ -61,7 +61,7 @@ class TransitionTest(TestCase):
 
         # Assert
         self.assertEqual(transition.id, "2bdec96b-be3b-4ba9-afa0-c4a0632cced3")
-        self.assertEqual(transition.from_, "2bdec96b-be3b-4ba9-afa0-c4a0632cced2")
+        self.assertEqual(transition.from_, "2bdec96b-be3b-4ba9-afa0-c4a0632cced2")  # type: ignore
         self.assertEqual(transition.to, "2bdec96b-be3b-4ba9-afa0-c4a0632cced1")
         self.assertEqual(transition.start_timers, [])
         self.assertEqual(transition.blocking_timers, [])
@@ -132,12 +132,12 @@ class TransitionTest(TestCase):
     def test__to_json__value_validation_error_neg_duration(self):
         # Arrange/ Act / Assert
         with self.assertRaises(S2ValidationError):
-            Transition(
+            Transition(  # type: ignore
                 id="2bdec96b-be3b-4ba9-afa0-c4a0632cced3",
-                from_="2bdec96b-be3b-4ba9-afa0-c4a0632cced2",
+                from_="2bdec96b-be3b-4ba9-afa0-c4a0632cced2",  # type: ignore
                 to="2bdec96b-be3b-4ba9-afa0-c4a0632cced1",
                 start_timers=[],
                 blocking_timers=[],
                 transition_duration=Duration(__root__=-5000),
                 abnormal_condition_only=False,
-            )
+            )  # type: ignore
