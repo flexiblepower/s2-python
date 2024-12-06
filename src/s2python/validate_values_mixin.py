@@ -13,9 +13,9 @@ from typing import (
     Union,
 )
 
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module; ignore E0611
 from pydantic import Protocol as PydanticProtocol  # pylint: disable=no-name-in-module
-from pydantic import StrBytes, ValidationError
+from pydantic import StrBytes, ValidationError  # pylint: disable=no-name-in-module; ignore E0611
 from pydantic.error_wrappers import display_errors  # pylint: disable=no-name-in-module
 
 from s2python.s2_validation_error import S2ValidationError

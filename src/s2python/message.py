@@ -1,6 +1,6 @@
 from typing import Union
 
-from pydantic import BaseModel  # noqa F401
+from pydantic import BaseModel  # pylint: disable=no-name-in-module, unused-import; ignore E0611 and W0611
 
 from s2python.common import (
     Handshake,
