@@ -1,16 +1,6 @@
 from typing import Union
-from pydantic import BaseModel
 
-from s2python.frbc import (
-    FRBCActuatorStatus,
-    FRBCFillLevelTargetProfile,
-    FRBCInstruction,
-    FRBCLeakageBehaviour,
-    FRBCStorageStatus,
-    FRBCSystemDescription,
-    FRBCTimerStatus,
-    FRBCUsageForecast
-)
+from pydantic import BaseModel  # noqa F401
 
 from s2python.common import (
     Handshake,
@@ -22,7 +12,17 @@ from s2python.common import (
     ResourceManagerDetails,
     RevokeObject,
     SelectControlType,
-    SessionRequest
+    SessionRequest,
+)
+from s2python.frbc import (
+    FRBCActuatorStatus,
+    FRBCFillLevelTargetProfile,
+    FRBCInstruction,
+    FRBCLeakageBehaviour,
+    FRBCStorageStatus,
+    FRBCSystemDescription,
+    FRBCTimerStatus,
+    FRBCUsageForecast,
 )
 
 S2Message = Union[

@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Optional, TypeVar, Union, Type, Dict
+from typing import Dict, Optional, Type, TypeVar, Union
 
 from s2python.common import (
     Handshake,
@@ -24,9 +24,8 @@ from s2python.frbc import (
     FRBCTimerStatus,
     FRBCUsageForecast,
 )
-from s2python.validate_values_mixin import S2Message
 from s2python.s2_validation_error import S2ValidationError
-
+from s2python.validate_values_mixin import S2Message
 
 LOGGER = logging.getLogger(__name__)
 S2MessageType = str

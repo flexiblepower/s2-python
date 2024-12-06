@@ -1,11 +1,5 @@
-from  pydantic import Field
-from typing import Literal
-
 from s2python.generated.gen_s2 import Role as GenRole
-from s2python.validate_values_mixin import (
-    S2Message,
-    catch_and_convert_exceptions,
-)
+from s2python.validate_values_mixin import S2Message, catch_and_convert_exceptions
 
 
 @catch_and_convert_exceptions

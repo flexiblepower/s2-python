@@ -1,19 +1,15 @@
-from pydantic import Field
-from typing import List, Any, Dict, Literal
+from typing import Any, Dict, List
 
 from pydantic import root_validator
 
-from s2python.common import Transition, Timer, Commodity
+from s2python.common import Commodity, Timer, Transition
 from s2python.common.support import commodity_has_quantity
 from s2python.frbc.frbc_operation_mode import FRBCOperationMode
+from s2python.generated.gen_s2 import CommodityQuantity
 from s2python.generated.gen_s2 import (
     FRBCActuatorDescription as GenFRBCActuatorDescription,
-    CommodityQuantity,
 )
-from s2python.validate_values_mixin import (
-    S2Message,
-    catch_and_convert_exceptions,
-)
+from s2python.validate_values_mixin import S2Message, catch_and_convert_exceptions
 
 
 @catch_and_convert_exceptions

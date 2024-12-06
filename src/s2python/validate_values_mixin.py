@@ -1,24 +1,21 @@
 from typing import (
-    TypeVar,
+    AbstractSet,
+    Any,
+    Callable,
+    Dict,
     Generic,
+    List,
+    Mapping,
+    Optional,
     Protocol,
     Type,
-    Optional,
-    Callable,
-    Any,
+    TypeVar,
     Union,
-    AbstractSet,
-    Mapping,
-    List,
-    Dict,
 )
 
-from pydantic import (  # pylint: disable=no-name-in-module
-    BaseModel,
-    StrBytes,
-    Protocol as PydanticProtocol,
-    ValidationError,
-)
+from pydantic import BaseModel
+from pydantic import Protocol as PydanticProtocol  # pylint: disable=no-name-in-module
+from pydantic import StrBytes, ValidationError
 from pydantic.error_wrappers import display_errors  # pylint: disable=no-name-in-module
 
 from s2python.s2_validation_error import S2ValidationError

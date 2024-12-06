@@ -1,13 +1,9 @@
-from  pydantic import Field
-from typing import Any, Dict, Literal
+from typing import Any, Dict
 
 from pydantic import root_validator
 
-from s2python.validate_values_mixin import (
-    S2Message,
-    catch_and_convert_exceptions,
-)
 from s2python.generated.gen_s2 import NumberRange as GenNumberRange
+from s2python.validate_values_mixin import S2Message, catch_and_convert_exceptions
 
 
 @catch_and_convert_exceptions

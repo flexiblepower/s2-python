@@ -1,14 +1,8 @@
-from pydantic import Field
-from typing import Literal
-
 from s2python.common import NumberRange
 from s2python.generated.gen_s2 import (
     FRBCLeakageBehaviourElement as GenFRBCLeakageBehaviourElement,
 )
-from s2python.validate_values_mixin import (
-    catch_and_convert_exceptions,
-    S2Message,
-)
+from s2python.validate_values_mixin import S2Message, catch_and_convert_exceptions
 
 
 @catch_and_convert_exceptions

@@ -1,4 +1,4 @@
-from s2python.common import CommodityQuantity, Commodity
+from s2python.common import Commodity, CommodityQuantity
 
 
 def commodity_has_quantity(commodity: "Commodity", quantity: CommodityQuantity) -> bool:
