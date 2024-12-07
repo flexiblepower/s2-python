@@ -1,13 +1,10 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from s2python.common import NumberRange, PowerRange
 from s2python.generated.gen_s2 import (
     FRBCOperationModeElement as GenFRBCOperationModeElement,
 )
-from s2python.validate_values_mixin import (
-    S2Message,
-    catch_and_convert_exceptions,
-)
+from s2python.validate_values_mixin import S2Message, catch_and_convert_exceptions
 
 
 @catch_and_convert_exceptions

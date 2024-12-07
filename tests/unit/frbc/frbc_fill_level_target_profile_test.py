@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
-import uuid
+
 
 from s2python.common import *
 from s2python.frbc import *
@@ -45,7 +45,7 @@ class FRBCFillLevelTargetProfileTest(TestCase):
         )
         self.assertEqual(
             frbc_fill_level_target_profile.message_id,
-            uuid.UUID("04a6c8af-ca8d-420c-9c11-e96a70fe82b1"),
+            "04a6c8af-ca8d-420c-9c11-e96a70fe82b1",
         )
         self.assertEqual(
             frbc_fill_level_target_profile.message_type, "FRBC.FillLevelTargetProfile"
@@ -75,7 +75,7 @@ class FRBCFillLevelTargetProfileTest(TestCase):
                     ),
                 )
             ],
-            message_id=uuid.UUID("04a6c8af-ca8d-420c-9c11-e96a70fe82b1"),
+            message_id="04a6c8af-ca8d-420c-9c11-e96a70fe82b1",
             message_type="FRBC.FillLevelTargetProfile",
             start_time=datetime(
                 year=2021,

@@ -1,4 +1,4 @@
-from typing import Generator, Tuple, List, TypeVar
+from typing import Generator, List, Tuple, TypeVar
 
 P = TypeVar("P")
 

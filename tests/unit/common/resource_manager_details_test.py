@@ -1,5 +1,5 @@
 import json
-import uuid
+
 from datetime import timedelta
 from unittest import TestCase
 
@@ -59,7 +59,7 @@ class ResourceManagerDetailsTest(TestCase):
         self.assertEqual(resource_manager_details.manufacturer, "Dagobert inc.")
         self.assertEqual(
             resource_manager_details.message_id,
-            uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
+            "3bdec96b-be3b-4ba9-afa0-c4a0632cced5",
         )
         self.assertEqual(resource_manager_details.model, "Safe")
         self.assertEqual(resource_manager_details.name, "Dagobert's safe")
@@ -73,7 +73,7 @@ class ResourceManagerDetailsTest(TestCase):
         )
         self.assertEqual(
             resource_manager_details.resource_id,
-            uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced6"),
+            "3bdec96b-be3b-4ba9-afa0-c4a0632cced6",
         )
         self.assertEqual(
             resource_manager_details.roles,
@@ -98,7 +98,7 @@ class ResourceManagerDetailsTest(TestCase):
                 timedelta(milliseconds=342)
             ),
             manufacturer="Dagobert inc.",
-            message_id=uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
+            message_id="3bdec96b-be3b-4ba9-afa0-c4a0632cced5",
             model="Safe",
             name="Dagobert's safe",
             provides_forecast=True,
@@ -106,7 +106,7 @@ class ResourceManagerDetailsTest(TestCase):
                 CommodityQuantity.HEAT_THERMAL_POWER,
                 CommodityQuantity.ELECTRIC_POWER_3_PHASE_SYMMETRIC,
             ],
-            resource_id=uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced6"),
+            resource_id="3bdec96b-be3b-4ba9-afa0-c4a0632cced6",
             roles=[
                 Role(commodity=Commodity.HEAT, role=RoleType.ENERGY_PRODUCER),
                 Role(commodity=Commodity.ELECTRICITY, role=RoleType.ENERGY_CONSUMER),
