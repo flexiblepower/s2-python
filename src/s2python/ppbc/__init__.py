@@ -1,1 +1,2 @@
 from s2python.ppbc.ppbc_schedule_instruction import PPBCScheduleInstruction
+from s2python.ppbc.ppbc_end_interruption_instruction import PPBCEndInterruptionInstruction
