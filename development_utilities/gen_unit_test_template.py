@@ -17,6 +17,7 @@ from typing import (
 import uuid
 
 import pydantic
+from pydantic.types import AwareDatetime
 
 from s2python import frbc
 from s2python.common import Duration, PowerRange, NumberRange
@@ -64,7 +65,7 @@ def get_list_arg(field_type):
 
 
 def is_enum(field_type):
-    return issubclass(field_type, Enum)
+    return inspect.isclass(field_type) and issubclass(field_type, Enum)
 
 
 def snake_case(camelcased: str) -> str:
@@ -111,6 +112,17 @@ def generate_json_test_data_for_field(field_type: Type):
         value = bool(random.randint(0, 1))
     elif field_type is float:
         value = random.random() * 9000.0
+    elif field_type is AwareDatetime:
+        # Generate a timezone-aware datetime
+        value = datetime.datetime(
+            year=random.randint(2020, 2023),
+            month=random.randint(1, 12),
+            day=random.randint(1, 28),
+            hour=random.randint(0, 23),
+            minute=random.randint(0, 59),
+            second=random.randint(0, 59),
+            tzinfo=datetime.timezone(datetime.timedelta(hours=random.randint(-12, 14))),
+        )
     elif field_type is datetime.datetime:
         value = datetime.datetime(
             year=random.randint(2020, 2023),
@@ -167,10 +179,15 @@ def dump_test_data_as_constructor_field_for(test_data, field_type: Type) -> str:
         value = str(test_data)
     elif field_type is float:
         value = str(test_data)
-    elif field_type is datetime.datetime:
+    elif field_type is AwareDatetime or field_type is datetime.datetime:
         test_data: datetime.datetime
         offset: datetime.timedelta = test_data.tzinfo.utcoffset(None)
-        value = f"datetime(year={test_data.year}, month={test_data.month}, day={test_data.day}, hour={test_data.hour}, minute={test_data.minute}, second={test_data.second}, tzinfo=offset(offset=timedelta(seconds={offset.total_seconds()})))"
+        value = (
+            f"datetime("
+            f"year={test_data.year}, month={test_data.month}, day={test_data.day}, "
+            f"hour={test_data.hour}, minute={test_data.minute}, second={test_data.second}, "
+            f"tzinfo=offset(offset=timedelta(seconds={offset.total_seconds()})))"
+        )
     elif field_type is uuid.UUID:
         value = f'uuid.UUID("{test_data}")'
     else:
@@ -217,7 +234,7 @@ def dump_test_data_as_json_field_for(test_data, field_type: Type):
         value = test_data
     elif field_type is float:
         value = test_data
-    elif field_type is datetime.datetime:
+    elif field_type is AwareDatetime or field_type is datetime.datetime:
         test_data: datetime.datetime
         value = test_data.isoformat()
     elif field_type is uuid.UUID:
