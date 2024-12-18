@@ -190,7 +190,10 @@ def dump_test_data_as_constructor_field_for(test_data, field_type: Type) -> str:
         )
     elif field_type is uuid.UUID:
         value = f'uuid.UUID("{test_data}")'
+    elif type(field_type).__name__ == "_LiteralGenericAlias":
+        value = field_type.__args__[0]
     else:
+        breakpoint()
         raise RuntimeError(
             f"Please implement dump test data for field type {field_type}"
         )
@@ -239,6 +242,8 @@ def dump_test_data_as_json_field_for(test_data, field_type: Type):
         value = test_data.isoformat()
     elif field_type is uuid.UUID:
         value = str(test_data)
+    elif type(field_type).__name__ == "_LiteralGenericAlias":
+        value = test_data
     else:
         raise RuntimeError(
             f"Please implement dump test data to json for field type {field_type}"

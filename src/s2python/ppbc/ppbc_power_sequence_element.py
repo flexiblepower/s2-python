@@ -24,5 +24,3 @@ class PPBCPowerSequenceElement(
     power_values: List[PowerForecastValue] = GenPPBCPowerSequenceElement.model_fields[
         "power_values"
     ]
-
-    
