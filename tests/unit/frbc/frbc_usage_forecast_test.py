@@ -1,3 +1,4 @@
+
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
@@ -12,21 +13,21 @@ class FRBCUsageForecastTest(TestCase):
         # Arrange
         json_str = """
 {
+    "message_type": "FRBC.UsageForecast",
+    "message_id": "88f742b5-ef8e-4af9-8ae4-633922859a8e",
+    "start_time": "2022-11-21T01:57:56-09:00",
     "elements": [
         {
-            "duration": 14010,
-            "usage_rate_expected": 8032.572599815139,
-            "usage_rate_lower_68PPR": 3910.197692207213,
-            "usage_rate_lower_95PPR": 6541.633895752248,
-            "usage_rate_lower_limit": 3419.1709124422173,
-            "usage_rate_upper_68PPR": 7146.0702352976305,
-            "usage_rate_upper_95PPR": 627.7040858037238,
-            "usage_rate_upper_limit": 8477.800850190179
+            "duration": 8336,
+            "usage_rate_upper_limit": 2600.090517037444,
+            "usage_rate_upper_95PPR": 5466.368905051084,
+            "usage_rate_upper_68PPR": 7874.9948212758245,
+            "usage_rate_expected": 1233.4751600765392,
+            "usage_rate_lower_68PPR": 1785.90944809586,
+            "usage_rate_lower_95PPR": 1047.0960233716157,
+            "usage_rate_lower_limit": 4680.219153555034
         }
-    ],
-    "message_id": "4a91b4ab-21fb-42ae-b97d-6170f8b922cc",
-    "message_type": "FRBC.UsageForecast",
-    "start_time": "2023-03-25T13:48:35+02:00"
+    ]
 }
         """
 
@@ -34,86 +35,28 @@ class FRBCUsageForecastTest(TestCase):
         frbc_usage_forecast = FRBCUsageForecast.from_json(json_str)
 
         # Assert
-        self.assertEqual(
-            frbc_usage_forecast.elements,
-            [
-                FRBCUsageForecastElement(
-                    duration=Duration.from_timedelta(timedelta(milliseconds=14010)),
-                    usage_rate_expected=8032.572599815139,
-                    usage_rate_lower_68PPR=3910.197692207213,
-                    usage_rate_lower_95PPR=6541.633895752248,
-                    usage_rate_lower_limit=3419.1709124422173,
-                    usage_rate_upper_68PPR=7146.0702352976305,
-                    usage_rate_upper_95PPR=627.7040858037238,
-                    usage_rate_upper_limit=8477.800850190179,
-                )
-            ],
-        )
-        self.assertEqual(
-            frbc_usage_forecast.message_id,
-            uuid.UUID("4a91b4ab-21fb-42ae-b97d-6170f8b922cc"),
-        )
-        self.assertEqual(frbc_usage_forecast.message_type, "FRBC.UsageForecast")
-        self.assertEqual(
-            frbc_usage_forecast.start_time,
-            datetime(
-                year=2023,
-                month=3,
-                day=25,
-                hour=13,
-                minute=48,
-                second=35,
-                tzinfo=offset(offset=timedelta(seconds=7200.0)),
-            ),
-        )
+        self.assertEqual(frbc_usage_forecast.message_type, FRBC.UsageForecast)
+        self.assertEqual(frbc_usage_forecast.message_id, uuid.UUID("88f742b5-ef8e-4af9-8ae4-633922859a8e"))
+        self.assertEqual(frbc_usage_forecast.start_time, datetime(year=2022, month=11, day=21, hour=1, minute=57, second=56, tzinfo=offset(offset=timedelta(seconds=-32400.0))))
+        self.assertEqual(frbc_usage_forecast.elements, [FRBCUsageForecastElement(duration=Duration.from_timedelta(timedelta(milliseconds=8336)), usage_rate_upper_limit=2600.090517037444, usage_rate_upper_95PPR=5466.368905051084, usage_rate_upper_68PPR=7874.9948212758245, usage_rate_expected=1233.4751600765392, usage_rate_lower_68PPR=1785.90944809586, usage_rate_lower_95PPR=1047.0960233716157, usage_rate_lower_limit=4680.219153555034)])
 
     def test__to_json__happy_path_full(self):
         # Arrange
-        frbc_usage_forecast = FRBCUsageForecast(
-            elements=[
-                FRBCUsageForecastElement(
-                    duration=Duration.from_timedelta(timedelta(milliseconds=14010)),
-                    usage_rate_expected=8032.572599815139,
-                    usage_rate_lower_68PPR=3910.197692207213,
-                    usage_rate_lower_95PPR=6541.633895752248,
-                    usage_rate_lower_limit=3419.1709124422173,
-                    usage_rate_upper_68PPR=7146.0702352976305,
-                    usage_rate_upper_95PPR=627.7040858037238,
-                    usage_rate_upper_limit=8477.800850190179,
-                )
-            ],
-            message_id=uuid.UUID("4a91b4ab-21fb-42ae-b97d-6170f8b922cc"),
-            message_type="FRBC.UsageForecast",
-            start_time=datetime(
-                year=2023,
-                month=3,
-                day=25,
-                hour=13,
-                minute=48,
-                second=35,
-                tzinfo=offset(offset=timedelta(seconds=7200.0)),
-            ),
-        )
+        frbc_usage_forecast = FRBCUsageForecast(message_type=FRBC.UsageForecast, message_id=uuid.UUID("88f742b5-ef8e-4af9-8ae4-633922859a8e"), start_time=datetime(year=2022, month=11, day=21, hour=1, minute=57, second=56, tzinfo=offset(offset=timedelta(seconds=-32400.0))), elements=[FRBCUsageForecastElement(duration=Duration.from_timedelta(timedelta(milliseconds=8336)), usage_rate_upper_limit=2600.090517037444, usage_rate_upper_95PPR=5466.368905051084, usage_rate_upper_68PPR=7874.9948212758245, usage_rate_expected=1233.4751600765392, usage_rate_lower_68PPR=1785.90944809586, usage_rate_lower_95PPR=1047.0960233716157, usage_rate_lower_limit=4680.219153555034)])
 
         # Act
         json_str = frbc_usage_forecast.to_json()
 
         # Assert
-        expected_json = {
-            "elements": [
-                {
-                    "duration": 14010,
-                    "usage_rate_expected": 8032.572599815139,
-                    "usage_rate_lower_68PPR": 3910.197692207213,
-                    "usage_rate_lower_95PPR": 6541.633895752248,
-                    "usage_rate_lower_limit": 3419.1709124422173,
-                    "usage_rate_upper_68PPR": 7146.0702352976305,
-                    "usage_rate_upper_95PPR": 627.7040858037238,
-                    "usage_rate_upper_limit": 8477.800850190179,
-                }
-            ],
-            "message_id": "4a91b4ab-21fb-42ae-b97d-6170f8b922cc",
-            "message_type": "FRBC.UsageForecast",
-            "start_time": "2023-03-25T13:48:35+02:00",
-        }
+        expected_json = {   'elements': [   {   'duration': 8336,
+                        'usage_rate_expected': 1233.4751600765392,
+                        'usage_rate_lower_68PPR': 1785.90944809586,
+                        'usage_rate_lower_95PPR': 1047.0960233716157,
+                        'usage_rate_lower_limit': 4680.219153555034,
+                        'usage_rate_upper_68PPR': 7874.9948212758245,
+                        'usage_rate_upper_95PPR': 5466.368905051084,
+                        'usage_rate_upper_limit': 2600.090517037444}],
+    'message_id': '88f742b5-ef8e-4af9-8ae4-633922859a8e',
+    'message_type': 'FRBC.UsageForecast',
+    'start_time': '2022-11-21T01:57:56-09:00'}
         self.assertEqual(json.loads(json_str), expected_json)

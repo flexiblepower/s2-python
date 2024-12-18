@@ -1,3 +1,4 @@
+
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
@@ -12,18 +13,18 @@ class FRBCLeakageBehaviourTest(TestCase):
         # Arrange
         json_str = """
 {
+    "message_type": "FRBC.LeakageBehaviour",
+    "message_id": "f681fa18-589b-4081-a85b-cdb608795248",
+    "valid_from": "2023-09-26T17:14:46+13:00",
     "elements": [
         {
             "fill_level_range": {
-                "end_of_range": 31155.931914859895,
-                "start_of_range": 5727.722922773178
+                "start_of_range": 5349.224337716178,
+                "end_of_range": 26642.603531976765
             },
-            "leakage_rate": 1225.9695121338086
+            "leakage_rate": 3062.489155126407
         }
-    ],
-    "message_id": "b3e9604a-1127-4ecc-9f9e-336047fde285",
-    "message_type": "FRBC.LeakageBehaviour",
-    "valid_from": "2022-05-26T15:02:32Z"
+    ]
 }
         """
 
@@ -31,77 +32,23 @@ class FRBCLeakageBehaviourTest(TestCase):
         frbc_leakage_behaviour = FRBCLeakageBehaviour.from_json(json_str)
 
         # Assert
-        self.assertEqual(
-            frbc_leakage_behaviour.elements,
-            [
-                FRBCLeakageBehaviourElement(
-                    fill_level_range=NumberRange(
-                        end_of_range=31155.931914859895,
-                        start_of_range=5727.722922773178,
-                    ),
-                    leakage_rate=1225.9695121338086,
-                )
-            ],
-        )
-        self.assertEqual(
-            frbc_leakage_behaviour.message_id,
-            uuid.UUID("b3e9604a-1127-4ecc-9f9e-336047fde285"),
-        )
-        self.assertEqual(frbc_leakage_behaviour.message_type, "FRBC.LeakageBehaviour")
-        self.assertEqual(
-            frbc_leakage_behaviour.valid_from,
-            datetime(
-                year=2022,
-                month=5,
-                day=26,
-                hour=15,
-                minute=2,
-                second=32,
-                tzinfo=offset(offset=timedelta(seconds=0.0)),
-            ),
-        )
+        self.assertEqual(frbc_leakage_behaviour.message_type, FRBC.LeakageBehaviour)
+        self.assertEqual(frbc_leakage_behaviour.message_id, uuid.UUID("f681fa18-589b-4081-a85b-cdb608795248"))
+        self.assertEqual(frbc_leakage_behaviour.valid_from, datetime(year=2023, month=9, day=26, hour=17, minute=14, second=46, tzinfo=offset(offset=timedelta(seconds=46800.0))))
+        self.assertEqual(frbc_leakage_behaviour.elements, [FRBCLeakageBehaviourElement(fill_level_range=NumberRange(start_of_range=5349.224337716178, end_of_range=26642.603531976765), leakage_rate=3062.489155126407)])
 
     def test__to_json__happy_path_full(self):
         # Arrange
-        frbc_leakage_behaviour = FRBCLeakageBehaviour(
-            elements=[
-                FRBCLeakageBehaviourElement(
-                    fill_level_range=NumberRange(
-                        end_of_range=31155.931914859895,
-                        start_of_range=5727.722922773178,
-                    ),
-                    leakage_rate=1225.9695121338086,
-                )
-            ],
-            message_id=uuid.UUID("b3e9604a-1127-4ecc-9f9e-336047fde285"),
-            message_type="FRBC.LeakageBehaviour",
-            valid_from=datetime(
-                year=2022,
-                month=5,
-                day=26,
-                hour=15,
-                minute=2,
-                second=32,
-                tzinfo=offset(offset=timedelta(seconds=0.0)),
-            ),
-        )
+        frbc_leakage_behaviour = FRBCLeakageBehaviour(message_type=FRBC.LeakageBehaviour, message_id=uuid.UUID("f681fa18-589b-4081-a85b-cdb608795248"), valid_from=datetime(year=2023, month=9, day=26, hour=17, minute=14, second=46, tzinfo=offset(offset=timedelta(seconds=46800.0))), elements=[FRBCLeakageBehaviourElement(fill_level_range=NumberRange(start_of_range=5349.224337716178, end_of_range=26642.603531976765), leakage_rate=3062.489155126407)])
 
         # Act
         json_str = frbc_leakage_behaviour.to_json()
 
         # Assert
-        expected_json = {
-            "elements": [
-                {
-                    "fill_level_range": {
-                        "end_of_range": 31155.931914859895,
-                        "start_of_range": 5727.722922773178,
-                    },
-                    "leakage_rate": 1225.9695121338086,
-                }
-            ],
-            "message_id": "b3e9604a-1127-4ecc-9f9e-336047fde285",
-            "message_type": "FRBC.LeakageBehaviour",
-            "valid_from": "2022-05-26T15:02:32Z",
-        }
+        expected_json = {   'elements': [   {   'fill_level_range': {   'end_of_range': 26642.603531976765,
+                                                'start_of_range': 5349.224337716178},
+                        'leakage_rate': 3062.489155126407}],
+    'message_id': 'f681fa18-589b-4081-a85b-cdb608795248',
+    'message_type': 'FRBC.LeakageBehaviour',
+    'valid_from': '2023-09-26T17:14:46+13:00'}
         self.assertEqual(json.loads(json_str), expected_json)

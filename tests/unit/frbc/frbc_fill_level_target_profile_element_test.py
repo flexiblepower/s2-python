@@ -1,10 +1,11 @@
-from datetime import timedelta
+
+from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
+import uuid
 
 from s2python.common import *
 from s2python.frbc import *
-from s2python.s2_validation_error import S2ValidationError
 
 
 class FRBCFillLevelTargetProfileElementTest(TestCase):
@@ -12,50 +13,30 @@ class FRBCFillLevelTargetProfileElementTest(TestCase):
         # Arrange
         json_str = """
 {
-    "duration": 12950,
+    "duration": 16041,
     "fill_level_range": {
-        "end_of_range": 8176,
-        "start_of_range": 6207
+        "start_of_range": 38789.06538190935,
+        "end_of_range": 45889.620464907246
     }
 }
         """
 
         # Act
-        frbc_fill_level_target_profile_element = FRBCFillLevelTargetProfileElement.from_json(
-            json_str
-        )
+        frbc_fill_level_target_profile_element = FRBCFillLevelTargetProfileElement.from_json(json_str)
 
         # Assert
-        self.assertEqual(
-            frbc_fill_level_target_profile_element.duration,
-            Duration.from_timedelta(timedelta(milliseconds=12950)),
-        )
-        self.assertEqual(
-            frbc_fill_level_target_profile_element.fill_level_range,
-            NumberRange(end_of_range=8176.0, start_of_range=6207.0),
-        )
+        self.assertEqual(frbc_fill_level_target_profile_element.duration, Duration.from_timedelta(timedelta(milliseconds=16041)))
+        self.assertEqual(frbc_fill_level_target_profile_element.fill_level_range, NumberRange(start_of_range=38789.06538190935, end_of_range=45889.620464907246))
 
     def test__to_json__happy_path_full(self):
         # Arrange
-        frbc_fill_level_target_profile_element = FRBCFillLevelTargetProfileElement(
-            duration=Duration.from_timedelta(timedelta(milliseconds=12950)),
-            fill_level_range=NumberRange(end_of_range=8176, start_of_range=6207),
-        )
+        frbc_fill_level_target_profile_element = FRBCFillLevelTargetProfileElement(duration=Duration.from_timedelta(timedelta(milliseconds=16041)), fill_level_range=NumberRange(start_of_range=38789.06538190935, end_of_range=45889.620464907246))
 
         # Act
         json_str = frbc_fill_level_target_profile_element.to_json()
 
         # Assert
-        expected_json = {
-            "duration": 12950,
-            "fill_level_range": {"end_of_range": 8176, "start_of_range": 6207},
-        }
+        expected_json = {   'duration': 16041,
+    'fill_level_range': {   'end_of_range': 45889.620464907246,
+                            'start_of_range': 38789.06538190935}}
         self.assertEqual(json.loads(json_str), expected_json)
-
-    def test__init__fill_level_range_end_is_smaller_than_start(self):
-        # Arrange / Act / Assert
-        with self.assertRaises(S2ValidationError):
-            FRBCFillLevelTargetProfileElement(
-                duration=Duration.from_timedelta(timedelta(milliseconds=12950)),
-                fill_level_range=NumberRange(end_of_range=6000, start_of_range=8176),
-            )

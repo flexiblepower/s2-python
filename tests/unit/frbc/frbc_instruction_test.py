@@ -1,3 +1,4 @@
+
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
@@ -12,14 +13,14 @@ class FRBCInstructionTest(TestCase):
         # Arrange
         json_str = """
 {
-    "abnormal_condition": true,
-    "actuator_id": "db7855dd-05c4-4ba8-81e2-d10001c5bc3f",
-    "execution_time": "2023-04-11T16:46:33+01:00",
-    "id": "9ffd68cd-b0e2-44a6-aded-4dce6c18247e",
-    "message_id": "bcb3e1da-e797-4951-86be-5e5d9136c63f",
     "message_type": "FRBC.Instruction",
-    "operation_mode": "e7bf29a7-4ebc-49c1-a1fb-20725f450c91",
-    "operation_mode_factor": 2303.58902271682
+    "message_id": "185b511f-725d-42c8-a1db-523cda5c45a9",
+    "id": "8db97bd0-258e-4a8b-92be-40e10b1c7a2c",
+    "actuator_id": "cb06550c-e8a2-418d-8885-24a530dde4c4",
+    "operation_mode": "4a687962-da90-4379-9190-5d1d68f9dd18",
+    "operation_mode_factor": 4456.156981790672,
+    "execution_time": "2020-11-11T07:59:54-11:00",
+    "abnormal_condition": true
 }
         """
 
@@ -27,70 +28,29 @@ class FRBCInstructionTest(TestCase):
         frbc_instruction = FRBCInstruction.from_json(json_str)
 
         # Assert
+        self.assertEqual(frbc_instruction.message_type, FRBC.Instruction)
+        self.assertEqual(frbc_instruction.message_id, uuid.UUID("185b511f-725d-42c8-a1db-523cda5c45a9"))
+        self.assertEqual(frbc_instruction.id, uuid.UUID("8db97bd0-258e-4a8b-92be-40e10b1c7a2c"))
+        self.assertEqual(frbc_instruction.actuator_id, uuid.UUID("cb06550c-e8a2-418d-8885-24a530dde4c4"))
+        self.assertEqual(frbc_instruction.operation_mode, uuid.UUID("4a687962-da90-4379-9190-5d1d68f9dd18"))
+        self.assertEqual(frbc_instruction.operation_mode_factor, 4456.156981790672)
+        self.assertEqual(frbc_instruction.execution_time, datetime(year=2020, month=11, day=11, hour=7, minute=59, second=54, tzinfo=offset(offset=timedelta(seconds=-39600.0))))
         self.assertEqual(frbc_instruction.abnormal_condition, True)
-        self.assertEqual(
-            frbc_instruction.actuator_id,
-            uuid.UUID("db7855dd-05c4-4ba8-81e2-d10001c5bc3f"),
-        )
-        self.assertEqual(
-            frbc_instruction.execution_time,
-            datetime(
-                year=2023,
-                month=4,
-                day=11,
-                hour=16,
-                minute=46,
-                second=33,
-                tzinfo=offset(offset=timedelta(seconds=3600.0)),
-            ),
-        )
-        self.assertEqual(
-            frbc_instruction.id, uuid.UUID("9ffd68cd-b0e2-44a6-aded-4dce6c18247e")
-        )
-        self.assertEqual(
-            frbc_instruction.message_id,
-            uuid.UUID("bcb3e1da-e797-4951-86be-5e5d9136c63f"),
-        )
-        self.assertEqual(frbc_instruction.message_type, "FRBC.Instruction")
-        self.assertEqual(
-            frbc_instruction.operation_mode,
-            uuid.UUID("e7bf29a7-4ebc-49c1-a1fb-20725f450c91"),
-        )
-        self.assertEqual(frbc_instruction.operation_mode_factor, 2303.58902271682)
 
     def test__to_json__happy_path_full(self):
         # Arrange
-        frbc_instruction = FRBCInstruction(
-            abnormal_condition=True,
-            actuator_id=uuid.UUID("db7855dd-05c4-4ba8-81e2-d10001c5bc3f"),
-            execution_time=datetime(
-                year=2023,
-                month=4,
-                day=11,
-                hour=16,
-                minute=46,
-                second=33,
-                tzinfo=offset(offset=timedelta(seconds=3600.0)),
-            ),
-            id=uuid.UUID("9ffd68cd-b0e2-44a6-aded-4dce6c18247e"),
-            message_id=uuid.UUID("bcb3e1da-e797-4951-86be-5e5d9136c63f"),
-            message_type="FRBC.Instruction",
-            operation_mode=uuid.UUID("e7bf29a7-4ebc-49c1-a1fb-20725f450c91"),
-            operation_mode_factor=2303.58902271682,
-        )
+        frbc_instruction = FRBCInstruction(message_type=FRBC.Instruction, message_id=uuid.UUID("185b511f-725d-42c8-a1db-523cda5c45a9"), id=uuid.UUID("8db97bd0-258e-4a8b-92be-40e10b1c7a2c"), actuator_id=uuid.UUID("cb06550c-e8a2-418d-8885-24a530dde4c4"), operation_mode=uuid.UUID("4a687962-da90-4379-9190-5d1d68f9dd18"), operation_mode_factor=4456.156981790672, execution_time=datetime(year=2020, month=11, day=11, hour=7, minute=59, second=54, tzinfo=offset(offset=timedelta(seconds=-39600.0))), abnormal_condition=True)
 
         # Act
         json_str = frbc_instruction.to_json()
 
         # Assert
-        expected_json = {
-            "abnormal_condition": True,
-            "actuator_id": "db7855dd-05c4-4ba8-81e2-d10001c5bc3f",
-            "execution_time": "2023-04-11T16:46:33+01:00",
-            "id": "9ffd68cd-b0e2-44a6-aded-4dce6c18247e",
-            "message_id": "bcb3e1da-e797-4951-86be-5e5d9136c63f",
-            "message_type": "FRBC.Instruction",
-            "operation_mode": "e7bf29a7-4ebc-49c1-a1fb-20725f450c91",
-            "operation_mode_factor": 2303.58902271682,
-        }
+        expected_json = {   'abnormal_condition': True,
+    'actuator_id': 'cb06550c-e8a2-418d-8885-24a530dde4c4',
+    'execution_time': '2020-11-11T07:59:54-11:00',
+    'id': '8db97bd0-258e-4a8b-92be-40e10b1c7a2c',
+    'message_id': '185b511f-725d-42c8-a1db-523cda5c45a9',
+    'message_type': 'FRBC.Instruction',
+    'operation_mode': '4a687962-da90-4379-9190-5d1d68f9dd18',
+    'operation_mode_factor': 4456.156981790672}
         self.assertEqual(json.loads(json_str), expected_json)
