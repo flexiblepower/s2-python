@@ -36,9 +36,11 @@ class FRBCControlType(S2ControlType):
         self, conn: "S2Connection", msg: S2Message, send_okay: typing.Callable[[], None]
     ) -> None: ...
 
+    # TODO
     @abc.abstractmethod
     def activate(self, conn: "S2Connection") -> None: ...
 
+    # TODO
     @abc.abstractmethod
     def deactivate(self, conn: "S2Connection") -> None: ...
 
@@ -55,9 +57,11 @@ class PPBCControlType(S2ControlType):
         self, conn: "S2Connection", msg: S2Message, send_okay: typing.Callable[[], None]
     ) -> None: ...
 
+    # TODO
     @abc.abstractmethod
     def activate(self, conn: "S2Connection") -> None: ...
 
+    # TODO
     @abc.abstractmethod
     def deactivate(self, conn: "S2Connection") -> None: ...
 

@@ -90,7 +90,9 @@ class MyFRBCControlType(FRBCControlType):
                     )
                 ],
                 storage=FRBCStorageDescription(
-                    fill_level_range=NumberRange(start_of_range=0.0, end_of_range=100.0),
+                    fill_level_range=NumberRange(
+                        start_of_range=0.0, end_of_range=100.0
+                    ),
                     fill_level_label="%",
                     diagnostic_label="Imaginary battery",
                     provides_fill_level_target_profile=True,
@@ -108,11 +110,15 @@ class MyFRBCControlType(FRBCControlType):
                 elements=[
                     FRBCFillLevelTargetProfileElement(
                         duration=Duration.from_milliseconds(30_000),
-                        fill_level_range=NumberRange(start_of_range=20.0, end_of_range=30.0),
+                        fill_level_range=NumberRange(
+                            start_of_range=20.0, end_of_range=30.0
+                        ),
                     ),
                     FRBCFillLevelTargetProfileElement(
                         duration=Duration.from_milliseconds(300_000),
-                        fill_level_range=NumberRange(start_of_range=40.0, end_of_range=50.0),
+                        fill_level_range=NumberRange(
+                            start_of_range=40.0, end_of_range=50.0
+                        ),
                     ),
                 ],
             )
