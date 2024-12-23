@@ -1,4 +1,3 @@
-from typing import List
 import uuid
 
 from s2python.generated.gen_s2 import (
