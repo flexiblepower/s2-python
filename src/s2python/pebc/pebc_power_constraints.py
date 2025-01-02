@@ -21,3 +21,4 @@ class PEBCPowerConstraints(GenPEBCPowerConstraints, S2Message["PEBCPowerConstrai
     id: uuid.UUID = GenPEBCPowerConstraints.model_fields["id"]  # type: ignore[assignment]
     consequence_type: GenPEBCPowerEnvelopeConsequenceType = GenPEBCPowerConstraints.model_fields["consequence_type"]  # type: ignore[assignment]
     allowed_limit_ranges: List[PEBCAllowedLimitRange] = GenPEBCPowerConstraints.model_fields["allowed_limit_ranges"]  # type: ignore[assignment]
+    pass
