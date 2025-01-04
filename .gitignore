@@ -12,4 +12,3 @@ venv
 .tox/
 dist/
 build/
-tests/unit/frbc

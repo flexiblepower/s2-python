@@ -13,9 +13,7 @@ from typing import (
     TypeVar,
     Callable,
     Sequence,
-    Literal,
 )
-from typing_extensions import _LiteralGenericAlias
 import uuid
 
 import pydantic
