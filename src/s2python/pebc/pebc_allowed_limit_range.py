@@ -21,4 +21,6 @@ class PEBCAllowedLimitRange(GenPEBCAllowedLimitRange, S2Message["PEBCAllowedLimi
         "limit_type"
     ]  # type: ignore[assignment]
     range_boundary: NumberRange = GenPEBCAllowedLimitRange.model_fields["range_boundary"]  # type: ignore[assignment]
-    abnormal_condition_only: bool = GenPEBCAllowedLimitRange.model_fields["abnormal_condition_only"]  # type: ignore[assignment]
+    abnormal_condition_only: bool = [
+        GenPEBCAllowedLimitRange.model_fields["abnormal_condition_only"]  # type: ignore[assignment]
+    ]

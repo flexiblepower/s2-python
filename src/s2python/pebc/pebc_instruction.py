@@ -18,6 +18,10 @@ class PEBCInstruction(GenPEBCInstruction, S2Message["PEBCInstruction"]):
 
     message_id: uuid.UUID = GenPEBCInstruction.model_fields["message_id"]  # type: ignore[assignment]
     id: uuid.UUID = GenPEBCInstruction.model_fields["id"]  # type: ignore[assignment]
-    power_constraints_id: uuid.UUID = GenPEBCInstruction.model_fields["power_constraints_id"]  # type: ignore[assignment]
-    power_envelopes: List[PEBCPowerEnvelope] = GenPEBCInstruction.model_fields["power_envelopes"]  # type: ignore[assignment]
+    power_constraints_id: uuid.UUID = [
+        GenPEBCInstruction.model_fields["power_constraints_id"]  # type: ignore[assignment]
+    ]
+    power_envelopes: List[PEBCPowerEnvelope] = [
+        GenPEBCInstruction.model_fields["power_envelopes"]  # type: ignore[assignment]
+    ]
     abnormal_conditions: bool = GenPEBCInstruction.model_fields["abnormal_conditions"]  # type: ignore[assignment]

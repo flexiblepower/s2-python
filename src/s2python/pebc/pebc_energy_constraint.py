@@ -20,4 +20,6 @@ class PEBCEnergyConstraint(GenPEBCEnergyConstraint, S2Message["PEBCEnergyConstra
 
     upper_average_power: float = GenPEBCEnergyConstraint.model_fields["upper_average_power"]  # type: ignore[assignment]
     lower_average_power: float = GenPEBCEnergyConstraint.model_fields["lower_average_power"]  # type: ignore[assignment]
-    commodity_quantity: CommodityQuantity = GenPEBCEnergyConstraint.model_fields["commodity_quantity"]  # type: ignore[assignment]
+    commodity_quantity: CommodityQuantity = [
+        GenPEBCEnergyConstraint.model_fields["commodity_quantity"]  # type: ignore[assignment]
+    ]
