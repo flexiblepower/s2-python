@@ -1,4 +1,5 @@
 import uuid
+from typing import Union
 
 from s2python.generated.gen_s2 import (
     PPBCPowerSequenceContainerStatus as GenPPBCPowerSequenceContainerStatus,
@@ -24,9 +25,9 @@ class PPBCPowerSequenceContainerStatus(
     sequence_container_id: uuid.UUID = GenPPBCPowerSequenceContainerStatus.model_fields[
         "sequence_container_id"  # type: ignore[assignment]
     ]
-    selected_sequence_id: uuid.UUID | None = (
+    selected_sequence_id: Union[uuid.UUID, None] = (
         GenPPBCPowerSequenceContainerStatus.model_fields["selected_sequence_id"]  # type: ignore[assignment]
     )
-    progress: Duration | None = GenPPBCPowerSequenceContainerStatus.model_fields[
+    progress: Union[uuid.UUID, None] = GenPPBCPowerSequenceContainerStatus.model_fields[
         "progress"  # type: ignore[assignment]
     ]
