@@ -1,4 +1,3 @@
-
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
@@ -13,13 +12,13 @@ class FRBCActuatorStatusTest(TestCase):
         # Arrange
         json_str = """
 {
+    "active_operation_mode_id": "395dcbc5-5c7f-415e-8727-e48fc53761bc",
+    "actuator_id": "1cee425e-861b-417a-8208-bb6d53aafb00",
+    "message_id": "07f3d559-63c5-4369-a9e0-deed4195f651",
     "message_type": "FRBC.ActuatorStatus",
-    "message_id": "4dbb1dee-cda6-46d8-92f7-98c1f0cd4157",
-    "actuator_id": "0b6552ac-7af4-4627-87da-30fef76d22b7",
-    "active_operation_mode_id": "b1ff587d-8257-4644-8adf-7e0a7787863e",
-    "operation_mode_factor": 674.4963166817159,
-    "previous_operation_mode_id": "7b2553e7-ae6c-4ce4-8059-3712e33b0648",
-    "transition_timestamp": "2022-11-24T09:56:49+08:00"
+    "operation_mode_factor": 6919.960475850124,
+    "previous_operation_mode_id": "2ed8f7de-cbaa-4cab-9d25-6792317aa284",
+    "transition_timestamp": "2020-01-02T07:56:46Z"
 }
         """
 
@@ -27,27 +26,68 @@ class FRBCActuatorStatusTest(TestCase):
         frbc_actuator_status = FRBCActuatorStatus.from_json(json_str)
 
         # Assert
-        self.assertEqual(frbc_actuator_status.message_type, FRBC.ActuatorStatus)
-        self.assertEqual(frbc_actuator_status.message_id, uuid.UUID("4dbb1dee-cda6-46d8-92f7-98c1f0cd4157"))
-        self.assertEqual(frbc_actuator_status.actuator_id, uuid.UUID("0b6552ac-7af4-4627-87da-30fef76d22b7"))
-        self.assertEqual(frbc_actuator_status.active_operation_mode_id, uuid.UUID("b1ff587d-8257-4644-8adf-7e0a7787863e"))
-        self.assertEqual(frbc_actuator_status.operation_mode_factor, 674.4963166817159)
-        self.assertEqual(frbc_actuator_status.previous_operation_mode_id, uuid.UUID("7b2553e7-ae6c-4ce4-8059-3712e33b0648"))
-        self.assertEqual(frbc_actuator_status.transition_timestamp, datetime(year=2022, month=11, day=24, hour=9, minute=56, second=49, tzinfo=offset(offset=timedelta(seconds=28800.0))))
+        self.assertEqual(
+            frbc_actuator_status.active_operation_mode_id,
+            uuid.UUID("395dcbc5-5c7f-415e-8727-e48fc53761bc"),
+        )
+        self.assertEqual(
+            frbc_actuator_status.actuator_id,
+            uuid.UUID("1cee425e-861b-417a-8208-bb6d53aafb00"),
+        )
+        self.assertEqual(
+            frbc_actuator_status.message_id,
+            uuid.UUID("07f3d559-63c5-4369-a9e0-deed4195f651"),
+        )
+        self.assertEqual(frbc_actuator_status.message_type, "FRBC.ActuatorStatus")
+        self.assertEqual(frbc_actuator_status.operation_mode_factor, 6919.960475850124)
+        self.assertEqual(
+            frbc_actuator_status.previous_operation_mode_id,
+            uuid.UUID("2ed8f7de-cbaa-4cab-9d25-6792317aa284"),
+        )
+        self.assertEqual(
+            frbc_actuator_status.transition_timestamp,
+            datetime(
+                year=2020,
+                month=1,
+                day=2,
+                hour=7,
+                minute=56,
+                second=46,
+                tzinfo=offset(offset=timedelta(seconds=0.0)),
+            ),
+        )
 
     def test__to_json__happy_path_full(self):
         # Arrange
-        frbc_actuator_status = FRBCActuatorStatus(message_type=FRBC.ActuatorStatus, message_id=uuid.UUID("4dbb1dee-cda6-46d8-92f7-98c1f0cd4157"), actuator_id=uuid.UUID("0b6552ac-7af4-4627-87da-30fef76d22b7"), active_operation_mode_id=uuid.UUID("b1ff587d-8257-4644-8adf-7e0a7787863e"), operation_mode_factor=674.4963166817159, previous_operation_mode_id=uuid.UUID("7b2553e7-ae6c-4ce4-8059-3712e33b0648"), transition_timestamp=datetime(year=2022, month=11, day=24, hour=9, minute=56, second=49, tzinfo=offset(offset=timedelta(seconds=28800.0))))
+        frbc_actuator_status = FRBCActuatorStatus(
+            active_operation_mode_id=uuid.UUID("395dcbc5-5c7f-415e-8727-e48fc53761bc"),
+            actuator_id=uuid.UUID("1cee425e-861b-417a-8208-bb6d53aafb00"),
+            message_id=uuid.UUID("07f3d559-63c5-4369-a9e0-deed4195f651"),
+            message_type="FRBC.ActuatorStatus",
+            operation_mode_factor=6919.960475850124,
+            previous_operation_mode_id=uuid.UUID("2ed8f7de-cbaa-4cab-9d25-6792317aa284"),
+            transition_timestamp=datetime(
+                year=2020,
+                month=1,
+                day=2,
+                hour=7,
+                minute=56,
+                second=46,
+                tzinfo=offset(offset=timedelta(seconds=0.0)),
+            ),
+        )
 
         # Act
         json_str = frbc_actuator_status.to_json()
 
         # Assert
-        expected_json = {   'active_operation_mode_id': 'b1ff587d-8257-4644-8adf-7e0a7787863e',
-    'actuator_id': '0b6552ac-7af4-4627-87da-30fef76d22b7',
-    'message_id': '4dbb1dee-cda6-46d8-92f7-98c1f0cd4157',
-    'message_type': 'FRBC.ActuatorStatus',
-    'operation_mode_factor': 674.4963166817159,
-    'previous_operation_mode_id': '7b2553e7-ae6c-4ce4-8059-3712e33b0648',
-    'transition_timestamp': '2022-11-24T09:56:49+08:00'}
+        expected_json = {
+            "active_operation_mode_id": "395dcbc5-5c7f-415e-8727-e48fc53761bc",
+            "actuator_id": "1cee425e-861b-417a-8208-bb6d53aafb00",
+            "message_id": "07f3d559-63c5-4369-a9e0-deed4195f651",
+            "message_type": "FRBC.ActuatorStatus",
+            "operation_mode_factor": 6919.960475850124,
+            "previous_operation_mode_id": "2ed8f7de-cbaa-4cab-9d25-6792317aa284",
+            "transition_timestamp": "2020-01-02T07:56:46Z",
+        }
         self.assertEqual(json.loads(json_str), expected_json)

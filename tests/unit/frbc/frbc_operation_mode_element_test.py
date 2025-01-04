@@ -1,11 +1,11 @@
-
 from datetime import timedelta, datetime, timezone as offset
 import json
 from unittest import TestCase
 import uuid
 
-from s2python.common import *
-from s2python.frbc import *
+from s2python.common import NumberRange, PowerRange
+from s2python.frbc.frbc_operation_mode_element import FRBCOperationModeElement
+from s2python.generated.gen_s2 import CommodityQuantity
 
 
 class FRBCOperationModeElementTest(TestCase):
@@ -14,23 +14,23 @@ class FRBCOperationModeElementTest(TestCase):
         json_str = """
 {
     "fill_level_range": {
-        "start_of_range": 17902.57617756065,
-        "end_of_range": 23155.498329551232
+        "end_of_range": 51798.05122344172,
+        "start_of_range": 12901.48976850875
     },
     "fill_rate": {
-        "start_of_range": 24592.14185864383,
-        "end_of_range": 64041.99840646259
+        "end_of_range": 35734.54630113551,
+        "start_of_range": 10740.443924585083
     },
     "power_ranges": [
         {
-            "start_of_range": 32526.45719448619,
-            "end_of_range": 71172.61140295293,
-            "commodity_quantity": "ELECTRIC.POWER.L1"
+            "commodity_quantity": "ELECTRIC.POWER.L1",
+            "end_of_range": 69093.48993128976,
+            "start_of_range": 34859.59303603876
         }
     ],
     "running_costs": {
-        "start_of_range": 34310.357669763165,
-        "end_of_range": 49896.43882374468
+        "end_of_range": 47869.03540464825,
+        "start_of_range": 19009.60894672492
     }
 }
         """
@@ -39,26 +39,79 @@ class FRBCOperationModeElementTest(TestCase):
         frbc_operation_mode_element = FRBCOperationModeElement.from_json(json_str)
 
         # Assert
-        self.assertEqual(frbc_operation_mode_element.fill_level_range, NumberRange(start_of_range=17902.57617756065, end_of_range=23155.498329551232))
-        self.assertEqual(frbc_operation_mode_element.fill_rate, NumberRange(start_of_range=24592.14185864383, end_of_range=64041.99840646259))
-        self.assertEqual(frbc_operation_mode_element.power_ranges, [PowerRange(start_of_range=32526.45719448619, end_of_range=71172.61140295293, commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)])
-        self.assertEqual(frbc_operation_mode_element.running_costs, NumberRange(start_of_range=34310.357669763165, end_of_range=49896.43882374468))
+        self.assertEqual(
+            frbc_operation_mode_element.fill_level_range,
+            NumberRange(
+                end_of_range=51798.05122344172, start_of_range=12901.48976850875
+            ),
+        )
+        self.assertEqual(
+            frbc_operation_mode_element.fill_rate,
+            NumberRange(
+                end_of_range=35734.54630113551, start_of_range=10740.443924585083
+            ),
+        )
+        self.assertEqual(
+            frbc_operation_mode_element.power_ranges,
+            [
+                PowerRange(
+                    commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1,
+                    end_of_range=69093.48993128976,
+                    start_of_range=34859.59303603876,
+                )
+            ],
+        )
+        self.assertEqual(
+            frbc_operation_mode_element.running_costs,
+            NumberRange(
+                end_of_range=47869.03540464825, start_of_range=19009.60894672492
+            ),
+        )
 
     def test__to_json__happy_path_full(self):
         # Arrange
-        frbc_operation_mode_element = FRBCOperationModeElement(fill_level_range=NumberRange(start_of_range=17902.57617756065, end_of_range=23155.498329551232), fill_rate=NumberRange(start_of_range=24592.14185864383, end_of_range=64041.99840646259), power_ranges=[PowerRange(start_of_range=32526.45719448619, end_of_range=71172.61140295293, commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1)], running_costs=NumberRange(start_of_range=34310.357669763165, end_of_range=49896.43882374468))
+        frbc_operation_mode_element = FRBCOperationModeElement(
+            fill_level_range=NumberRange(
+                end_of_range=51798.05122344172, start_of_range=12901.48976850875
+            ),
+            fill_rate=NumberRange(
+                end_of_range=35734.54630113551, start_of_range=10740.443924585083
+            ),
+            power_ranges=[
+                PowerRange(
+                    commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1,
+                    end_of_range=69093.48993128976,
+                    start_of_range=34859.59303603876,
+                )
+            ],
+            running_costs=NumberRange(
+                end_of_range=47869.03540464825, start_of_range=19009.60894672492
+            ),
+        )
 
         # Act
         json_str = frbc_operation_mode_element.to_json()
 
         # Assert
-        expected_json = {   'fill_level_range': {   'end_of_range': 23155.498329551232,
-                            'start_of_range': 17902.57617756065},
-    'fill_rate': {   'end_of_range': 64041.99840646259,
-                     'start_of_range': 24592.14185864383},
-    'power_ranges': [   {   'commodity_quantity': 'ELECTRIC.POWER.L1',
-                            'end_of_range': 71172.61140295293,
-                            'start_of_range': 32526.45719448619}],
-    'running_costs': {   'end_of_range': 49896.43882374468,
-                         'start_of_range': 34310.357669763165}}
+        expected_json = {
+            "fill_level_range": {
+                "end_of_range": 51798.05122344172,
+                "start_of_range": 12901.48976850875,
+            },
+            "fill_rate": {
+                "end_of_range": 35734.54630113551,
+                "start_of_range": 10740.443924585083,
+            },
+            "power_ranges": [
+                {
+                    "commodity_quantity": "ELECTRIC.POWER.L1",
+                    "end_of_range": 69093.48993128976,
+                    "start_of_range": 34859.59303603876,
+                }
+            ],
+            "running_costs": {
+                "end_of_range": 47869.03540464825,
+                "start_of_range": 19009.60894672492,
+            },
+        }
         self.assertEqual(json.loads(json_str), expected_json)
