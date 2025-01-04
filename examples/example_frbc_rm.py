@@ -152,7 +152,7 @@ class MyNoControlControlType(NoControlControlType):
 
 
 s2_conn = S2Connection(
-    url="ws://localhost:8080/backend/rm/s2python-frbc/cem/dummy_model/ws",
+    url="ws://localhost:8001/backend/rm/s2python-frbc/cem/dummy_model/ws",
     role=EnergyManagementRole.RM,
     control_types=[MyFRBCControlType(), MyNoControlControlType()],
     asset_details=AssetDetails(
