@@ -9,7 +9,6 @@ from s2python.validate_values_mixin import (
     S2Message,
     catch_and_convert_exceptions,
 )
-from s2python.common import Duration
 
 
 @catch_and_convert_exceptions
