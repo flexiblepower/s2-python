@@ -13,20 +13,20 @@ from s2python.common import Duration
 
 @catch_and_convert_exceptions
 class PPBCPowerSequenceContainerStatus(
-    GenPPBCPowerSequenceContainerStatus, S2Message["PPBCPowerProfileDefinitionStatus"]
+    GenPPBCPowerSequenceContainerStatus, S2Message["PPBCPowerSequenceContainerStatus"]
 ):
     model_config = GenPPBCPowerSequenceContainerStatus.model_config
     model_config["validate_assignment"] = True
 
     power_profile_id: uuid.UUID = GenPPBCPowerSequenceContainerStatus.model_fields[
-        "power_profile_id"
+        "power_profile_id"  # type: ignore[assignment]
     ]
     sequence_container_id: uuid.UUID = GenPPBCPowerSequenceContainerStatus.model_fields[
-        "sequence_container_id"
+        "sequence_container_id"  # type: ignore[assignment]
     ]
     selected_sequence_id: uuid.UUID | None = (
-        GenPPBCPowerSequenceContainerStatus.model_fields["selected_sequence_id"]
+        GenPPBCPowerSequenceContainerStatus.model_fields["selected_sequence_id"]  # type: ignore[assignment]
     )
     progress: Duration | None = GenPPBCPowerSequenceContainerStatus.model_fields[
-        "progress"
+        "progress"  # type: ignore[assignment]
     ]
