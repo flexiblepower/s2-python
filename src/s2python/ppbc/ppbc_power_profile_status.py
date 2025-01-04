@@ -22,5 +22,5 @@ class PPBCPowerProfileStatus(
     model_config["validate_assignment"] = True
 
     sequence_container_status: List[PPBCPowerSequenceContainerStatus] = (
-        GenPPBCPowerProfileStatus.model_fields["sequence_container_status"]
+        GenPPBCPowerProfileStatus.model_fields["sequence_container_status"]  # type: ignore[assignment]
     )

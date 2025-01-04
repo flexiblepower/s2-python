@@ -19,12 +19,12 @@ class PPBCPowerSequence(GenPPBCPowerSequence, S2Message["PPBCPowerSequence"]):
     model_config = GenPPBCPowerSequence.model_config
     model_config["validate_assignment"] = True
 
-    id: uuid.UUID = GenPPBCPowerSequence.model_fields["id"]
+    id: uuid.UUID = GenPPBCPowerSequence.model_fields["id"]  # type: ignore[assignment]
     elements: List[PPBCPowerSequenceElement] = GenPPBCPowerSequence.model_fields[
         "elements"
-    ]
-    is_interruptible: bool = GenPPBCPowerSequence.model_fields["is_interruptible"]
-    max_pause_before: Duration = GenPPBCPowerSequence.model_fields["max_pause_before"]
+    ]  # type: ignore[assignment]
+    is_interruptible: bool = GenPPBCPowerSequence.model_fields["is_interruptible"]  # type: ignore[assignment]
+    max_pause_before: Duration = GenPPBCPowerSequence.model_fields["max_pause_before"]  # type: ignore[assignment]
     abnormal_condition_only: bool = GenPPBCPowerSequence.model_fields[
         "abnormal_condition_only"
-    ]
+    ]  # type: ignore[assignment]

@@ -20,8 +20,8 @@ class PPBCPowerProfileDefinition(
     model_config = GenPPBCPowerProfileDefinition.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenPPBCPowerProfileDefinition.model_fields["message_id"]
-    id: uuid.UUID = GenPPBCPowerProfileDefinition.model_fields["id"]
+    message_id: uuid.UUID = GenPPBCPowerProfileDefinition.model_fields["message_id"]  # type: ignore[assignment]
+    id: uuid.UUID = GenPPBCPowerProfileDefinition.model_fields["id"]  # type: ignore[assignment]
     power_sequences_containers: List[PPBCPowerSequenceContainer] = (
-        GenPPBCPowerProfileDefinition.model_fields["power_sequences_containers"]
+        GenPPBCPowerProfileDefinition.model_fields["power_sequences_containers"]  # type: ignore[assignment]
     )

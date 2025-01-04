@@ -19,7 +19,7 @@ class PPBCPowerSequenceElement(
     model_config = GenPPBCPowerSequenceElement.model_config
     model_config["validate_assignment"] = True
 
-    duration: Duration = GenPPBCPowerSequenceElement.model_fields["duration"]
+    duration: Duration = GenPPBCPowerSequenceElement.model_fields["duration"]  # type: ignore[assignment]
     power_values: List[PowerForecastValue] = GenPPBCPowerSequenceElement.model_fields[
         "power_values"
-    ]
+    ]  # type: ignore[assignment]

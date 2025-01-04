@@ -21,7 +21,7 @@ class PPBCPowerSequenceContainer(
     model_config = GenPPBCPowerSequenceContainer.model_config
     model_config["validate_assignment"] = True
 
-    id: uuid.UUID = GenPPBCPowerSequenceContainer.model_fields["id"]
+    id: uuid.UUID = GenPPBCPowerSequenceContainer.model_fields["id"]  # type: ignore[assignment]
     power_sequences: List[PPBCPowerSequence] = (
-        GenPPBCPowerSequenceContainer.model_fields["power_sequences"]
+        GenPPBCPowerSequenceContainer.model_fields["power_sequences"]  # type: ignore[assignment]
     )
