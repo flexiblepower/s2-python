@@ -10,9 +10,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class PEBCAllowedLimitRange(
-    GenPEBCAllowedLimitRange, S2Message["PEBCAllowedLimitRange"]
-):
+class PEBCAllowedLimitRange(GenPEBCAllowedLimitRange, S2Message["PEBCAllowedLimitRange"]):
     model_config = GenPEBCAllowedLimitRange.model_config
     model_config["validate_assignment"] = True
 

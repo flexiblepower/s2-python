@@ -18,8 +18,6 @@ class PEBCPowerEnvelope(GenPEBCPowerEnvelope, S2Message["PEBCPowerEnvelope"]):
     commodity_quantity: CommodityQuantity = GenPEBCPowerEnvelope.model_fields[
         "commodity_quantity"
     ]  # type: ignore[assignment]
-    power_envelope_elements: List[
-        PEBCPowerEnvelopeElement
-    ] = GenPEBCPowerEnvelope.model_fields[
+    power_envelope_elements: List[PEBCPowerEnvelopeElement] = GenPEBCPowerEnvelope.model_fields[
         "power_envelope_elements"
     ]  # type: ignore[assignment]
