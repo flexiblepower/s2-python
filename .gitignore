@@ -11,3 +11,5 @@ venv
 *venv*
 .tox/
 dist/
+build/
+
