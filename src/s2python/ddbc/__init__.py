@@ -1,2 +1,2 @@
 from s2python.ddbc.ddbc_actuator_description import DDBCActuatorDescription
-
+from s2python.ddbc.ddbc_operation_mode import DDBCOperationMode
