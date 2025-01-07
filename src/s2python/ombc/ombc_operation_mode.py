@@ -17,5 +17,9 @@ class OMBCOperationMode(GenOMBCOperationMode, S2Message["OMBCOperationMode"]):
     model_config["validate_assignment"] = True
 
     id: uuid.UUID = GenOMBCOperationMode.model_fields["id"]  # type: ignore[assignment]
-    power_ranges: List[PowerRange] = GenOMBCOperationMode.model_fields["power_ranges"]  # type: ignore[assignment]
-    abnormal_condition_only: bool = GenOMBCOperationMode.model_fields["abnormal_condition_only"]  # type: ignore[assignment]
+    power_ranges: List[PowerRange] = GenOMBCOperationMode.model_fields[
+        "power_ranges"
+    ]  # type: ignore[assignment]
+    abnormal_condition_only: bool = GenOMBCOperationMode.model_fields[
+        "abnormal_condition_only"
+    ]  # type: ignore[assignment]
