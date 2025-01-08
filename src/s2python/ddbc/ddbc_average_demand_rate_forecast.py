@@ -15,12 +15,11 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class DDBCAverageDemandRateForecast(
-    GenDDBCAverageDemandRateForecast, S2Message["DDBCAverageDemandRateForecast"]
-):
+class DDBCAverageDemandRateForecast(GenDDBCAverageDemandRateForecast, S2Message["DDBCAverageDemandRateForecast"]):
     model_config = GenDDBCAverageDemandRateForecast.model_config
     model_config["validate_assignment"] = True
 
-    elements: List[DDBCAverageDemandRateForecastElement] = (
-        GenDDBCAverageDemandRateForecast.model_fields["elements"]
-    )
+    message_id: uuid.UUID = GenDDBCAverageDemandRateForecast.model_fields["message_id"]  # type: ignore[assignment]
+    elements: List[DDBCAverageDemandRateForecastElement] = GenDDBCAverageDemandRateForecast.model_fields[
+        "elements"
+    ]  # type: ignore[assignment]
