@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 from enum import Enum
 import inspect
 import pprint
@@ -18,7 +19,8 @@ import uuid
 
 import pydantic
 
-from s2python import frbc
+import s2python
+from s2python import frbc, ombc
 from s2python.common import Duration, PowerRange, NumberRange
 from s2python.generated.gen_s2 import CommodityQuantity
 
@@ -79,6 +81,7 @@ def message_type_from_class_name(class_name: str) -> str:
 
 
 def generate_json_test_data_for_field(field_type: Type):
+
     if field_type is Duration:
         value = random.randint(0, 39999)
     elif field_type is NumberRange:
@@ -125,6 +128,8 @@ def generate_json_test_data_for_field(field_type: Type):
         )
     elif field_type is uuid.UUID:
         value = uuid.uuid4()
+    elif field_type is Duration:
+        value = random.randint(0, 39999)
     else:
         raise RuntimeError(f"Please implement test data for field type {field_type}")
     return value
@@ -241,60 +246,72 @@ def dump_test_data_as_json_for(test_data: dict, class_: Type) -> dict:
     return result
 
 
-for class_name, class_ in inspect.getmembers(frbc):
-    if inspect.isclass(class_) and issubclass(class_, pydantic.BaseModel):
-        test_data = generate_json_test_data_for_class(class_)
-
-        assert_lines = []
-        for field_name, field_type in get_type_hints(class_).items():
-            assert_test_data = dump_test_data_as_constructor_field_for(
-                test_data[field_name], field_type
+for class_name_bc, class_bc in [("frbc", frbc), ("ombc", ombc)]:
+    # Dynamically get the module object
+    for class_name, class_ in inspect.getmembers(class_bc):
+        # print(f"{class_name}: {class_}")
+        # Print the folder thats being inspected
+        print(f"Checking :tests/unit/{class_name_bc}/{snake_case(class_name)}_test.py")
+        if (
+            inspect.isclass(class_)
+            and issubclass(class_, pydantic.BaseModel)
+            and not os.path.exists(
+                f"tests/unit/{class_name_bc}/{snake_case(class_name)}_test.py"
             )
+        ):
+            print(f"Generating test for {class_name}")
+            test_data = generate_json_test_data_for_class(class_)
 
-            assert_lines.append(
-                f"self.assertEqual({snake_case(class_name)}.{field_name}, {assert_test_data})"
-            )
+            assert_lines = []
+            for field_name, field_type in get_type_hints(class_).items():
+                assert_test_data = dump_test_data_as_constructor_field_for(
+                    test_data[field_name], field_type
+                )
 
-        asserts = "\n        ".join(assert_lines)
-        template = f"""
-from datetime import timedelta, datetime, timezone as offset
-import json
-from unittest import TestCase
-import uuid
+                assert_lines.append(
+                    f"self.assertEqual({snake_case(class_name)}.{field_name}, {assert_test_data})"
+                )
 
-from s2python.common import *
-from s2python.frbc import *
+            asserts = "\n        ".join(assert_lines)
+            template = f"""
+    from datetime import timedelta, datetime, timezone as offset
+    import json
+    from unittest import TestCase
+    import uuid
+
+    from s2python.common import *
+    from s2python.frbc import *
 
 
-class {class_name}Test(TestCase):
-    def test__from_json__happy_path_full(self):
-        # Arrange
-        json_str = \"\"\"
-{json.dumps(dump_test_data_as_json_for(test_data, class_), indent=4)}
-        \"\"\"
+    class {class_name}Test(TestCase):
+        def test__from_json__happy_path_full(self):
+            # Arrange
+            json_str = \"\"\"
+    {json.dumps(dump_test_data_as_json_for(test_data, class_), indent=4)}
+            \"\"\"
 
-        # Act
-        {snake_case(class_name)} = {class_name}.from_json(json_str)
+            # Act
+            {snake_case(class_name)} = {class_name}.from_json(json_str)
 
-        # Assert
-        {asserts}
+            # Assert
+            {asserts}
 
-    def test__to_json__happy_path_full(self):
-        # Arrange
-        {snake_case(class_name)} = {dump_test_data_as_constructor_for(test_data, class_)}
+        def test__to_json__happy_path_full(self):
+            # Arrange
+            {snake_case(class_name)} = {dump_test_data_as_constructor_for(test_data, class_)}
 
-        # Act
-        json_str = {snake_case(class_name)}.to_json()
+            # Act
+            json_str = {snake_case(class_name)}.to_json()
 
-        # Assert
-        expected_json = {pprint.pformat(dump_test_data_as_json_for(test_data, class_), indent=4)}
-        self.assertEqual(json.loads(json_str), expected_json)
-"""
-        print(template)
-        print()
-        print()
+            # Assert
+            expected_json = {pprint.pformat(dump_test_data_as_json_for(test_data, class_), indent=4)}
+            self.assertEqual(json.loads(json_str), expected_json)
+    """
+            print(template)
+            print()
+            print()
 
-        with open(
-            f"tests/unit/frbc/{snake_case(class_name)}_test.py", "w+"
-        ) as unit_test_file:
-            unit_test_file.write(template)
+            with open(
+                f"tests/unit/frbc/{snake_case(class_name)}_test.py", "w+"
+            ) as unit_test_file:
+                unit_test_file.write(template)
