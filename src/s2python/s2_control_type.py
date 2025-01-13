@@ -44,7 +44,7 @@ class FRBCControlType(S2ControlType):
 
 class PEBCControlType(S2ControlType):
     def get_protocol_control_type(self) -> ProtocolControlType:
-        return ProtocolControlType.PEAK_RATE_BASED_CONTROL
+        return ProtocolControlType.POWER_ENVELOPE_BASED_CONTROL
 
     def register_handlers(self, handlers: "MessageHandlers") -> None:
         pass
