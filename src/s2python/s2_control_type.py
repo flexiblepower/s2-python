@@ -36,9 +36,10 @@ class FRBCControlType(S2ControlType):
         self, conn: "S2Connection", msg: S2Message, send_okay: typing.Callable[[], None]
     ) -> None: ...
 
-    # TODO
     @abc.abstractmethod
-    def activate(self, conn: "S2Connection") -> None: ...
+    def activate(self, conn: "S2Connection") -> None:
+        """Overwrite with the actual dctivation logic of your Resource Manager for this particular control type."""
+        pass
 
     @abc.abstractmethod
     def deactivate(self, conn: "S2Connection") -> None:
@@ -58,13 +59,15 @@ class PPBCControlType(S2ControlType):
         self, conn: "S2Connection", msg: S2Message, send_okay: typing.Callable[[], None]
     ) -> None: ...
 
-    # TODO
     @abc.abstractmethod
-    def activate(self, conn: "S2Connection") -> None: ...
+    def activate(self, conn: "S2Connection") -> None:
+        """Overwrite with the actual dctivation logic of your Resource Manager for this particular control type."""
+        pass
 
-    # TODO
     @abc.abstractmethod
-    def deactivate(self, conn: "S2Connection") -> None: ...
+    def deactivate(self, conn: "S2Connection") -> None:
+        """Overwrite with the actual deactivation logic of your Resource Manager for this particular control type."""
+        pass
 
 
 class NoControlControlType(S2ControlType):
