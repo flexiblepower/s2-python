@@ -40,9 +40,10 @@ class FRBCControlType(S2ControlType):
     @abc.abstractmethod
     def activate(self, conn: "S2Connection") -> None: ...
 
-    # TODO
     @abc.abstractmethod
-    def deactivate(self, conn: "S2Connection") -> None: ...
+    def deactivate(self, conn: "S2Connection") -> None:
+        """Overwrite with the actual deactivation logic of your Resource Manager for this particular control type."""
+        pass
 
 
 class PPBCControlType(S2ControlType):
