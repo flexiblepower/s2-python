@@ -14,5 +14,9 @@ class DDBCActuatorStatus(GenDDBCActuatorStatus, S2Message["DDBCActuatorStatus"])
 
     message_id: uuid.UUID = GenDDBCActuatorStatus.model_fields["message_id"]  # type: ignore[assignment]
     actuator_id: uuid.UUID = GenDDBCActuatorStatus.model_fields["actuator_id"]  # type: ignore[assignment]
-    active_operation_mode_id: uuid.UUID = GenDDBCActuatorStatus.model_fields["active_operation_mode_id"]  # type: ignore[assignment]
-    operation_mode_factor: float = GenDDBCActuatorStatus.model_fields["operation_mode_factor"]  # type: ignore[assignment]
+    active_operation_mode_id: uuid.UUID = GenDDBCActuatorStatus.model_fields[
+        "active_operation_mode_id"
+    ]  # type: ignore[assignment]
+    operation_mode_factor: float = GenDDBCActuatorStatus.model_fields[
+        "operation_mode_factor"
+    ]  # type: ignore[assignment]

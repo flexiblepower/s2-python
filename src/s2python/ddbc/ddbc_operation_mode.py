@@ -17,7 +17,10 @@ class DDBCOperationMode(GenDDBCOperationMode, S2Message["DDBCOperationMode"]):
     model_config = GenDDBCOperationMode.model_config
     model_config["validate_assignment"] = True
 
-    id: uuid.UUID = GenDDBCOperationMode.model_fields["id"]
+    # ? Id vs id
+    id: uuid.UUID = GenDDBCOperationMode.model_fields["Id"]  # type: ignore[assignment]
     power_ranges: List[PowerRange] = GenDDBCOperationMode.model_fields["power_ranges"]  # type: ignore[assignment]
     supply_ranges: List[NumberRange] = GenDDBCOperationMode.model_fields["supply_ranges"]  # type: ignore[assignment]
-    abnormal_condition_only: bool = GenDDBCOperationMode.model_fields["abnormal_condition_only"]  # type: ignore[assignment]
+    abnormal_condition_only: bool = GenDDBCOperationMode.model_fields[
+        "abnormal_condition_only"
+    ]  # type: ignore[assignment]

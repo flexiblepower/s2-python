@@ -13,13 +13,17 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class DDBCSystemDescription(
-    GenDDBCSystemDescription, S2Message["DDBCSystemDescription"]
-):
+class DDBCSystemDescription(GenDDBCSystemDescription, S2Message["DDBCSystemDescription"]):
     model_config = GenDDBCSystemDescription.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenDDBCSystemDescription.model_fields["message_id"]
-    actuators: List[DDBCActuatorDescription] = GenDDBCSystemDescription.model_fields["actuators"]  # type: ignore[assignment]
-    present_demand_rate: NumberRange = GenDDBCSystemDescription.model_fields["present_demand_rate"]  # type: ignore[assignment]
-    provides_average_demand_rate_forecast: bool = GenDDBCSystemDescription.model_fields["provides_average_demand_rate_forecast"]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenDDBCSystemDescription.model_fields["message_id"]  # type: ignore[assignment]
+    actuators: List[DDBCActuatorDescription] = GenDDBCSystemDescription.model_fields[
+        "actuators"
+    ]  # type: ignore[assignment]
+    present_demand_rate: NumberRange = GenDDBCSystemDescription.model_fields[
+        "present_demand_rate"
+    ]  # type: ignore[assignment]
+    provides_average_demand_rate_forecast: bool = GenDDBCSystemDescription.model_fields[
+        "provides_average_demand_rate_forecast"
+    ]  # type: ignore[assignment]
