@@ -10,8 +10,7 @@ ignore-paths=src/s2python/generated/
 # avoid hangs.
 jobs=1
 
-# W0511: TODOs
-disable=missing-class-docstring,missing-module-docstring,too-few-public-methods,missing-function-docstring,no-member, W0511
+disable=missing-class-docstring,missing-module-docstring,too-few-public-methods,missing-function-docstring,no-member
 
 [Format]
 max-line-length=120
