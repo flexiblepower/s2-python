@@ -1,5 +1,3 @@
-from pydantic import Field
-from typing import Literal
 import uuid
 
 from s2python.generated.gen_s2 import HandshakeResponse as GenHandshakeResponse
@@ -11,8 +9,7 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class HandshakeResponse(GenHandshakeResponse, S2Message["HandshakeResponse"]):
-    class Config(GenHandshakeResponse.Config):
-        validate_assignment = True
+    model_config = GenHandshakeResponse.model_config
+    model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenHandshakeResponse.__fields__["message_id"].field_info  # type: ignore[assignment]
-    message_type: Literal["HandshakeResponse"] = Field(default="HandshakeResponse")
+    message_id: uuid.UUID = GenHandshakeResponse.model_fields["message_id"]  # type: ignore[assignment]

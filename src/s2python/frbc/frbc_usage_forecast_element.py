@@ -1,6 +1,3 @@
-from pydantic import Field
-from typing import Literal
-
 from s2python.common import Duration
 
 from s2python.generated.gen_s2 import (
@@ -13,11 +10,8 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class FRBCUsageForecastElement(
-    GenFRBCUsageForecastElement, S2Message["FRBCUsageForecastElement"]
-):
-    class Config(GenFRBCUsageForecastElement.Config):
-        validate_assignment = True
+class FRBCUsageForecastElement(GenFRBCUsageForecastElement, S2Message["FRBCUsageForecastElement"]):
+    model_config = GenFRBCUsageForecastElement.model_config
+    model_config["validate_assignment"] = True
 
-    duration: Duration = GenFRBCUsageForecastElement.__fields__["duration"].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCUsageForecastElement"] = Field(default="FRBCUsageForecastElement")
+    duration: Duration = GenFRBCUsageForecastElement.model_fields["duration"]  # type: ignore[assignment]

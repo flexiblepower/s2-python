@@ -1,31 +1,13 @@
-from  pydantic import Field
-from typing import Any, Dict, Literal
+from typing import Any
 
-from pydantic import root_validator
-
-from s2python.validate_values_mixin import (
-    S2Message,
-    catch_and_convert_exceptions,
-)
+from s2python.validate_values_mixin import S2Message, catch_and_convert_exceptions
 from s2python.generated.gen_s2 import NumberRange as GenNumberRange
 
 
 @catch_and_convert_exceptions
 class NumberRange(GenNumberRange, S2Message["NumberRange"]):
-    class Config(GenNumberRange.Config):
-        validate_assignment = True
-
-    @root_validator(pre=False)
-    @classmethod
-    def validate_start_end_order(  # pylint: disable=duplicate-code
-        cls, values: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        if values.get("start_of_range", 0.0) > values.get("end_of_range", 0.0):
-            raise ValueError(
-                cls, "start_of_range should not be higher than end_of_range"
-            )
-
-        return values
+    model_config = GenNumberRange.model_config
+    model_config["validate_assignment"] = True
 
     def __hash__(self) -> int:
         return hash(f"{self.start_of_range}|{self.end_of_range}")
@@ -38,5 +20,3 @@ class NumberRange(GenNumberRange, S2Message["NumberRange"]):
             )
 
         return False
-
-    message_type: Literal["NumberRange"] = Field(default="NumberRange")

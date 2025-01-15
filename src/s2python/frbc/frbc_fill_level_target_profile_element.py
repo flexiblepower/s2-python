@@ -1,29 +1,34 @@
-from pydantic import Field
-from typing import Literal
+# pylint: disable=duplicate-code
+
+from typing_extensions import Self
+
+from pydantic import model_validator
 
 from s2python.common import Duration, NumberRange
-
 from s2python.generated.gen_s2 import (
     FRBCFillLevelTargetProfileElement as GenFRBCFillLevelTargetProfileElement,
 )
-from s2python.validate_values_mixin import (
-    catch_and_convert_exceptions,
-    S2Message,
-)
+from s2python.validate_values_mixin import catch_and_convert_exceptions, S2Message
 
 
 @catch_and_convert_exceptions
 class FRBCFillLevelTargetProfileElement(
-    GenFRBCFillLevelTargetProfileElement,
-    S2Message["FRBCFillLevelTargetProfileElement"],
+    GenFRBCFillLevelTargetProfileElement, S2Message["FRBCFillLevelTargetProfileElement"]
 ):
-    class Config(GenFRBCFillLevelTargetProfileElement.Config):
-        validate_assignment = True
+    model_config = GenFRBCFillLevelTargetProfileElement.model_config
+    model_config["validate_assignment"] = True
 
-    duration: Duration = GenFRBCFillLevelTargetProfileElement.__fields__[
-        "duration"
-    ].field_info  # type: ignore[assignment]
-    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.__fields__[
+    duration: Duration = GenFRBCFillLevelTargetProfileElement.model_fields["duration"]  # type: ignore[assignment]
+    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.model_fields[
         "fill_level_range"
-    ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCFillLevelTargetProfileElement"] = Field(default="FRBCFillLevelTargetProfileElement")
+    ]  # type: ignore[assignment]
+
+    @model_validator(mode="after")
+    def validate_start_end_order(self) -> Self:
+        if self.fill_level_range.start_of_range > self.fill_level_range.end_of_range:
+            raise ValueError(
+                self,
+                "start_of_range should not be higher than end_of_range for the fill_level_range",
+            )
+
+        return self

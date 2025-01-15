@@ -25,15 +25,9 @@ class TransitionTest(TestCase):
         transition: Transition = Transition.from_json(json_str)
 
         # Assert
-        self.assertEqual(
-            transition.id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3")
-        )
-        self.assertEqual(
-            transition.from_, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced2")
-        )
-        self.assertEqual(
-            transition.to, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1")
-        )
+        self.assertEqual(transition.id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"))
+        self.assertEqual(transition.from_, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced2"))
+        self.assertEqual(transition.to, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1"))
         self.assertEqual(
             transition.start_timers,
             [
@@ -47,9 +41,7 @@ class TransitionTest(TestCase):
         )
         self.assertEqual(transition.transition_costs, 4.3)
         assert transition.transition_duration is not None
-        self.assertEqual(
-            transition.transition_duration.to_timedelta(), timedelta(seconds=1.5)
-        )
+        self.assertEqual(transition.transition_duration.to_timedelta(), timedelta(seconds=1.5))
         self.assertEqual(transition.abnormal_condition_only, False)
 
     def test__from_json__happy_path_min(self):
@@ -67,15 +59,9 @@ class TransitionTest(TestCase):
         transition: Transition = Transition.from_json(json_str)
 
         # Assert
-        self.assertEqual(
-            transition.id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3")
-        )
-        self.assertEqual(
-            transition.from_, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced2")
-        )
-        self.assertEqual(
-            transition.to, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1")
-        )
+        self.assertEqual(transition.id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"))
+        self.assertEqual(transition.from_, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced2"))
+        self.assertEqual(transition.to, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1"))
         self.assertEqual(transition.start_timers, [])
         self.assertEqual(transition.blocking_timers, [])
         self.assertEqual(transition.transition_costs, None)
@@ -120,9 +106,7 @@ class TransitionTest(TestCase):
                 "to": uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1"),
                 "start_timers": [],
                 "blocking_timers": [],
-                "transition_duration": Duration.from_timedelta(
-                    timedelta(minutes=1, seconds=1)
-                ),
+                "transition_duration": Duration.from_timedelta(timedelta(minutes=1, seconds=1)),
                 "abnormal_condition_only": False,
             }
         )
@@ -151,6 +135,6 @@ class TransitionTest(TestCase):
                 to=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1"),
                 start_timers=[],
                 blocking_timers=[],
-                transition_duration=Duration(__root__=-5000),
+                transition_duration=Duration(root=-5000),
                 abnormal_condition_only=False,
             )

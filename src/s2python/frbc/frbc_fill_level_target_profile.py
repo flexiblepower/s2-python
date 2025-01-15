@@ -1,5 +1,4 @@
-from pydantic import Field
-from typing import List, Literal
+from typing import List
 import uuid
 
 from s2python.frbc.frbc_fill_level_target_profile_element import (
@@ -15,18 +14,11 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class FRBCFillLevelTargetProfile(
-    GenFRBCFillLevelTargetProfile, S2Message["FRBCFillLevelTargetProfile"]
-):
-    class Config(GenFRBCFillLevelTargetProfile.Config):
-        validate_assignment = True
+class FRBCFillLevelTargetProfile(GenFRBCFillLevelTargetProfile, S2Message["FRBCFillLevelTargetProfile"]):
+    model_config = GenFRBCFillLevelTargetProfile.model_config
+    model_config["validate_assignment"] = True
 
-    elements: List[
-        FRBCFillLevelTargetProfileElement
-    ] = GenFRBCFillLevelTargetProfile.__fields__[
+    elements: List[FRBCFillLevelTargetProfileElement] = GenFRBCFillLevelTargetProfile.model_fields[
         "elements"
-    ].field_info  # type: ignore[assignment]
-    message_id: uuid.UUID = GenFRBCFillLevelTargetProfile.__fields__[
-        "message_id"
-    ].field_info  # type: ignore[assignment]
-    message_type: Literal["FRBCFillLevelTargetProfile"] = Field(default="FRBCFillLevelTargetProfile")
+    ]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenFRBCFillLevelTargetProfile.model_fields["message_id"]  # type: ignore[assignment]

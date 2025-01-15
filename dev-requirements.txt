@@ -6,19 +6,21 @@
 #
 alabaster==0.7.13
     # via sphinx
-argcomplete==3.4.0
+annotated-types==0.7.0
+    # via pydantic
+argcomplete==3.5.0
     # via datamodel-code-generator
 astroid==3.2.4
     # via pylint
-babel==2.15.0
+babel==2.16.0
     # via sphinx
-black==24.4.2
+black==24.8.0
     # via datamodel-code-generator
 build==1.2.1
     # via pip-tools
-cachetools==5.4.0
+cachetools==5.5.0
     # via tox
-certifi==2024.7.4
+certifi==2024.8.30
     # via requests
 cfgv==3.4.0
     # via pre-commit
@@ -33,11 +35,9 @@ click==8.1.7
     #   s2-python (setup.cfg)
 colorama==0.4.6
     # via tox
-coverage[toml]==7.6.0
-    # via
-    #   coverage
-    #   pytest-cov
-datamodel-code-generator==0.25.8
+coverage[toml]==7.6.1
+    # via pytest-cov
+datamodel-code-generator==0.26.0
     # via s2-python (setup.cfg)
 dill==0.3.8
     # via pylint
@@ -62,13 +62,13 @@ genson==1.3.0
     # via datamodel-code-generator
 identify==2.6.0
     # via pre-commit
-idna==3.7
+idna==3.8
     # via
     #   email-validator
     #   requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==8.2.0
+importlib-metadata==8.4.0
     # via
     #   build
     #   sphinx
@@ -88,7 +88,7 @@ markupsafe==2.1.5
     # via jinja2
 mccabe==0.7.0
     # via pylint
-mypy==1.11.0
+mypy==1.11.2
     # via s2-python (setup.cfg)
 mypy-extensions==1.0.0
     # via
@@ -121,15 +121,17 @@ pluggy==1.5.0
     #   tox
 pre-commit==3.5.0
     # via s2-python (setup.cfg)
-pydantic[email]==1.10.17
+pydantic[email]==2.8.2
     # via
     #   datamodel-code-generator
     #   s2-python (setup.cfg)
+pydantic-core==2.20.1
+    # via pydantic
 pygments==2.18.0
     # via
     #   sphinx
     #   sphinx-tabs
-pylint==3.2.6
+pylint==3.2.7
     # via s2-python (setup.cfg)
 pyproject-api==1.7.1
     # via tox
@@ -154,7 +156,7 @@ pytz==2024.1
     # via
     #   babel
     #   s2-python (setup.cfg)
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via
     #   datamodel-code-generator
     #   pre-commit
@@ -210,18 +212,20 @@ tomli==2.0.1
     #   pyproject-api
     #   pytest
     #   tox
-tomlkit==0.13.0
+tomlkit==0.13.2
     # via pylint
-tox==4.16.0
+tox==4.18.0
     # via s2-python (setup.cfg)
 types-pytz==2024.1.0.20240417
     # via s2-python (setup.cfg)
 typing-extensions==4.12.2
     # via
+    #   annotated-types
     #   astroid
     #   black
     #   mypy
     #   pydantic
+    #   pydantic-core
     #   pylint
 urllib3==2.2.2
     # via requests
@@ -229,9 +233,11 @@ virtualenv==20.26.3
     # via
     #   pre-commit
     #   tox
-wheel==0.43.0
+websockets==13.0.1
+    # via s2-python (setup.cfg)
+wheel==0.44.0
     # via pip-tools
-zipp==3.19.2
+zipp==3.20.1
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
