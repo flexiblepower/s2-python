@@ -5,13 +5,13 @@ from s2python.generated.gen_s2 import (
     FRBCOperationModeElement as GenFRBCOperationModeElement,
 )
 from s2python.validate_values_mixin import (
-    S2Message,
+    S2MessageComponent,
     catch_and_convert_exceptions,
 )
 
 
 @catch_and_convert_exceptions
-class FRBCOperationModeElement(GenFRBCOperationModeElement, S2Message["FRBCOperationModeElement"]):
+class FRBCOperationModeElement(GenFRBCOperationModeElement, S2MessageComponent["FRBCOperationModeElement"]):
     model_config = GenFRBCOperationModeElement.model_config
     model_config["validate_assignment"] = True
 

@@ -12,13 +12,13 @@ from s2python.generated.gen_s2 import (
     FRBCActuatorDescription as GenFRBCActuatorDescription,
 )
 from s2python.validate_values_mixin import (
-    S2Message,
+    S2MessageComponent,
     catch_and_convert_exceptions,
 )
 
 
 @catch_and_convert_exceptions
-class FRBCActuatorDescription(GenFRBCActuatorDescription, S2Message["FRBCActuatorDescription"]):
+class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent["FRBCActuatorDescription"]):
     model_config = GenFRBCActuatorDescription.model_config
     model_config["validate_assignment"] = True
 

@@ -5,14 +5,14 @@ from s2python.generated.gen_s2 import (
 )
 
 from s2python.validate_values_mixin import (
-    S2Message,
+    S2MessageComponent,
     catch_and_convert_exceptions,
 )
 
 
 @catch_and_convert_exceptions
 class PPBCEndInterruptionInstruction(
-    GenPPBCEndInterruptionInstruction, S2Message["PPBCEndInterruptionInstruction"]
+    GenPPBCEndInterruptionInstruction, S2MessageComponent["PPBCEndInterruptionInstruction"]
 ):
     model_config = GenPPBCEndInterruptionInstruction.model_config
     model_config["validate_assignment"] = True

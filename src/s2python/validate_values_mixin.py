@@ -15,7 +15,7 @@ MappingIntStrAny = Mapping[IntStr, Any]
 C = TypeVar("C", bound="BaseModel")
 
 
-class S2Message(BaseModel, Generic[C]):
+class S2MessageComponent(BaseModel, Generic[C]):
     def to_json(self: C) -> str:
         try:
             return self.model_dump_json(by_alias=True, exclude_none=True)
@@ -59,7 +59,7 @@ def convert_to_s2exception(f: Callable) -> Callable:
     return inner
 
 
-def catch_and_convert_exceptions(input_class: Type[S2Message[B_co]]) -> Type[S2Message[B_co]]:
+def catch_and_convert_exceptions(input_class: Type[S2MessageComponent[B_co]]) -> Type[S2MessageComponent[B_co]]:
     input_class.__init__ = convert_to_s2exception(input_class.__init__)  # type: ignore[method-assign]
     input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)  # type: ignore[method-assign]
     input_class.model_validate_json = convert_to_s2exception(  # type: ignore[method-assign]
