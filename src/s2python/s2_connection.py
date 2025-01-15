@@ -27,7 +27,7 @@ from s2python.reception_status_awaiter import ReceptionStatusAwaiter
 from s2python.s2_control_type import S2ControlType
 from s2python.s2_parser import S2Parser
 from s2python.s2_validation_error import S2ValidationError
-from s2python.message import S2Message
+from s2python.validate_values_mixin import S2MessageComponent
 from s2python.version import S2_VERSION
 
 logger = logging.getLogger("s2python")
@@ -73,8 +73,8 @@ class AssetDetails:  # pylint: disable=too-many-instance-attributes
 
 
 S2MessageHandler = Union[
-    Callable[["S2Connection", S2Message, Callable[[], None]], None],
-    Callable[["S2Connection", S2Message, Awaitable[None]], Awaitable[None]],
+    Callable[["S2Connection", S2MessageComponent, Callable[[], None]], None],
+    Callable[["S2Connection", S2MessageComponent, Awaitable[None]], Awaitable[None]],
 ]
 
 
@@ -106,7 +106,7 @@ class SendOkay:
             diagnostic_label="Processed okay.",
         )
 
-    async def ensure_send_async(self, type_msg: Type[S2Message]) -> None:
+    async def ensure_send_async(self, type_msg: Type[S2MessageComponent]) -> None:
         if not self.status_is_send.is_set():
             logger.warning(
                 "Handler for message %s %s did not call send_okay / function to send the ReceptionStatus. "
@@ -116,7 +116,7 @@ class SendOkay:
             )
             await self.run_async()
 
-    def ensure_send_sync(self, type_msg: Type[S2Message]) -> None:
+    def ensure_send_sync(self, type_msg: Type[S2MessageComponent]) -> None:
         if not self.status_is_send.is_set():
             logger.warning(
                 "Handler for message %s %s did not call send_okay / function to send the ReceptionStatus. "
@@ -128,12 +128,12 @@ class SendOkay:
 
 
 class MessageHandlers:
-    handlers: Dict[Type[S2Message], S2MessageHandler]
+    handlers: Dict[Type[S2MessageComponent], S2MessageHandler]
 
     def __init__(self) -> None:
         self.handlers = {}
 
-    async def handle_message(self, connection: "S2Connection", msg: S2Message) -> None:
+    async def handle_message(self, connection: "S2Connection", msg: S2MessageComponent) -> None:
         """Handle the S2 message using the registered handler.
 
         :param connection: The S2 conncetion the `msg` is received from.
@@ -170,7 +170,7 @@ class MessageHandlers:
                 type(msg),
             )
 
-    def register_handler(self, msg_type: Type[S2Message], handler: S2MessageHandler) -> None:
+    def register_handler(self, msg_type: Type[S2MessageComponent], handler: S2MessageHandler) -> None:
         """Register a coroutine function or a normal function as the handler for a specific S2 message type.
 
         :param msg_type: The S2 message type to attach the handler to.
@@ -334,7 +334,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         await self._handle_received_messages()
 
     async def handle_handshake(
-        self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
+        self, _: "S2Connection", message: S2MessageComponent, send_okay: Awaitable[None]
     ) -> None:
         if not isinstance(message, Handshake):
             logger.error(
@@ -350,7 +350,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         await send_okay
 
     async def handle_handshake_response_as_rm(
-        self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
+        self, _: "S2Connection", message: S2MessageComponent, send_okay: Awaitable[None]
     ) -> None:
         if not isinstance(message, HandshakeResponse):
             logger.error(
@@ -370,7 +370,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         )
 
     async def handle_select_control_type_as_rm(
-        self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
+        self, _: "S2Connection", message: S2MessageComponent, send_okay: Awaitable[None]
     ) -> None:
         if not isinstance(message, SelectControlType):
             logger.error(
@@ -414,7 +414,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
         async for message in self.ws:
             try:
-                s2_msg: S2Message = self.s2_parser.parse_as_any_message(message)
+                s2_msg: S2MessageComponent = self.s2_parser.parse_as_any_message(message)
             except json.JSONDecodeError:
                 await self._send_and_forget(
                     ReceptionStatus(
@@ -450,7 +450,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 else:
                     await self._received_messages.put(s2_msg)
 
-    async def _send_and_forget(self, s2_msg: S2Message) -> None:
+    async def _send_and_forget(self, s2_msg: S2MessageComponent) -> None:
         if self.ws is None:
             raise RuntimeError(
                 "Cannot send messages if websocket connection is not yet established."
@@ -485,7 +485,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         ).result()
 
     async def send_msg_and_await_reception_status_async(
-        self, s2_msg: S2Message, timeout_reception_status: float = 5.0, raise_on_error: bool = True
+        self, s2_msg: S2MessageComponent, timeout_reception_status: float = 5.0, raise_on_error: bool = True
     ) -> ReceptionStatus:
         await self._send_and_forget(s2_msg)
         logger.debug(
@@ -511,7 +511,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         return reception_status
 
     def send_msg_and_await_reception_status_sync(
-        self, s2_msg: S2Message, timeout_reception_status: float = 5.0, raise_on_error: bool = True
+        self, s2_msg: S2MessageComponent, timeout_reception_status: float = 5.0, raise_on_error: bool = True
     ) -> ReceptionStatus:
         return asyncio.run_coroutine_threadsafe(
             self.send_msg_and_await_reception_status_async(
