@@ -1,5 +1,4 @@
 from typing import Union
-from pydantic import BaseModel
 
 from s2python.frbc import (
     FRBCActuatorStatus,
