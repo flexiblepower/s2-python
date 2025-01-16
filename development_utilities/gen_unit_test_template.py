@@ -113,7 +113,7 @@ def generate_json_test_data_for_field(field_type: Type):
         value = bool(random.randint(0, 1))
     elif field_type is float:
         value = random.random() * 9000.0
-    elif field_type is AwareDatetime:
+    elif field_type in (AwareDatetime, datetime.datetime):
         # Generate a timezone-aware datetime
         value = datetime.datetime(
             year=random.randint(2020, 2023),
@@ -123,18 +123,6 @@ def generate_json_test_data_for_field(field_type: Type):
             minute=random.randint(0, 59),
             second=random.randint(0, 59),
             tzinfo=datetime.timezone(datetime.timedelta(hours=random.randint(-12, 14))),
-        )
-    elif field_type is datetime.datetime:
-        value = datetime.datetime(
-            year=random.randint(2020, 2023),
-            month=random.randint(1, 12),
-            day=random.randint(1, 28),
-            hour=random.randint(0, 23),
-            minute=random.randint(0, 59),
-            second=random.randint(0, 59),
-            tzinfo=datetime.timezone(
-                offset=datetime.timedelta(hours=random.randint(0, 2))
-            ),
         )
     elif field_type is uuid.UUID:
         value = uuid.uuid4()
@@ -237,7 +225,7 @@ def dump_test_data_as_json_field_for(test_data, field_type: Type):
         value = test_data
     elif field_type is float:
         value = test_data
-    elif field_type is AwareDatetime or field_type is datetime.datetime:
+    elif field_type in (AwareDatetime, datetime.datetime):
         test_data: datetime.datetime
         value = test_data.isoformat()
     elif field_type is uuid.UUID:
