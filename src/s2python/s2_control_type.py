@@ -4,7 +4,7 @@ import typing
 from s2python.common import ControlType as ProtocolControlType
 from s2python.frbc import FRBCInstruction
 from s2python.ppbc import PPBCScheduleInstruction
-from s2python.validate_values_mixin import S2MessageComponent
+from s2python.message import S2Message
 
 if typing.TYPE_CHECKING:
     from s2python.s2_connection import S2Connection, MessageHandlers
@@ -33,7 +33,7 @@ class FRBCControlType(S2ControlType):
 
     @abc.abstractmethod
     def handle_instruction(
-        self, conn: "S2Connection", msg: S2MessageComponent, send_okay: typing.Callable[[], None]
+        self, conn: "S2Connection", msg: S2Message, send_okay: typing.Callable[[], None]
     ) -> None: ...
 
     @abc.abstractmethod
@@ -54,7 +54,7 @@ class PPBCControlType(S2ControlType):
 
     @abc.abstractmethod
     def handle_instruction(
-        self, conn: "S2Connection", msg: S2MessageComponent, send_okay: typing.Callable[[], None]
+        self, conn: "S2Connection", msg: S2Message, send_okay: typing.Callable[[], None]
     ) -> None: ...
 
     @abc.abstractmethod
