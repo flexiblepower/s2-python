@@ -10,6 +10,9 @@ from s2python.frbc import (
     FRBCTimerStatus,
     FRBCUsageForecast
 )
+from s2python.ppbc import (
+    PPBCScheduleInstruction,
+)
 
 from s2python.common import (
     Handshake,
@@ -33,6 +36,7 @@ S2Message = Union[
     FRBCSystemDescription,
     FRBCTimerStatus,
     FRBCUsageForecast,
+    PPBCScheduleInstruction,
     Handshake,
     HandshakeResponse,
     InstructionStatusUpdate,
