@@ -194,7 +194,6 @@ def dump_test_data_as_constructor_field_for(test_data, field_type: Type) -> str:
     elif type(field_type).__name__ == "_LiteralGenericAlias":
         value = field_type.__args__[0]
     else:
-        breakpoint()
         raise RuntimeError(
             f"Please implement dump test data for field type {field_type}"
         )
