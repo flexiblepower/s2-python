@@ -5,7 +5,7 @@ from s2python.generated.gen_s2 import (
 )
 
 from s2python.validate_values_mixin import (
-    S2Message,
+    S2MessageComponent,
     catch_and_convert_exceptions,
 )
 
@@ -16,7 +16,7 @@ from s2python.ppbc.ppbc_power_sequence_container_status import (
 
 @catch_and_convert_exceptions
 class PPBCPowerProfileStatus(
-    GenPPBCPowerProfileStatus, S2Message["PPBCPowerProfileStatus"]
+    GenPPBCPowerProfileStatus, S2MessageComponent["PPBCPowerProfileStatus"]
 ):
     model_config = GenPPBCPowerProfileStatus.model_config
     model_config["validate_assignment"] = True

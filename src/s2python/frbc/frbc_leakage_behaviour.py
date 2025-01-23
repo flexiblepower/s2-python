@@ -5,12 +5,12 @@ from s2python.frbc.frbc_leakage_behaviour_element import FRBCLeakageBehaviourEle
 from s2python.generated.gen_s2 import FRBCLeakageBehaviour as GenFRBCLeakageBehaviour
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class FRBCLeakageBehaviour(GenFRBCLeakageBehaviour, S2Message["FRBCLeakageBehaviour"]):
+class FRBCLeakageBehaviour(GenFRBCLeakageBehaviour, S2MessageComponent["FRBCLeakageBehaviour"]):
     model_config = GenFRBCLeakageBehaviour.model_config
     model_config["validate_assignment"] = True
 

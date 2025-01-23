@@ -26,14 +26,15 @@ from s2python.frbc import (
 )
 from s2python.ppbc import PPBCScheduleInstruction
 
-from s2python.validate_values_mixin import S2Message
+from s2python.message import S2Message
+from s2python.validate_values_mixin import S2MessageComponent
 from s2python.s2_validation_error import S2ValidationError
 
 
 LOGGER = logging.getLogger(__name__)
 S2MessageType = str
 
-M = TypeVar("M", bound=S2Message)
+M = TypeVar("M", bound=S2MessageComponent)
 
 
 # May be generated with development_utilities/generate_s2_message_type_to_class.py

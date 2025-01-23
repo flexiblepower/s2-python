@@ -5,13 +5,13 @@ from s2python.generated.gen_s2 import (
 )
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
 class PPBCScheduleInstruction(
-    GenPPBCScheduleInstruction, S2Message["PPBCScheduleInstruction"]
+    GenPPBCScheduleInstruction, S2MessageComponent["PPBCScheduleInstruction"]
 ):
     model_config = GenPPBCScheduleInstruction.model_config
     model_config["validate_assignment"] = True
