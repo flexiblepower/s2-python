@@ -160,7 +160,7 @@ class MessageHandlers:
                     await connection.respond_with_reception_status(
                         subject_message_id=str(msg.message_id),  # type: ignore[attr-defined, union-attr]
                         status=ReceptionStatusValues.PERMANENT_ERROR,
-                        diagnostic_label=f"While processing message {msg.message_id} "  # type: ignore[attr-defined, union-attr]
+                        diagnostic_label=f"While processing message {msg.message_id} "  # type: ignore[attr-defined, union-attr]  # pylint: disable=line-too-long
                         f"an unrecoverable error occurred.",
                     )
                 raise
