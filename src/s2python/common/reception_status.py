@@ -12,4 +12,4 @@ class ReceptionStatus(GenReceptionStatus, S2MessageComponent["ReceptionStatus"])
     model_config = GenReceptionStatus.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenReceptionStatus.model_fields["message_id"]  # type: ignore[assignment]
+    subject_message_id: uuid.UUID = GenReceptionStatus.model_fields["subject_message_id"]  # type: ignore[assignment]

@@ -1002,13 +1002,13 @@ components:
       type: object
       required:
       - message_type
-      - message_id
+      - subject_message_id
       - status
       properties:
         message_type:
           const: ReceptionStatus
           type: string
-        message_id:
+        subject_message_id:
           $ref: '#/components/schemas/ID'
           description: "The message this ReceptionStatus refers to"
         status:
