@@ -6,12 +6,12 @@ from s2python.pebc.pebc_power_envelope_element import PEBCPowerEnvelopeElement
 from s2python.common import CommodityQuantity
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class PEBCPowerEnvelope(GenPEBCPowerEnvelope, S2Message["PEBCPowerEnvelope"]):
+class PEBCPowerEnvelope(GenPEBCPowerEnvelope, S2MessageComponent["PEBCPowerEnvelope"]):
     model_config = GenPEBCPowerEnvelope.model_config
     model_config["validate_assignment"] = True
 

@@ -8,12 +8,12 @@ from s2python.generated.gen_s2 import (
 from s2python.pebc.pebc_allowed_limit_range import PEBCAllowedLimitRange
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class PEBCPowerConstraints(GenPEBCPowerConstraints, S2Message["PEBCPowerConstraints"]):
+class PEBCPowerConstraints(GenPEBCPowerConstraints, S2MessageComponent["PEBCPowerConstraints"]):
     model_config = GenPEBCPowerConstraints.model_config
     model_config["validate_assignment"] = True
 

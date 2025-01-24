@@ -3,12 +3,12 @@ from s2python.generated.gen_s2 import (
 )
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class PEBCPowerEnvelopeElement(GenPEBCPowerEnvelopeElement, S2Message["PEBCPowerEnvelopeElement"]):
+class PEBCPowerEnvelopeElement(GenPEBCPowerEnvelopeElement, S2MessageComponent["PEBCPowerEnvelopeElement"]):
     model_config = GenPEBCPowerEnvelopeElement.model_config
     model_config["validate_assignment"] = True
 
