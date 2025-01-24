@@ -1,11 +1,11 @@
 from typing import Any
 
-from s2python.validate_values_mixin import S2Message, catch_and_convert_exceptions
+from s2python.validate_values_mixin import S2MessageComponent, catch_and_convert_exceptions
 from s2python.generated.gen_s2 import NumberRange as GenNumberRange
 
 
 @catch_and_convert_exceptions
-class NumberRange(GenNumberRange, S2Message["NumberRange"]):
+class NumberRange(GenNumberRange, S2MessageComponent["NumberRange"]):
     model_config = GenNumberRange.model_config
     model_config["validate_assignment"] = True
 

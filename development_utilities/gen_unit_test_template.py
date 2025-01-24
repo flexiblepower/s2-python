@@ -18,6 +18,7 @@ from typing import (
 import uuid
 
 import pydantic
+from pydantic.types import AwareDatetime
 
 import s2python
 from s2python import frbc, ombc
@@ -66,7 +67,7 @@ def get_list_arg(field_type):
 
 
 def is_enum(field_type):
-    return issubclass(field_type, Enum)
+    return inspect.isclass(field_type) and issubclass(field_type, Enum)
 
 
 def snake_case(camelcased: str) -> str:
@@ -114,7 +115,8 @@ def generate_json_test_data_for_field(field_type: Type):
         value = bool(random.randint(0, 1))
     elif field_type is float:
         value = random.random() * 9000.0
-    elif field_type is datetime.datetime:
+    elif field_type in (AwareDatetime, datetime.datetime):
+        # Generate a timezone-aware datetime
         value = datetime.datetime(
             year=random.randint(2020, 2023),
             month=random.randint(1, 12),
@@ -122,9 +124,7 @@ def generate_json_test_data_for_field(field_type: Type):
             hour=random.randint(0, 23),
             minute=random.randint(0, 59),
             second=random.randint(0, 59),
-            tzinfo=datetime.timezone(
-                offset=datetime.timedelta(hours=random.randint(0, 2))
-            ),
+            tzinfo=datetime.timezone(datetime.timedelta(hours=random.randint(-12, 14))),
         )
     elif field_type is uuid.UUID:
         value = uuid.uuid4()
@@ -172,12 +172,19 @@ def dump_test_data_as_constructor_field_for(test_data, field_type: Type) -> str:
         value = str(test_data)
     elif field_type is float:
         value = str(test_data)
-    elif field_type is datetime.datetime:
+    elif field_type is AwareDatetime or field_type is datetime.datetime:
         test_data: datetime.datetime
         offset: datetime.timedelta = test_data.tzinfo.utcoffset(None)
-        value = f"datetime(year={test_data.year}, month={test_data.month}, day={test_data.day}, hour={test_data.hour}, minute={test_data.minute}, second={test_data.second}, tzinfo=offset(offset=timedelta(seconds={offset.total_seconds()})))"
+        value = (
+            f"datetime("
+            f"year={test_data.year}, month={test_data.month}, day={test_data.day}, "
+            f"hour={test_data.hour}, minute={test_data.minute}, second={test_data.second}, "
+            f"tzinfo=offset(offset=timedelta(seconds={offset.total_seconds()})))"
+        )
     elif field_type is uuid.UUID:
         value = f'uuid.UUID("{test_data}")'
+    elif type(field_type).__name__ == "_LiteralGenericAlias":
+        value = field_type.__args__[0]
     else:
         raise RuntimeError(
             f"Please implement dump test data for field type {field_type}"
@@ -222,11 +229,13 @@ def dump_test_data_as_json_field_for(test_data, field_type: Type):
         value = test_data
     elif field_type is float:
         value = test_data
-    elif field_type is datetime.datetime:
+    elif field_type in (AwareDatetime, datetime.datetime):
         test_data: datetime.datetime
         value = test_data.isoformat()
     elif field_type is uuid.UUID:
         value = str(test_data)
+    elif type(field_type).__name__ == "_LiteralGenericAlias":
+        value = test_data
     else:
         raise RuntimeError(
             f"Please implement dump test data to json for field type {field_type}"
@@ -258,60 +267,50 @@ for class_name_bc, class_bc in [("frbc", frbc), ("ombc", ombc)]:
             and not os.path.exists(
                 f"tests/unit/{class_name_bc}/{snake_case(class_name)}_test.py"
             )
-        ):
-            print(f"Generating test for {class_name}")
-            test_data = generate_json_test_data_for_class(class_)
 
-            assert_lines = []
-            for field_name, field_type in get_type_hints(class_).items():
-                assert_test_data = dump_test_data_as_constructor_field_for(
-                    test_data[field_name], field_type
-                )
+        asserts = "\n        ".join(assert_lines)
+        template = f"""
+from datetime import timedelta, datetime, timezone as offset
+import json
+from unittest import TestCase
+import uuid
 
-                assert_lines.append(
-                    f"self.assertEqual({snake_case(class_name)}.{field_name}, {assert_test_data})"
-                )
-
-            asserts = "\n        ".join(assert_lines)
-            template = f"""
-    from datetime import timedelta, datetime, timezone as offset
-    import json
-    from unittest import TestCase
-    import uuid
-
-    from s2python.common import *
-    from s2python.frbc import *
+from s2python.common import *
+from s2python.frbc import *
 
 
-    class {class_name}Test(TestCase):
-        def test__from_json__happy_path_full(self):
-            # Arrange
-            json_str = \"\"\"
-    {json.dumps(dump_test_data_as_json_for(test_data, class_), indent=4)}
-            \"\"\"
+class {class_name}Test(TestCase):
+    def test__from_json__happy_path_full(self):
+        # Arrange
+        json_str = \"\"\"
+{json.dumps(dump_test_data_as_json_for(test_data, class_), indent=4)}
+        \"\"\"
 
-            # Act
-            {snake_case(class_name)} = {class_name}.from_json(json_str)
+        # Act
+        {snake_case(class_name)} = {class_name}.from_json(json_str)
 
-            # Assert
-            {asserts}
+        # Assert
+        {asserts}
 
-        def test__to_json__happy_path_full(self):
-            # Arrange
-            {snake_case(class_name)} = {dump_test_data_as_constructor_for(test_data, class_)}
+    def test__to_json__happy_path_full(self):
+        # Arrange
+        {snake_case(class_name)} = {dump_test_data_as_constructor_for(test_data, class_)}
 
-            # Act
-            json_str = {snake_case(class_name)}.to_json()
+        # Act
+        json_str = {snake_case(class_name)}.to_json()
 
-            # Assert
-            expected_json = {pprint.pformat(dump_test_data_as_json_for(test_data, class_), indent=4)}
-            self.assertEqual(json.loads(json_str), expected_json)
-    """
-            print(template)
-            print()
-            print()
+        # Assert
+        expected_json = {pprint.pformat(dump_test_data_as_json_for(test_data, class_), indent=4)}
+        self.assertEqual(json.loads(json_str), expected_json)
+"""
+        print(template)
+        print()
+        print()
 
+        # Check if the file already exists
+        if not os.path.exists(f"tests/unit/frbc/{snake_case(class_name)}_test.py"):
             with open(
                 f"tests/unit/frbc/{snake_case(class_name)}_test.py", "w+"
             ) as unit_test_file:
                 unit_test_file.write(template)
+                print(f"Created tests/unit/frbc/{snake_case(class_name)}_test.py")
