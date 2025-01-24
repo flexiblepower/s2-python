@@ -3,12 +3,12 @@ import uuid
 from s2python.generated.gen_s2 import DDBCInstruction as GenDDBCInstruction
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class DDBCInstruction(GenDDBCInstruction, S2Message["DDBCInstruction"]):
+class DDBCInstruction(GenDDBCInstruction, S2MessageComponent["DDBCInstruction"]):
     model_config = GenDDBCInstruction.model_config
     model_config["validate_assignment"] = True
 

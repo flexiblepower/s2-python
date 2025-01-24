@@ -4,13 +4,13 @@ from s2python.generated.gen_s2 import (
     DDBCAverageDemandRateForecastElement as GenDDBCAverageDemandRateForecastElement,
 )
 
-from s2python.validate_values_mixin import catch_and_convert_exceptions, S2Message
+from s2python.validate_values_mixin import catch_and_convert_exceptions, S2MessageComponent
 
 
 @catch_and_convert_exceptions
 class DDBCAverageDemandRateForecastElement(
     GenDDBCAverageDemandRateForecastElement,
-    S2Message["DDBCAverageDemandRateForecastElement"],
+    S2MessageComponent["DDBCAverageDemandRateForecastElement"],
 ):
     model_config = GenDDBCAverageDemandRateForecastElement.model_config
     model_config["validate_assignment"] = True

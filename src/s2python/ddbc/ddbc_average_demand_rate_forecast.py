@@ -10,12 +10,12 @@ from s2python.ddbc.ddbc_average_demand_rate_forecast_element import (
 
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class DDBCAverageDemandRateForecast(GenDDBCAverageDemandRateForecast, S2Message["DDBCAverageDemandRateForecast"]):
+class DDBCAverageDemandRateForecast(GenDDBCAverageDemandRateForecast, S2MessageComponent["DDBCAverageDemandRateForecast"]):
     model_config = GenDDBCAverageDemandRateForecast.model_config
     model_config["validate_assignment"] = True
 

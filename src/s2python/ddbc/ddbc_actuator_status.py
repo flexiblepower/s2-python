@@ -3,12 +3,12 @@ import uuid
 from s2python.generated.gen_s2 import DDBCActuatorStatus as GenDDBCActuatorStatus
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class DDBCActuatorStatus(GenDDBCActuatorStatus, S2Message["DDBCActuatorStatus"]):
+class DDBCActuatorStatus(GenDDBCActuatorStatus, S2MessageComponent["DDBCActuatorStatus"]):
     model_config = GenDDBCActuatorStatus.model_config
     model_config["validate_assignment"] = True
 
