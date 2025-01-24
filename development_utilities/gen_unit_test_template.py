@@ -20,8 +20,7 @@ import uuid
 import pydantic
 from pydantic.types import AwareDatetime
 
-import s2python
-from s2python import frbc, ombc
+from s2python import frbc
 from s2python.common import Duration, PowerRange, NumberRange
 from s2python.generated.gen_s2 import CommodityQuantity
 
@@ -82,7 +81,6 @@ def message_type_from_class_name(class_name: str) -> str:
 
 
 def generate_json_test_data_for_field(field_type: Type):
-
     if field_type is Duration:
         value = random.randint(0, 39999)
     elif field_type is NumberRange:
@@ -128,8 +126,6 @@ def generate_json_test_data_for_field(field_type: Type):
         )
     elif field_type is uuid.UUID:
         value = uuid.uuid4()
-    elif field_type is Duration:
-        value = random.randint(0, 39999)
     else:
         raise RuntimeError(f"Please implement test data for field type {field_type}")
     return value
@@ -255,17 +251,18 @@ def dump_test_data_as_json_for(test_data: dict, class_: Type) -> dict:
     return result
 
 
-for class_name_bc, class_bc in [("frbc", frbc), ("ombc", ombc)]:
-    # Dynamically get the module object
-    for class_name, class_ in inspect.getmembers(class_bc):
-        # print(f"{class_name}: {class_}")
-        # Print the folder thats being inspected
-        print(f"Checking :tests/unit/{class_name_bc}/{snake_case(class_name)}_test.py")
-        if (
-            inspect.isclass(class_)
-            and issubclass(class_, pydantic.BaseModel)
-            and not os.path.exists(
-                f"tests/unit/{class_name_bc}/{snake_case(class_name)}_test.py"
+for class_name, class_ in inspect.getmembers(frbc):
+    if inspect.isclass(class_) and issubclass(class_, pydantic.BaseModel):
+        test_data = generate_json_test_data_for_class(class_)
+
+        assert_lines = []
+        for field_name, field_type in get_type_hints(class_).items():
+            assert_test_data = dump_test_data_as_constructor_field_for(
+                test_data[field_name], field_type
+            )
+
+            assert_lines.append(
+                f"self.assertEqual({snake_case(class_name)}.{field_name}, {assert_test_data})"
             )
 
         asserts = "\n        ".join(assert_lines)
