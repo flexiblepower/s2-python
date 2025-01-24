@@ -27,7 +27,7 @@ from s2python.reception_status_awaiter import ReceptionStatusAwaiter
 from s2python.s2_control_type import S2ControlType
 from s2python.s2_parser import S2Parser
 from s2python.s2_validation_error import S2ValidationError
-from s2python.validate_values_mixin import S2Message
+from s2python.message import S2Message
 from s2python.version import S2_VERSION
 
 logger = logging.getLogger("s2python")
@@ -141,7 +141,7 @@ class MessageHandlers:
         """
         handler = self.handlers.get(type(msg))
         if handler is not None:
-            send_okay = SendOkay(connection, msg.message_id)  # type: ignore[attr-defined]
+            send_okay = SendOkay(connection, msg.message_id)  # type: ignore[attr-defined, union-attr]
 
             try:
                 if asyncio.iscoroutinefunction(handler):
@@ -158,9 +158,9 @@ class MessageHandlers:
             except Exception:
                 if not send_okay.status_is_send.is_set():
                     await connection.respond_with_reception_status(
-                        subject_message_id=str(msg.message_id),  # type: ignore[attr-defined]
+                        subject_message_id=str(msg.message_id),  # type: ignore[attr-defined, union-attr]
                         status=ReceptionStatusValues.PERMANENT_ERROR,
-                        diagnostic_label=f"While processing message {msg.message_id} "  # type: ignore[attr-defined]
+                        diagnostic_label=f"While processing message {msg.message_id} "  # type: ignore[attr-defined, union-attr]  # pylint: disable=line-too-long
                         f"an unrecoverable error occurred.",
                     )
                 raise
@@ -490,17 +490,17 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         await self._send_and_forget(s2_msg)
         logger.debug(
             "Waiting for ReceptionStatus for %s %s seconds",
-            s2_msg.message_id,  # type: ignore[attr-defined]
+            s2_msg.message_id,  # type: ignore[attr-defined, union-attr]
             timeout_reception_status,
         )
         try:
             reception_status = await self.reception_status_awaiter.wait_for_reception_status(
-                s2_msg.message_id, timeout_reception_status  # type: ignore[attr-defined]
+                s2_msg.message_id, timeout_reception_status  # type: ignore[attr-defined, union-attr]
             )
         except TimeoutError:
             logger.error(
                 "Did not receive a reception status on time for %s",
-                s2_msg.message_id,  # type: ignore[attr-defined]
+                s2_msg.message_id,  # type: ignore[attr-defined, union-attr]
             )
             self._stop_event.set()
             raise

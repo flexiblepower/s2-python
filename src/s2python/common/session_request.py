@@ -3,12 +3,12 @@ import uuid
 from s2python.generated.gen_s2 import SessionRequest as GenSessionRequest
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class SessionRequest(GenSessionRequest, S2Message["SessionRequest"]):
+class SessionRequest(GenSessionRequest, S2MessageComponent["SessionRequest"]):
     model_config = GenSessionRequest.model_config
     model_config["validate_assignment"] = True
 
