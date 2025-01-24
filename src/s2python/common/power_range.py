@@ -4,13 +4,13 @@ from pydantic import model_validator
 
 from s2python.generated.gen_s2 import PowerRange as GenPowerRange
 from s2python.validate_values_mixin import (
-    S2Message,
+    S2MessageComponent,
     catch_and_convert_exceptions,
 )
 
 
 @catch_and_convert_exceptions
-class PowerRange(GenPowerRange, S2Message["PowerRange"]):
+class PowerRange(GenPowerRange, S2MessageComponent["PowerRange"]):
     model_config = GenPowerRange.model_config
     model_config["validate_assignment"] = True
 

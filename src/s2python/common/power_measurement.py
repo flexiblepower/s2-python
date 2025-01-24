@@ -5,12 +5,12 @@ from s2python.common.power_value import PowerValue
 from s2python.generated.gen_s2 import PowerMeasurement as GenPowerMeasurement
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class PowerMeasurement(GenPowerMeasurement, S2Message["PowerMeasurement"]):
+class PowerMeasurement(GenPowerMeasurement, S2MessageComponent["PowerMeasurement"]):
     model_config = GenPowerMeasurement.model_config
     model_config["validate_assignment"] = True
 
