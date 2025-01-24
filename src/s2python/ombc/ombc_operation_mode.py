@@ -7,12 +7,12 @@ from s2python.common.power_range import PowerRange
 
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
-class OMBCOperationMode(GenOMBCOperationMode, S2Message["OMBCOperationMode"]):
+class OMBCOperationMode(GenOMBCOperationMode, S2MessageComponent["OMBCOperationMode"]):
     model_config = GenOMBCOperationMode.model_config
     model_config["validate_assignment"] = True
 

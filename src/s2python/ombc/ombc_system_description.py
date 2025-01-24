@@ -8,13 +8,13 @@ from s2python.common.timer import Timer
 
 from s2python.validate_values_mixin import (
     catch_and_convert_exceptions,
-    S2Message,
+    S2MessageComponent,
 )
 
 
 @catch_and_convert_exceptions
 class OMBCSystemDescription(
-    GenOMBCSystemDescription, S2Message["OMBCSystemDescription"]
+    GenOMBCSystemDescription, S2MessageComponent["OMBCSystemDescription"]
 ):
     model_config = GenOMBCSystemDescription.model_config
     model_config["validate_assignment"] = True
