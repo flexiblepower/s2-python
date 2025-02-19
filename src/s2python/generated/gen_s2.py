@@ -281,6 +281,7 @@ class FRBCStorageDescription(BaseModel):
         ...,
         description='The range in which the fill_level should remain. It is expected of the CEM to keep the fill_level within this range. When the fill_level is not within this range, the Resource Manager can ignore instructions from the CEM (except during abnormal conditions). ',
     )
+    status: FRBCStorageStatus = Field(...,description='The status of the storage.')
 
 
 class FRBCLeakageBehaviourElement(BaseModel):
@@ -1566,6 +1567,10 @@ class FRBCActuatorDescription(BaseModel):
         description='List of Timers associated with this actuator',
         max_length=1000,
         min_length=0,
+    )
+    status: Optional[FRBCActuatorStatus] = Field(
+        ...,
+        description='Status of the actuator',
     )
 
 
