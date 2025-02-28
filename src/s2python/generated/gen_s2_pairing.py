@@ -4,9 +4,10 @@
 
 from __future__ import annotations
 
+from enum import Enum
 from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from s2python.common import EnergyManagementRole as S2Role
 
 
