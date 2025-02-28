@@ -212,7 +212,6 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self.url = url
         self.reconnect = reconnect
         self.allow_self_signed_certs = allow_self_signed_certs
-        
         self.reception_status_awaiter = ReceptionStatusAwaiter()
         self.ws = None
         self.s2_parser = S2Parser()
