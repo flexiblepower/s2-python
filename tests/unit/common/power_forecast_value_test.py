@@ -17,10 +17,14 @@ class PowerForecastValueTest(TestCase):
                        "value_upper_limit": 600}"""
 
         # Act
-        power_forecast_value: PowerForecastValue = PowerForecastValue.from_json(json_str)
+        power_forecast_value: PowerForecastValue = PowerForecastValue.from_json(
+            json_str
+        )
 
         # Assert
-        self.assertEqual(power_forecast_value.commodity_quantity, CommodityQuantity.HEAT_FLOW_RATE)
+        self.assertEqual(
+            power_forecast_value.commodity_quantity, CommodityQuantity.HEAT_FLOW_RATE
+        )
         self.assertEqual(power_forecast_value.value_lower_limit, 450.3)
         self.assertEqual(power_forecast_value.value_lower_95PPR, 470.4)
         self.assertEqual(power_forecast_value.value_lower_68PPR, 480.3)
@@ -68,5 +72,8 @@ class PowerForecastValueTest(TestCase):
         json_str = power_forecast_value.to_json()
 
         # Assert
-        expected_json = {"commodity_quantity": "HEAT.TEMPERATURE", "value_expected": 500.2}
+        expected_json = {
+            "commodity_quantity": "HEAT.TEMPERATURE",
+            "value_expected": 500.2,
+        }
         self.assertEqual(json.loads(json_str), expected_json)

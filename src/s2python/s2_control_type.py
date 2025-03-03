@@ -66,6 +66,7 @@ class PPBCControlType(S2ControlType):
     def deactivate(self, conn: "S2Connection") -> None:
         """Overwrite with the actual deactivation logic of your Resource Manager for this particular control type."""
 
+
 class OMBCControlType(S2ControlType):
     def get_protocol_control_type(self) -> ProtocolControlType:
         return ProtocolControlType.OPERATION_MODE_BASED_CONTROL
@@ -85,6 +86,7 @@ class OMBCControlType(S2ControlType):
     @abc.abstractmethod
     def deactivate(self, conn: "S2Connection") -> None:
         """Overwrite with the actual deactivation logic of your Resource Manager for this particular control type."""
+
 
 class NoControlControlType(S2ControlType):
     def get_protocol_control_type(self) -> ProtocolControlType:

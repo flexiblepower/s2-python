@@ -8,7 +8,10 @@ from dataclasses import dataclass
 from typing import Optional, List, Type, Dict, Callable, Awaitable, Union
 
 import websockets
-from websockets.asyncio.client import ClientConnection as WSConnection, connect as ws_connect
+from websockets.asyncio.client import (
+    ClientConnection as WSConnection,
+    connect as ws_connect,
+)
 
 from s2python.common import (
     ReceptionStatusValues,
@@ -55,7 +58,8 @@ class AssetDetails:  # pylint: disable=too-many-instance-attributes
     ) -> ResourceManagerDetails:
         return ResourceManagerDetails(
             available_control_types=[
-                control_type.get_protocol_control_type() for control_type in control_types
+                control_type.get_protocol_control_type()
+                for control_type in control_types
             ],
             currency=self.currency,
             firmware_version=self.firmware_version,
@@ -170,7 +174,9 @@ class MessageHandlers:
                 type(msg),
             )
 
-    def register_handler(self, msg_type: Type[S2Message], handler: S2MessageHandler) -> None:
+    def register_handler(
+        self, msg_type: Type[S2Message], handler: S2MessageHandler
+    ) -> None:
         """Register a coroutine function or a normal function as the handler for a specific S2 message type.
 
         :param msg_type: The S2 message type to attach the handler to.
@@ -222,9 +228,13 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self.role = role
         self.asset_details = asset_details
 
-        self._handlers.register_handler(SelectControlType, self.handle_select_control_type_as_rm)
+        self._handlers.register_handler(
+            SelectControlType, self.handle_select_control_type_as_rm
+        )
         self._handlers.register_handler(Handshake, self.handle_handshake)
-        self._handlers.register_handler(HandshakeResponse, self.handle_handshake_response_as_rm)
+        self._handlers.register_handler(
+            HandshakeResponse, self.handle_handshake_response_as_rm
+        )
 
     def start_as_rm(self) -> None:
         self._run_eventloop(self._run_as_rm())
@@ -304,7 +314,10 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                     await task
                 except asyncio.CancelledError:
                     pass
-                except (websockets.ConnectionClosedError, websockets.ConnectionClosedOK):
+                except (
+                    websockets.ConnectionClosedError,
+                    websockets.ConnectionClosedOK,
+                ):
                     logger.info("The other party closed the websocket connection.")
 
             for task in pending:
@@ -326,10 +339,14 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     async def _connect_as_rm(self) -> None:
         await self.send_msg_and_await_reception_status_async(
             Handshake(
-                message_id=uuid.uuid4(), role=self.role, supported_protocol_versions=[S2_VERSION]
+                message_id=uuid.uuid4(),
+                role=self.role,
+                supported_protocol_versions=[S2_VERSION],
             )
         )
-        logger.debug("Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM.")
+        logger.debug(
+            "Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM."
+        )
 
         await self._handle_received_messages()
 
@@ -338,7 +355,8 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     ) -> None:
         if not isinstance(message, Handshake):
             logger.error(
-                "Handler for Handshake received a message of the wrong type: %s", type(message)
+                "Handler for Handshake received a message of the wrong type: %s",
+                type(message),
             )
             return
 
@@ -361,7 +379,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
         logger.debug("Received HandshakeResponse %s", message.to_json())
 
-        logger.debug("CEM selected to use version %s", message.selected_protocol_version)
+        logger.debug(
+            "CEM selected to use version %s", message.selected_protocol_version
+        )
         await send_okay
         logger.debug("Handshake complete. Sending first ResourceManagerDetails.")
 
@@ -381,22 +401,29 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
         await send_okay
 
-        logger.debug("CEM selected control type %s. Activating control type.", message.control_type)
+        logger.debug(
+            "CEM selected control type %s. Activating control type.",
+            message.control_type,
+        )
 
         control_types_by_protocol_name = {
             c.get_protocol_control_type(): c for c in self.control_types
         }
-        selected_control_type: Optional[S2ControlType] = control_types_by_protocol_name.get(
-            message.control_type
+        selected_control_type: Optional[S2ControlType] = (
+            control_types_by_protocol_name.get(message.control_type)
         )
 
         if self._current_control_type is not None:
-            await self._eventloop.run_in_executor(None, self._current_control_type.deactivate, self)
+            await self._eventloop.run_in_executor(
+                None, self._current_control_type.deactivate, self
+            )
 
         self._current_control_type = selected_control_type
 
         if self._current_control_type is not None:
-            await self._eventloop.run_in_executor(None, self._current_control_type.activate, self)
+            await self._eventloop.run_in_executor(
+                None, self._current_control_type.activate, self
+            )
             self._current_control_type.register_handlers(self._handlers)
 
     async def _receive_messages(self) -> None:
@@ -465,9 +492,14 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             self._restart_connection_event.set()
 
     async def respond_with_reception_status(
-        self, subject_message_id: str, status: ReceptionStatusValues, diagnostic_label: str
+        self,
+        subject_message_id: str,
+        status: ReceptionStatusValues,
+        diagnostic_label: str,
     ) -> None:
-        logger.debug("Responding to message %s with status %s", subject_message_id, status)
+        logger.debug(
+            "Responding to message %s with status %s", subject_message_id, status
+        )
         await self._send_and_forget(
             ReceptionStatus(
                 subject_message_id=subject_message_id,
@@ -477,15 +509,23 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         )
 
     def respond_with_reception_status_sync(
-        self, subject_message_id: str, status: ReceptionStatusValues, diagnostic_label: str
+        self,
+        subject_message_id: str,
+        status: ReceptionStatusValues,
+        diagnostic_label: str,
     ) -> None:
         asyncio.run_coroutine_threadsafe(
-            self.respond_with_reception_status(subject_message_id, status, diagnostic_label),
+            self.respond_with_reception_status(
+                subject_message_id, status, diagnostic_label
+            ),
             self._eventloop,
         ).result()
 
     async def send_msg_and_await_reception_status_async(
-        self, s2_msg: S2Message, timeout_reception_status: float = 5.0, raise_on_error: bool = True
+        self,
+        s2_msg: S2Message,
+        timeout_reception_status: float = 5.0,
+        raise_on_error: bool = True,
     ) -> ReceptionStatus:
         await self._send_and_forget(s2_msg)
         logger.debug(
@@ -506,12 +546,17 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             raise
 
         if reception_status.status != ReceptionStatusValues.OK and raise_on_error:
-            raise RuntimeError(f"ReceptionStatus was not OK but rather {reception_status.status}")
+            raise RuntimeError(
+                f"ReceptionStatus was not OK but rather {reception_status.status}"
+            )
 
         return reception_status
 
     def send_msg_and_await_reception_status_sync(
-        self, s2_msg: S2Message, timeout_reception_status: float = 5.0, raise_on_error: bool = True
+        self,
+        s2_msg: S2Message,
+        timeout_reception_status: float = 5.0,
+        raise_on_error: bool = True,
     ) -> ReceptionStatus:
         return asyncio.run_coroutine_threadsafe(
             self.send_msg_and_await_reception_status_async(
