@@ -51,7 +51,7 @@ class PairingRequest(BaseModel):
     publicKey: str
     s2ClientNodeId: str
     s2ClientNodeDescription: str
-    supportedProtocols: Protocols
+    supportedProtocols: List[Protocols]
 
 
 class PairingResponse(BaseModel):
@@ -68,7 +68,7 @@ class ConnectionRequest(BaseModel):
         extra='forbid',
     )
     s2ClientNodeId: str
-    supportedProtocols: Protocols
+    supportedProtocols: List[Protocols]
 
 
 class ConnectionDetails(BaseModel):
