@@ -88,6 +88,20 @@ class OMBCControlType(S2ControlType):
         """Overwrite with the actual deactivation logic of your Resource Manager for this particular control type."""
 
 
+class PEBCControlType(S2ControlType):
+    def get_protocol_control_type(self) -> ProtocolControlType:
+        return ProtocolControlType.POWER_ENVELOPE_BASED_CONTROL
+
+    def register_handlers(self, handlers: "MessageHandlers") -> None:
+        pass
+
+    @abc.abstractmethod
+    def activate(self, conn: "S2Connection") -> None: ...
+
+    @abc.abstractmethod
+    def deactivate(self, conn: "S2Connection") -> None: ...
+
+
 class NoControlControlType(S2ControlType):
     def get_protocol_control_type(self) -> ProtocolControlType:
         return ProtocolControlType.NOT_CONTROLABLE
