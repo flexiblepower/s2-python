@@ -30,7 +30,7 @@ from s2python.frbc import (
 )
 from s2python.s2_connection import S2Connection, AssetDetails
 from s2python.s2_control_type import FRBCControlType, NoControlControlType
-from s2python.validate_values_mixin import S2Message
+from s2python.message import S2Message
 
 logger = logging.getLogger("s2python")
 logger.addHandler(logging.StreamHandler(sys.stdout))

@@ -4,6 +4,7 @@ import typing
 from s2python.common import ControlType as ProtocolControlType
 from s2python.frbc import FRBCInstruction
 from s2python.ppbc import PPBCScheduleInstruction
+from s2python.ombc import OMBCInstruction
 from s2python.message import S2Message
 
 if typing.TYPE_CHECKING:
@@ -65,6 +66,25 @@ class PPBCControlType(S2ControlType):
     def deactivate(self, conn: "S2Connection") -> None:
         """Overwrite with the actual deactivation logic of your Resource Manager for this particular control type."""
 
+class OMBCControlType(S2ControlType):
+    def get_protocol_control_type(self) -> ProtocolControlType:
+        return ProtocolControlType.OPERATION_MODE_BASED_CONTROL
+
+    def register_handlers(self, handlers: "MessageHandlers") -> None:
+        handlers.register_handler(OMBCInstruction, self.handle_instruction)
+
+    @abc.abstractmethod
+    def handle_instruction(
+        self, conn: "S2Connection", msg: S2Message, send_okay: typing.Callable[[], None]
+    ) -> None: ...
+
+    @abc.abstractmethod
+    def activate(self, conn: "S2Connection") -> None:
+        """Overwrite with the actual dctivation logic of your Resource Manager for this particular control type."""
+
+    @abc.abstractmethod
+    def deactivate(self, conn: "S2Connection") -> None:
+        """Overwrite with the actual deactivation logic of your Resource Manager for this particular control type."""
 
 class NoControlControlType(S2ControlType):
     def get_protocol_control_type(self) -> ProtocolControlType:
