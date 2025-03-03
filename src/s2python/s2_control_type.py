@@ -66,9 +66,10 @@ class PPBCControlType(S2ControlType):
         """Overwrite with the actual deactivation logic of your Resource Manager for this particular control type."""
 
 
-class DDBControlType(S2ControlType):
+
+class PEBCControlType(S2ControlType):
     def get_protocol_control_type(self) -> ProtocolControlType:
-        return ProtocolControlType.DEMAND_DRIVEN_BASED_CONTROL
+        return ProtocolControlType.POWER_ENVELOPE_BASED_CONTROL
 
     def register_handlers(self, handlers: "MessageHandlers") -> None:
         pass
