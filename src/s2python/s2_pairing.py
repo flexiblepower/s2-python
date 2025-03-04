@@ -1,5 +1,6 @@
 import logging
 import uuid
+import datetime
 from typing import Tuple, Union
 import requests
 
@@ -17,14 +18,17 @@ from s2python.generated.gen_s2_pairing import (Protocols,
 
 logger = logging.getLogger("s2python")
 
+REQTEST_TIMEOUT = 10
+CHALLANGE_TIMEOUT = datetime.timedelta(minutes=5)
+
 class S2Pairing:  # pylint: disable=too-many-instance-attributes
-    paired: bool
     s2_server_node_id: str
     server_node_description: str
     selected_protocol: Protocols
     connection_uri: str
-    challenge: BinaPy
+    _challenge: BinaPy
 
+    _paring_timestamp: datetime.datetime
     _request_pairing_endpoint: str
     _token: str
     _s2_client_node_description: S2NodeDescription
@@ -41,8 +45,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         client_node_id: str = str(uuid.uuid4()),
         supported_protocols: Tuple[Protocols] = (Protocols.WebSocketSecure, )
     ) -> None:
-        self.paired = False
-
+        self._paring_timestamp = datetime.datetime(year = datetime.MINYEAR, month = 1, day = 1)
         self._request_pairing_endpoint = request_pairing_endpoint
         self._token = token
         self._s2_client_node_description = s2_client_node_description
@@ -51,8 +54,12 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         self._supported_protocols = supported_protocols
         self._rsa_key_pair = RSAJwk(self._rsa_key_pair)
 
-    def pair(self) -> bool:
-        self.paired = False
+    def get_challenge(self) -> BinaPy:
+        # If pairing was done within the timeout, the existing chellange can be returned
+        if (self._paring_timestamp + CHALLANGE_TIMEOUT) < datetime.datetime.now():
+            return self._challenge
+
+        self._paring_timestamp =  datetime.datetime.now()
         pairing_request: PairingRequest = PairingRequest(token=self._token,
                                                         publicKey=self._rsa_key_pair.public_jwk().to_pem(),
                                                         s2ClientNodeId=self._client_node_id,
@@ -61,7 +68,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
 
         response = requests.post(self._request_pairing_endpoint,
                                  json=pairing_request.model_dump_json(),
-                                 timeout=10,
+                                 timeout=REQTEST_TIMEOUT,
                                  verify = self._verify_certificate)
         response.raise_for_status()
         pairing_response: PairingResponse = PairingResponse.parse_raw(response.json())
@@ -73,14 +80,13 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
 
         response = requests.post(pairing_response.requestConnectionUri,
                                  json=connection_request.model_dump_json(),
-                                 timeout=10,
+                                 timeout=REQTEST_TIMEOUT,
                                  verify = self._verify_certificate)
         response.raise_for_status()
         connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.json())
 
         self.selected_protocol = connection_details.selectedProtocol
         self.connection_uri = connection_details.connectionUri
-        self.challenge = JweCompact(connection_details.challenge).decrypt(self._rsa_key_pair)
+        self._challenge = JweCompact(connection_details.challenge).decrypt(self._rsa_key_pair)
 
-        self.paired = True
-        return self.paired
+        return self._challenge
