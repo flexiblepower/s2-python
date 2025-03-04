@@ -239,6 +239,17 @@ wheel==0.44.0
     # via pip-tools
 zipp==3.20.1
     # via importlib-metadata
+jwskate==0.11.1
+binapy==0.8.0
+    # via jwskate
+cffi==1.17.1
+    # via jwskate
+cryptography==44.0.2
+    # via jwskate
+pycparser==2.22
+    # via jwskate
+requests==2.32.3
+
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
