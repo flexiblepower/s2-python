@@ -24,14 +24,14 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
     selected_protocol: Protocols
     connection_uri: str
     challenge: BinaPy
-
+    
     _request_pairing_endpoint: str
     _token: str
     _s2_client_node_description: S2NodeDescription
     _verify_certificate: bool | str
     _client_node_id: str
     _supported_protocols: List[Protocols]
-    _rsa_key_pair: RSAJwk
+    _rsa_key_pair: RSAJwk    
     def __init__(  # pylint: disable=too-many-arguments
         self,
         request_pairing_endpoint: str,
@@ -47,7 +47,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         self.selected_protocol = None
         self.connection_uri = None
         self.challenge = None
-
+        
         self._request_pairing_endpoint = request_pairing_endpoint
         self._token = token
         self._s2_client_node_description = s2_client_node_description
@@ -55,6 +55,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         self._client_node_id = client_node_id
         self._supported_protocols = supported_protocols
         self._rsa_key_pair = RSAJwk(self._rsa_key_pair)
+        
 
     def pair(self) -> bool:
         self.paired = False
