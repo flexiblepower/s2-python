@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Tuple
+from typing import Tuple, Union
 import requests
 
 from jwskate import JweCompact
@@ -28,7 +28,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
     _request_pairing_endpoint: str
     _token: str
     _s2_client_node_description: S2NodeDescription
-    _verify_certificate: bool | str  # pylint: disable=E1131
+    _verify_certificate: Union[bool, str]
     _client_node_id: str
     _supported_protocols: Tuple[Protocols]
     _rsa_key_pair: RSAJwk
@@ -37,7 +37,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         request_pairing_endpoint: str,
         token: str,
         s2_client_node_description: S2NodeDescription,
-        verify_certificate: bool | str = False,  # pylint: disable=E1131
+        verify_certificate: Union[bool, str] = False,
         client_node_id: str = str(uuid.uuid4()),
         supported_protocols: Tuple[Protocols] = (Protocols.WebSocketSecure, )
     ) -> None:
