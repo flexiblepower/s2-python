@@ -54,7 +54,8 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         self._supported_protocols = supported_protocols
         self._rsa_key_pair = RSAJwk(self._rsa_key_pair)
 
-    def get_challenge(self) -> BinaPy:
+    @property
+    def challenge(self) -> BinaPy:
         # If pairing was done within the timeout, the existing chellange can be returned
         if (self._paring_timestamp + CHALLANGE_TIMEOUT) < datetime.datetime.now():
             return self._challenge
