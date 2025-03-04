@@ -4,6 +4,7 @@ import logging
 import time
 import threading
 import uuid
+import ssl
 from dataclasses import dataclass
 from typing import Optional, List, Type, Dict, Callable, Awaitable, Union
 
