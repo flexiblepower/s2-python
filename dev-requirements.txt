@@ -249,6 +249,7 @@ cryptography==44.0.2
 pycparser==2.22
     # via jwskate
 requests==2.32.3
+types-requests==2.32.0.20250301
 
 
 # The following packages are considered to be unsafe in a requirements file:
