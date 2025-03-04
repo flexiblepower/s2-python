@@ -7,7 +7,6 @@ import uuid
 from dataclasses import dataclass
 from typing import Optional, List, Type, Dict, Callable, Awaitable, Union
 
-import ssl
 import websockets
 from websockets.asyncio.client import ClientConnection as WSConnection, connect as ws_connect
 
@@ -207,11 +206,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         control_types: List[S2ControlType],
         asset_details: AssetDetails,
         reconnect: bool = False,
-        allow_self_signed_certs: bool = True,
     ) -> None:
         self.url = url
         self.reconnect = reconnect
-        self.allow_self_signed_certs = allow_self_signed_certs
         self.reception_status_awaiter = ReceptionStatusAwaiter()
         self.ws = None
         self.s2_parser = S2Parser()
@@ -322,12 +319,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
     async def _connect_ws(self) -> None:
         try:
-            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-            if self.allow_self_signed_certs:
-                ssl_context.check_hostname = False
-                ssl_context.verify_mode = ssl.CERT_NONE
-
-            self.ws = await ws_connect(uri=self.url, ssl=ssl_context)
+            self.ws = await ws_connect(uri=self.url)
         except (EOFError, OSError) as e:
             logger.info("Could not connect due to: %s", str(e))
 
