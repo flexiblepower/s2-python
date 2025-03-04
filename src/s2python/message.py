@@ -8,10 +8,17 @@ from s2python.frbc import (
     FRBCStorageStatus,
     FRBCSystemDescription,
     FRBCTimerStatus,
-    FRBCUsageForecast
+    FRBCUsageForecast,
 )
 from s2python.ppbc import (
     PPBCScheduleInstruction,
+)
+from s2python.ombc import (
+    OMBCInstruction,
+    OMBCOperationMode,
+    OMBCTimerStatus,
+    OMBCStatus,
+    OMBCSystemDescription,
 )
 
 from s2python.common import (
@@ -24,7 +31,7 @@ from s2python.common import (
     ResourceManagerDetails,
     RevokeObject,
     SelectControlType,
-    SessionRequest
+    SessionRequest,
 )
 
 S2Message = Union[
@@ -37,6 +44,11 @@ S2Message = Union[
     FRBCTimerStatus,
     FRBCUsageForecast,
     PPBCScheduleInstruction,
+    OMBCInstruction,
+    OMBCOperationMode,
+    OMBCTimerStatus,
+    OMBCStatus,
+    OMBCSystemDescription,
     Handshake,
     HandshakeResponse,
     InstructionStatusUpdate,

@@ -10,7 +10,9 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class InstructionStatusUpdate(GenInstructionStatusUpdate, S2MessageComponent["InstructionStatusUpdate"]):
+class InstructionStatusUpdate(
+    GenInstructionStatusUpdate, S2MessageComponent["InstructionStatusUpdate"]
+):
     model_config = GenInstructionStatusUpdate.model_config
     model_config["validate_assignment"] = True
 

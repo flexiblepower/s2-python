@@ -65,7 +65,9 @@ class FRBCActuatorStatusTest(TestCase):
             message_id=uuid.UUID("07f3d559-63c5-4369-a9e0-deed4195f651"),
             message_type="FRBC.ActuatorStatus",
             operation_mode_factor=6919.960475850124,
-            previous_operation_mode_id=uuid.UUID("2ed8f7de-cbaa-4cab-9d25-6792317aa284"),
+            previous_operation_mode_id=uuid.UUID(
+                "2ed8f7de-cbaa-4cab-9d25-6792317aa284"
+            ),
             transition_timestamp=datetime(
                 year=2020,
                 month=1,

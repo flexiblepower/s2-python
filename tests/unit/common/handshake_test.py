@@ -17,7 +17,9 @@ class HandshakeTest(TestCase):
         handshake = Handshake.from_json(json_str)
 
         # Assert
-        self.assertEqual(handshake.message_id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"))
+        self.assertEqual(
+            handshake.message_id, uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3")
+        )
         self.assertEqual(handshake.role, EnergyManagementRole.RM)
         self.assertEqual(handshake.supported_protocol_versions, ["v1", "v2"])
 

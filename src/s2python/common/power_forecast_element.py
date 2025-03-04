@@ -10,7 +10,9 @@ from s2python.common.power_forecast_value import PowerForecastValue
 
 
 @catch_and_convert_exceptions
-class PowerForecastElement(GenPowerForecastElement, S2MessageComponent["PowerForecastElement"]):
+class PowerForecastElement(
+    GenPowerForecastElement, S2MessageComponent["PowerForecastElement"]
+):
     model_config = GenPowerForecastElement.model_config
     model_config["validate_assignment"] = True
 

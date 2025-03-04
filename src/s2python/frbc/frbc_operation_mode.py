@@ -26,14 +26,21 @@ class FRBCOperationMode(GenFRBCOperationMode, S2MessageComponent["FRBCOperationM
     @model_validator(mode="after")
     def validate_contiguous_fill_levels_operation_mode_elements(self) -> Self:
         elements_by_fill_level_range: Dict[NumberRange, FRBCOperationModeElement]
-        elements_by_fill_level_range = {element.fill_level_range: element for element in self.elements}
+        elements_by_fill_level_range = {
+            element.fill_level_range: element for element in self.elements
+        }
 
         sorted_fill_level_ranges: List[NumberRange]
         sorted_fill_level_ranges = list(elements_by_fill_level_range.keys())
         sorted_fill_level_ranges.sort(key=lambda r: r.start_of_range)
 
-        for current_fill_level_range, next_fill_level_range in pairwise(sorted_fill_level_ranges):
-            if current_fill_level_range.end_of_range != next_fill_level_range.start_of_range:
+        for current_fill_level_range, next_fill_level_range in pairwise(
+            sorted_fill_level_ranges
+        ):
+            if (
+                current_fill_level_range.end_of_range
+                != next_fill_level_range.start_of_range
+            ):
                 raise ValueError(
                     self,
                     f"Elements with fill level ranges {current_fill_level_range} and "

@@ -1,7 +1,20 @@
-from typing import TypeVar, Generic, Type, Callable, Any, Union, AbstractSet, Mapping, List, Dict
+from typing import (
+    TypeVar,
+    Generic,
+    Type,
+    Callable,
+    Any,
+    Union,
+    AbstractSet,
+    Mapping,
+    List,
+    Dict,
+)
 
 from pydantic import BaseModel, ValidationError  # pylint: disable=no-name-in-module
-from pydantic.v1.error_wrappers import display_errors  # pylint: disable=no-name-in-module
+from pydantic.v1.error_wrappers import (
+    display_errors,
+)  # pylint: disable=no-name-in-module
 
 from s2python.s2_validation_error import S2ValidationError
 
@@ -59,7 +72,9 @@ def convert_to_s2exception(f: Callable) -> Callable:
     return inner
 
 
-def catch_and_convert_exceptions(input_class: Type[S2MessageComponent[B_co]]) -> Type[S2MessageComponent[B_co]]:
+def catch_and_convert_exceptions(
+    input_class: Type[S2MessageComponent[B_co]],
+) -> Type[S2MessageComponent[B_co]]:
     input_class.__init__ = convert_to_s2exception(input_class.__init__)  # type: ignore[method-assign]
     input_class.__setattr__ = convert_to_s2exception(input_class.__setattr__)  # type: ignore[method-assign]
     input_class.model_validate_json = convert_to_s2exception(  # type: ignore[method-assign]

@@ -18,7 +18,9 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent["FRBCActuatorDescription"]):
+class FRBCActuatorDescription(
+    GenFRBCActuatorDescription, S2MessageComponent["FRBCActuatorDescription"]
+):
     model_config = GenFRBCActuatorDescription.model_config
     model_config["validate_assignment"] = True
 
@@ -61,14 +63,18 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent["FR
         timer: Timer
         for timer in self.timers:
             if timer.id in ids:
-                raise ValueError(self, f"Id {timer.id} was found multiple times in 'timers'.")
+                raise ValueError(
+                    self, f"Id {timer.id} was found multiple times in 'timers'."
+                )
             ids.append(timer.id)
 
         return self
 
     @model_validator(mode="after")
     def validate_operation_modes_in_transitions(self) -> Self:
-        operation_mode_by_id = {operation_mode.id: operation_mode for operation_mode in self.operation_modes}
+        operation_mode_by_id = {
+            operation_mode.id: operation_mode for operation_mode in self.operation_modes
+        }
         transition: Transition
         for transition in self.transitions:
             if transition.from_ not in operation_mode_by_id:
@@ -111,7 +117,9 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent["FR
                     power_ranges_for_commodity = [
                         power_range
                         for power_range in operation_mode_element.power_ranges
-                        if commodity_has_quantity(commodity, power_range.commodity_quantity)
+                        if commodity_has_quantity(
+                            commodity, power_range.commodity_quantity
+                        )
                     ]
 
                     if len(power_ranges_for_commodity) > 1:

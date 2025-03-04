@@ -21,8 +21,8 @@ class FRBCFillLevelTargetProfileElementTest(TestCase):
         """
 
         # Act
-        frbc_fill_level_target_profile_element = FRBCFillLevelTargetProfileElement.from_json(
-            json_str
+        frbc_fill_level_target_profile_element = (
+            FRBCFillLevelTargetProfileElement.from_json(json_str)
         )
 
         # Assert
