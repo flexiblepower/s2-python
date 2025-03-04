@@ -198,6 +198,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     _eventloop: asyncio.AbstractEventLoop
     _stop_event: asyncio.Event
     _restart_connection_event: asyncio.Event
+    _verify_certificate: bool
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
@@ -206,6 +207,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         control_types: List[S2ControlType],
         asset_details: AssetDetails,
         reconnect: bool = False,
+        verify_certificate: bool = True,
     ) -> None:
         self.url = url
         self.reconnect = reconnect
@@ -221,6 +223,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self.control_types = control_types
         self.role = role
         self.asset_details = asset_details
+        self._verify_certificate = verify_certificate
 
         self._handlers.register_handler(SelectControlType, self.handle_select_control_type_as_rm)
         self._handlers.register_handler(Handshake, self.handle_handshake)
@@ -318,8 +321,13 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             await self.ws.wait_closed()
 
     async def _connect_ws(self) -> None:
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        if not self._verify_certificate:
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+
         try:
-            self.ws = await ws_connect(uri=self.url)
+            self.ws = await ws_connect(uri=self.url, ssl=ssl_context)
         except (EOFError, OSError) as e:
             logger.info("Could not connect due to: %s", str(e))
 
