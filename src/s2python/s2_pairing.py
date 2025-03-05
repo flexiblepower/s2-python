@@ -5,8 +5,7 @@ from dataclasses import dataclass
 from typing import Tuple, Union
 import requests
 
-from jwskate import JweCompact
-from jwskate.jwk.rsa import RSAJwk
+from jwskate import JweCompact, Jwk
 from binapy.binapy import BinaPy
 
 from s2python.generated.gen_s2_pairing import (Protocols,
@@ -22,8 +21,9 @@ logger = logging.getLogger("s2python")
 
 REQTEST_TIMEOUT = 10
 PAIRING_TIMEOUT = datetime.timedelta(minutes=5)
+KEY_ALGORITHM = "RSA-OAEP-256"
 
-@dataclass
+@dataclass(frozen=True)
 class PairingDetails:
     """The result of an S2 pairing
        :param pairing_response: Details about the server.
@@ -34,9 +34,7 @@ class PairingDetails:
     decrypted_challenge: BinaPy
 
 class S2Pairing:  # pylint: disable=too-many-instance-attributes
-    _pairing_response: PairingResponse
-    _connection_details: ConnectionDetails
-    _challenge: BinaPy
+    _pairing_details: PairingDetails
     _paring_timestamp: datetime.datetime
     _request_pairing_endpoint: str
     _token: str
@@ -44,7 +42,6 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
     _verify_certificate: Union[bool, str]
     _client_node_id: str
     _supported_protocols: Tuple[Protocols]
-    _rsa_key_pair: RSAJwk
     def __init__(  # pylint: disable=too-many-arguments
         self,
         request_pairing_endpoint: str,
@@ -70,17 +67,19 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         self._verify_certificate = verify_certificate
         self._client_node_id = client_node_id
         self._supported_protocols = supported_protocols
-        self._rsa_key_pair = RSAJwk(self._rsa_key_pair)
 
     def _pair(self) -> None:
         """Private method establishing pairing"""
         # If pairing has been established recently we don't need to do it again
-        if (self._paring_timestamp + PAIRING_TIMEOUT) > datetime.datetime.now():
+        if datetime.datetime.now() < (self._paring_timestamp + PAIRING_TIMEOUT):
             return
 
         self._paring_timestamp =  datetime.datetime.now()
+
+        rsa_key_pair = Jwk.generate_for_alg(KEY_ALGORITHM).with_kid_thumbprint()
+
         pairing_request: PairingRequest = PairingRequest(token=self._token,
-                                                        publicKey=self._rsa_key_pair.public_jwk().to_pem(),
+                                                        publicKey=rsa_key_pair.public_jwk().to_pem(),
                                                         s2ClientNodeId=self._client_node_id,
                                                         s2ClientNodeDescription=self._s2_client_node_description,
                                                         supportedProtocols=self._supported_protocols)
@@ -90,18 +89,19 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                  timeout=REQTEST_TIMEOUT,
                                  verify = self._verify_certificate)
         response.raise_for_status()
-        self._pairing_response: PairingResponse = PairingResponse.parse_raw(response.json())
+        pairing_response: PairingResponse = PairingResponse.parse_raw(response.json())
 
         connection_request: ConnectionRequest = ConnectionRequest(s2ClientNodeId=self._client_node_id,
                                                                    supportedProtocols=self._supported_protocols)
 
-        response = requests.post(self._pairing_response.requestConnectionUri,
+        response = requests.post(pairing_response.requestConnectionUri,
                                  json=connection_request.model_dump_json(),
                                  timeout=REQTEST_TIMEOUT,
                                  verify = self._verify_certificate)
         response.raise_for_status()
-        self._connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.json())
-        self._challenge = JweCompact(self._connection_details.challenge).decrypt(self._rsa_key_pair)
+        connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.json())
+        challenge = JweCompact(connection_details.challenge).decrypt(rsa_key_pair)
+        self._pairing_details = PairingDetails(pairing_response, connection_details, challenge)
 
 
     @property
@@ -109,4 +109,4 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         """:raises: requests.exceptions.HTTPError, requests.exceptions.JSONDecodeError
            :return: PairingDetails object that's the result of the latest pairing."""
         self._pair()
-        return PairingDetails(self._pairing_response, self._connection_details, self._challenge)
+        return self._pairing_details
