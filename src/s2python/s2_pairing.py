@@ -94,7 +94,14 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         connection_request: ConnectionRequest = ConnectionRequest(s2ClientNodeId=self._client_node_id,
                                                                    supportedProtocols=self._supported_protocols)
 
-        response = requests.post(pairing_response.requestConnectionUri,
+
+        restest_pairing_uri: str = \
+            pairing_response.requestConnectionUri if hasattr(pairing_response, 'requestConnectionUri') \
+                                                  and pairing_response.requestConnectionUri is not None \
+                                                  else self._request_pairing_endpoint.replace('requestPairing',
+                                                                                              'requestConnection')
+
+        response = requests.post(restest_pairing_uri,
                                  json=connection_request.model_dump_json(),
                                  timeout=REQTEST_TIMEOUT,
                                  verify = self._verify_certificate)
