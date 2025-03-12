@@ -156,13 +156,13 @@ def stop(s2_connection, signal_num, _current_stack_frame):
     print(f"Received signal {signal_num}. Will stop S2 connection.")
     s2_connection.stop()
 
-def start_s2_session(url):
+def start_s2_session(url, client_node_id=str(uuid.uuid4())):
     s2_conn = S2Connection(
         url=url,
         role=EnergyManagementRole.RM,
         control_types=[MyFRBCControlType(), MyNoControlControlType()],
         asset_details=AssetDetails(
-            resource_id=str(uuid.uuid4()),
+            resource_id=client_node_id,
             name="Some asset",
             instruction_processing_delay=Duration.from_milliseconds(20),
             roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
