@@ -1,3 +1,4 @@
+import argparse
 import re
 from functools import partial
 import logging
@@ -179,5 +180,8 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
     s2_conn.start_as_rm()
 
 if __name__ == "__main__":
-    start_s2_session(sys.argv[1] if len(sys.argv) > 1 and re.match(r'^ws{1,2}://', sys.argv[1])
-                                 else "ws://localhost:8080/backend/rm/s2python-frbc/cem/dummy_model/ws")
+    parser = argparse.ArgumentParser(description="A simple S2 reseource manager example.")
+    parser.add_argument('endpoint', type=str, help="WebSocket endpoint uri for the server (CEM) e.h. ws://localhost:8080/websocket/s2/my-first-websocket-rm")
+    args = parser.parse_args()
+
+    start_s2_session(args.endpoint)
