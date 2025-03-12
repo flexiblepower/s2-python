@@ -322,13 +322,14 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             await self.ws.wait_closed()
 
     async def _connect_ws(self) -> None:
-        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        if not self._verify_certificate:
-            ssl_context.check_hostname = False
-            ssl_context.verify_mode = ssl.CERT_NONE
-
         try:
-            self.ws = await ws_connect(uri=self.url, ssl=ssl_context)
+            if self.url.startswith("wss://") and not self._verify_certificate:
+                ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = ssl.CERT_NONE
+                self.ws = await ws_connect(uri=self.url, ssl=ssl_context)
+            else:
+                self.ws = await ws_connect(uri=self.url)
         except (EOFError, OSError) as e:
             logger.info("Could not connect due to: %s", str(e))
 
