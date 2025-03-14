@@ -2,11 +2,11 @@ import logging
 import uuid
 import datetime
 from dataclasses import dataclass
-from typing import Tuple, Union
+from typing import Tuple, Union, Mapping, Any
+import json
 import requests
 
-from jwskate import JweCompact, Jwk
-from binapy.binapy import BinaPy
+from jwskate import JweCompact, Jwk, Jwt, SignedJwt
 
 from s2python.generated.gen_s2_pairing import (Protocols,
                                                PairingRequest,
@@ -28,10 +28,10 @@ class PairingDetails:
     """The result of an S2 pairing
        :param pairing_response: Details about the server.
        :param connection_details: Details about how to connect.
-       :param supported_protocols: The decrypted challenge needed as bearer token."""
+       :param decrypted_challenge: The decrypted challenge needed as bearer token."""
     pairing_response: PairingResponse
     connection_details: ConnectionDetails
-    decrypted_challenge: BinaPy
+    decrypted_challenge: str
 
 class S2Pairing:  # pylint: disable=too-many-instance-attributes
     _pairing_details: PairingDetails
@@ -77,7 +77,6 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         self._paring_timestamp =  datetime.datetime.now()
 
         rsa_key_pair = Jwk.generate_for_alg(KEY_ALGORITHM).with_kid_thumbprint()
-
         pairing_request: PairingRequest = PairingRequest(token=self._token,
                                                         publicKey=rsa_key_pair.public_jwk().to_pem(),
                                                         s2ClientNodeId=self._client_node_id,
@@ -85,11 +84,11 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                                         supportedProtocols=self._supported_protocols)
 
         response = requests.post(self._request_pairing_endpoint,
-                                 json=pairing_request.model_dump_json(),
-                                 timeout=REQTEST_TIMEOUT,
+                                 json = pairing_request.dict(),
+                                 timeout = REQTEST_TIMEOUT,
                                  verify = self._verify_certificate)
         response.raise_for_status()
-        pairing_response: PairingResponse = PairingResponse.parse_raw(response.json())
+        pairing_response: PairingResponse = PairingResponse.parse_raw(response.text)
 
         connection_request: ConnectionRequest = ConnectionRequest(s2ClientNodeId=self._client_node_id,
                                                                    supportedProtocols=self._supported_protocols)
@@ -102,13 +101,14 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                                                                               'requestConnection')
 
         response = requests.post(restest_pairing_uri,
-                                 json=connection_request.model_dump_json(),
-                                 timeout=REQTEST_TIMEOUT,
+                                 json = connection_request.dict(),
+                                 timeout = REQTEST_TIMEOUT,
                                  verify = self._verify_certificate)
         response.raise_for_status()
-        connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.json())
-        challenge = JweCompact(connection_details.challenge).decrypt(rsa_key_pair)
-        self._pairing_details = PairingDetails(pairing_response, connection_details, challenge)
+        connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.text)
+        challenge: Mapping[str, Any] = json.loads(JweCompact(connection_details.challenge).decrypt(rsa_key_pair))
+        decrypted_challenge_token: SignedJwt = Jwt.unprotected(challenge)
+        self._pairing_details = PairingDetails(pairing_response, connection_details, str(decrypted_challenge_token))
 
 
     @property
