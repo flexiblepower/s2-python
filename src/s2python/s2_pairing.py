@@ -6,8 +6,7 @@ from typing import Tuple, Union, Mapping, Any
 import json
 import requests
 
-from jwskate import JweCompact, Jwk, Jwt
-from binapy.binapy import BinaPy
+from jwskate import JweCompact, Jwk, Jwt, SignedJwt
 
 from s2python.generated.gen_s2_pairing import (Protocols,
                                                PairingRequest,
@@ -29,10 +28,10 @@ class PairingDetails:
     """The result of an S2 pairing
        :param pairing_response: Details about the server.
        :param connection_details: Details about how to connect.
-       :param supported_protocols: The decrypted challenge needed as bearer token."""
+       :param decrypted_challenge: The decrypted challenge needed as bearer token."""
     pairing_response: PairingResponse
     connection_details: ConnectionDetails
-    decrypted_challenge: BinaPy
+    decrypted_challenge: str
 
 class S2Pairing:  # pylint: disable=too-many-instance-attributes
     _pairing_details: PairingDetails
@@ -108,8 +107,8 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         response.raise_for_status()
         connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.text)
         challenge: Mapping[str, Any] = json.loads(JweCompact(connection_details.challenge).decrypt(rsa_key_pair))
-        decrypted_challenge_token: BinaPy = Jwt.unprotected(challenge).decrypt(rsa_key_pair)
-        self._pairing_details = PairingDetails(pairing_response, connection_details, decrypted_challenge_token)
+        decrypted_challenge_token: SignedJwt = Jwt.unprotected(challenge)
+        self._pairing_details = PairingDetails(pairing_response, connection_details, str(decrypted_challenge_token))
 
 
     @property
