@@ -8,16 +8,18 @@ from enum import Enum
 from typing import List
 
 from pydantic import BaseModel, ConfigDict, Field
-from s2python.common import EnergyManagementRole as S2Role
 
 
-
-class Deployment(Enum):
+class S2Role(str, Enum):
+    CEM = 'CEM'
+    RM = 'RM'
+    
+class Deployment(str, Enum):
     WAN = 'WAN'
     LAN = 'LAN'
 
 
-class Protocols(Enum):
+class Protocols(str, Enum):
     WebSocketSecure = 'WebSocketSecure'
 
     
@@ -50,7 +52,7 @@ class PairingRequest(BaseModel):
     token: str
     publicKey: str
     s2ClientNodeId: str
-    s2ClientNodeDescription: str
+    s2ClientNodeDescription: S2NodeDescription
     supportedProtocols: List[Protocols]
 
 
@@ -59,7 +61,7 @@ class PairingResponse(BaseModel):
         extra='forbid',
     )
     s2ServerNodeId: str
-    serverNodeDescription: str
+    serverNodeDescription: S2NodeDescription
     requestConnectionUri: str
 
 

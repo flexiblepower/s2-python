@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Tuple, Union
 import requests
 
-from jwskate import JweCompact, Jwk
+from jwskate import JweCompact, Jwk, Jwt
 from binapy.binapy import BinaPy
 
 from s2python.generated.gen_s2_pairing import (Protocols,
@@ -77,7 +77,6 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         self._paring_timestamp =  datetime.datetime.now()
 
         rsa_key_pair = Jwk.generate_for_alg(KEY_ALGORITHM).with_kid_thumbprint()
-
         pairing_request: PairingRequest = PairingRequest(token=self._token,
                                                         publicKey=rsa_key_pair.public_jwk().to_pem(),
                                                         s2ClientNodeId=self._client_node_id,
@@ -85,11 +84,11 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                                         supportedProtocols=self._supported_protocols)
 
         response = requests.post(self._request_pairing_endpoint,
-                                 json=pairing_request.model_dump_json(),
-                                 timeout=REQTEST_TIMEOUT,
+                                 json = pairing_request.dict(),
+                                 timeout = REQTEST_TIMEOUT,
                                  verify = self._verify_certificate)
         response.raise_for_status()
-        pairing_response: PairingResponse = PairingResponse.parse_raw(response.json())
+        pairing_response: PairingResponse = PairingResponse.parse_raw(response.text)
 
         connection_request: ConnectionRequest = ConnectionRequest(s2ClientNodeId=self._client_node_id,
                                                                    supportedProtocols=self._supported_protocols)
@@ -102,12 +101,13 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                                                                               'requestConnection')
 
         response = requests.post(restest_pairing_uri,
-                                 json=connection_request.model_dump_json(),
-                                 timeout=REQTEST_TIMEOUT,
+                                 json = connection_request.dict(),
+                                 timeout = REQTEST_TIMEOUT,
                                  verify = self._verify_certificate)
         response.raise_for_status()
-        connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.json())
+        connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.text)
         challenge = JweCompact(connection_details.challenge).decrypt(rsa_key_pair)
+        challenge = Jwt.unprotected(JweCompact(connection_details.challenge).decrypt(rsa_key_pair))
         self._pairing_details = PairingDetails(pairing_response, connection_details, challenge)
 
 

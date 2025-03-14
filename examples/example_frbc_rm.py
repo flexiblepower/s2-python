@@ -1,3 +1,6 @@
+import argparse
+import re
+from functools import partial
 import logging
 import sys
 import uuid
@@ -150,30 +153,35 @@ class MyNoControlControlType(NoControlControlType):
     def deactivate(self, conn: S2Connection) -> None:
         print("The control type NoControl is now deactivated.")
 
-
-s2_conn = S2Connection(
-    url="ws://localhost:8080/backend/rm/s2python-frbc/cem/dummy_model/ws",
-    role=EnergyManagementRole.RM,
-    control_types=[MyFRBCControlType(), MyNoControlControlType()],
-    asset_details=AssetDetails(
-        resource_id=str(uuid.uuid4()),
-        name="Some asset",
-        instruction_processing_delay=Duration.from_milliseconds(20),
-        roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
-        currency=Currency.EUR,
-        provides_forecast=False,
-        provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
-    ),
-    reconnect=True,
-)
-
-
-def stop(signal_num, _current_stack_frame):
+def stop(s2_connection, signal_num, _current_stack_frame):
     print(f"Received signal {signal_num}. Will stop S2 connection.")
-    s2_conn.stop()
+    s2_connection.stop()
 
+def start_s2_session(url, client_node_id=str(uuid.uuid4())):
+    s2_conn = S2Connection(
+        url=url,
+        role=EnergyManagementRole.RM,
+        control_types=[MyFRBCControlType(), MyNoControlControlType()],
+        asset_details=AssetDetails(
+            resource_id=client_node_id,
+            name="Some asset",
+            instruction_processing_delay=Duration.from_milliseconds(20),
+            roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
+            currency=Currency.EUR,
+            provides_forecast=False,
+            provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1]
+        ),
+        reconnect=True,
+        verify_certificate=False
+    )
+    signal.signal(signal.SIGINT, partial(stop, s2_conn))
+    signal.signal(signal.SIGTERM, partial(stop, s2_conn))
 
-signal.signal(signal.SIGINT, stop)
-signal.signal(signal.SIGTERM, stop)
+    s2_conn.start_as_rm()
 
-s2_conn.start_as_rm()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="A simple S2 reseource manager example.")
+    parser.add_argument('endpoint', type=str, help="WebSocket endpoint uri for the server (CEM) e.h. ws://localhost:8080/websocket/s2/my-first-websocket-rm")
+    args = parser.parse_args()
+
+    start_s2_session(args.endpoint)
