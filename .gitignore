@@ -12,3 +12,4 @@ venv
 .tox/
 dist/
 build/
+%LOCALAPPDATA%
