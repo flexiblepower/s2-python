@@ -200,7 +200,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     _stop_event: asyncio.Event
     _restart_connection_event: asyncio.Event
     _verify_certificate: bool
-    _bearer_token: Union[bool, None]
+    _bearer_token: Optional[str]
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
@@ -210,7 +210,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         asset_details: AssetDetails,
         reconnect: bool = False,
         verify_certificate: bool = True,
-        bearer_token: Union[bool, None] = None
+        bearer_token: Optional[str] = None
     ) -> None:
         self.url = url
         self.reconnect = reconnect
