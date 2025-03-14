@@ -2,7 +2,8 @@ import logging
 import uuid
 import datetime
 from dataclasses import dataclass
-from typing import Tuple, Union
+from typing import Tuple, Union, Mapping, Any
+import json
 import requests
 
 from jwskate import JweCompact, Jwk, Jwt
@@ -106,8 +107,8 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                  verify = self._verify_certificate)
         response.raise_for_status()
         connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.text)
-        challenge = JweCompact(connection_details.challenge).decrypt(rsa_key_pair)
-        decrypted_challenge_token = Jwt.unprotected(challenge).decrypt(rsa_key_pair)
+        challenge: Mapping[str, Any] = json.loads(JweCompact(connection_details.challenge).decrypt(rsa_key_pair))
+        decrypted_challenge_token: BinaPy = Jwt.unprotected(challenge).decrypt(rsa_key_pair)
         self._pairing_details = PairingDetails(pairing_response, connection_details, decrypted_challenge_token)
 
 
