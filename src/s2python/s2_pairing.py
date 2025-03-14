@@ -107,7 +107,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         response.raise_for_status()
         connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.text)
         challenge = JweCompact(connection_details.challenge).decrypt(rsa_key_pair)
-        decrypted_challenge_token = Jwt.unprotected(challenge).decrypt(rsa_key_pair))
+        decrypted_challenge_token = Jwt.unprotected(challenge).decrypt(rsa_key_pair)
         self._pairing_details = PairingDetails(pairing_response, connection_details, decrypted_challenge_token)
 
 
