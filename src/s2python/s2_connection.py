@@ -332,10 +332,10 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 connection_kwargs['ssl'] = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
                 connection_kwargs['ssl'].check_hostname = False
                 connection_kwargs['ssl'].verify_mode = ssl.CERT_NONE
-                
+
             if self._bearer_token:
-                connection_kwargs['additional_headers'] = {"Authorization": f"Bearer {token}"}
-                
+                connection_kwargs['additional_headers'] = {"Authorization": f"Bearer {self._bearer_token}"}
+
             self.ws = await ws_connect(uri=self.url, **connection_kwargs)
         except (EOFError, OSError) as e:
             logger.info("Could not connect due to: %s", str(e))
