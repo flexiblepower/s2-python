@@ -1,5 +1,4 @@
 import argparse
-import re
 from functools import partial
 import logging
 import sys
@@ -157,7 +156,7 @@ def stop(s2_connection, signal_num, _current_stack_frame):
     print(f"Received signal {signal_num}. Will stop S2 connection.")
     s2_connection.stop()
 
-def start_s2_session(url, client_node_id=str(uuid.uuid4())):
+def start_s2_session(url, client_node_id=str(uuid.uuid4()), bearer_token=None):
     s2_conn = S2Connection(
         url=url,
         role=EnergyManagementRole.RM,
@@ -172,7 +171,8 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
             provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1]
         ),
         reconnect=True,
-        verify_certificate=False
+        verify_certificate=False,
+        bearer_token=bearer_token
     )
     signal.signal(signal.SIGINT, partial(stop, s2_conn))
     signal.signal(signal.SIGTERM, partial(stop, s2_conn))
@@ -181,7 +181,11 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="A simple S2 reseource manager example.")
-    parser.add_argument('endpoint', type=str, help="WebSocket endpoint uri for the server (CEM) e.h. ws://localhost:8080/websocket/s2/my-first-websocket-rm")
+    parser.add_argument(
+        'endpoint',
+        type=str,
+        help="WebSocket endpoint uri for the server (CEM) e.h. ws://localhost:8080/websocket/s2/my-first-websocket-rm"
+    )
     args = parser.parse_args()
 
     start_s2_session(args.endpoint)
