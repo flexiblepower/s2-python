@@ -1,3 +1,4 @@
+import base64
 import logging
 import uuid
 import datetime
@@ -28,10 +29,10 @@ class PairingDetails:
     """The result of an S2 pairing
        :param pairing_response: Details about the server.
        :param connection_details: Details about how to connect.
-       :param decrypted_challenge: The decrypted challenge needed as bearer token."""
+       :param decrypted_challenge_base64: The decrypted challenge needed as bearer token."""
     pairing_response: PairingResponse
     connection_details: ConnectionDetails
-    decrypted_challenge: str
+    decrypted_challenge_base64: str
 
 class S2Pairing:  # pylint: disable=too-many-instance-attributes
     _pairing_details: PairingDetails
@@ -108,7 +109,8 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.text)
         challenge: Mapping[str, Any] = json.loads(JweCompact(connection_details.challenge).decrypt(rsa_key_pair))
         decrypted_challenge_token: SignedJwt = Jwt.unprotected(challenge)
-        self._pairing_details = PairingDetails(pairing_response, connection_details, str(decrypted_challenge_token))
+        decrypted_challenge_str: str = base64.b64encode(bytes(decrypted_challenge_token)).decode('utf-8')
+        self._pairing_details = PairingDetails(pairing_response, connection_details, decrypted_challenge_str)
 
 
     @property

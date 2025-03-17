@@ -38,4 +38,4 @@ if __name__ == "__main__":
     logger.info("Pairing details: \n%s", pairing.pairing_details)
 
     start_s2_session(pairing.pairing_details.connection_details.connectionUri,
-                     bearer_token=pairing.pairing_details.decrypted_challenge)
+                     bearer_token=pairing.pairing_details.decrypted_challenge_base64)
