@@ -17,9 +17,7 @@ class S2MessageTest(unittest.TestCase):
 
         # Find all submodules
         all_subclasses = []
-        for _, name, is_pkg in pkgutil.iter_modules(
-            module.__path__, module.__name__ + "."
-        ):
+        for _, name, _ in pkgutil.iter_modules(module.__path__, module.__name__ + "."):
             submodule = importlib.import_module(name)
 
             # Find all classes in the submodule that subclass BaseClass
@@ -35,10 +33,10 @@ class S2MessageTest(unittest.TestCase):
             len(all_subclasses), 0, f"No subclasses found in {module_name}"
         )
 
-        for S2MessageClass in all_subclasses:
+        for _class in all_subclasses:
             assert hasattr(
-                message, S2MessageClass.__name__
-            ), f"{S2MessageClass} should be importable from s2_python.message"
+                message, _class.__name__
+            ), f"{_class} should be importable from s2_python.message"
 
     def test_import_s2_messages__common(self):
         self._test_import_s2_messages("s2python.common")
