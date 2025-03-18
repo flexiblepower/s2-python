@@ -102,6 +102,8 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                                   else self._request_pairing_endpoint.replace('requestPairing',
                                                                                               'requestConnection')
 
+        logger.info('requestConnectionUri %s ', connection_details.connectionUri)
+
         response = requests.post(restest_pairing_uri,
                                  json = connection_request.dict(),
                                  timeout = REQTEST_TIMEOUT,
@@ -115,6 +117,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                                                              .replace('https://', 'wss://') \
                                                                              .replace('requestPairing', '') \
                                                                              + '/' + connection_details.connectionUri
+        logger.info('connectionUri %s ', connection_details.connectionUri)
 
         challenge: Mapping[str, Any] = json.loads(JweCompact(connection_details.challenge).decrypt(rsa_key_pair))
         decrypted_challenge_token: SignedJwt = Jwt.unprotected(challenge)
