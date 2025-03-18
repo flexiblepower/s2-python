@@ -102,7 +102,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                                   else self._request_pairing_endpoint.replace('requestPairing',
                                                                                               'requestConnection')
 
-        logger.info('requestConnectionUri %s ', connection_details.connectionUri)
+        logger.info('restest_pairing_uri %s ', restest_pairing_uri)
 
         response = requests.post(restest_pairing_uri,
                                  json = connection_request.dict(),
@@ -113,10 +113,12 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         # if websocket address doesn't start with ws:// or wss:// assume it's relative to the requestPairing
         if not connection_details.connectionUri.startswith('ws://') \
            and not connection_details.connectionUri.startswith('wss://'):
-            connection_details.connectionUri = self._request_pairing_endpoint.replace('http://', 'ws://') \
-                                                                             .replace('https://', 'wss://') \
-                                                                             .replace('requestPairing', '') \
-                                                                             + '/' + connection_details.connectionUri
+            connection_details.connectionUri = \
+                self._request_pairing_endpoint.replace('http://', 'ws://') \
+                                              .replace('https://', 'wss://') \
+                                              .replace('requestPairing', '') \
+                                              .removesuffix('/') \
+                                              + '/' + connection_details.connectionUri.removeprefix('/')
         logger.info('connectionUri %s ', connection_details.connectionUri)
 
         challenge: Mapping[str, Any] = json.loads(JweCompact(connection_details.challenge).decrypt(rsa_key_pair))
