@@ -98,6 +98,7 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
         restest_pairing_uri: str = \
             pairing_response.requestConnectionUri if hasattr(pairing_response, 'requestConnectionUri') \
                                                   and pairing_response.requestConnectionUri is not None \
+                                                  and pairing_response.requestConnectionUri != "" \
                                                   else self._request_pairing_endpoint.replace('requestPairing',
                                                                                               'requestConnection')
 
@@ -107,6 +108,14 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                                  verify = self._verify_certificate)
         response.raise_for_status()
         connection_details: ConnectionDetails = ConnectionDetails.parse_raw(response.text)
+        # if websocket address doesn't start with ws:// or wss:// assume it's relative to the requestPairing
+        if not connection_details.connectionUri.startswith('ws://') \
+           and not connection_details.connectionUri.startswith('wss://'):
+            connection_details.connectionUri = self._request_pairing_endpoint.replace('http://', 'ws://') \
+                                                                             .replace('https://', 'wss://') \
+                                                                             .replace('requestPairing', '') \
+                                                                             + '/' + connection_details.connectionUri
+
         challenge: Mapping[str, Any] = json.loads(JweCompact(connection_details.challenge).decrypt(rsa_key_pair))
         decrypted_challenge_token: SignedJwt = Jwt.unprotected(challenge)
         decrypted_challenge_str: str = base64.b64encode(bytes(decrypted_challenge_token)).decode('utf-8')
