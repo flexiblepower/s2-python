@@ -117,8 +117,8 @@ class S2Pairing:  # pylint: disable=too-many-instance-attributes
                 self._request_pairing_endpoint.replace('http://', 'ws://') \
                                               .replace('https://', 'wss://') \
                                               .replace('requestPairing', '') \
-                                              .removesuffix('/') \
-                                              + '/' + connection_details.connectionUri.removeprefix('/')
+                                              .rstrip('/') \
+                                              + '/' + connection_details.connectionUri).lstrip('/')
         logger.info('connectionUri %s ', connection_details.connectionUri)
 
         challenge: Mapping[str, Any] = json.loads(JweCompact(connection_details.challenge).decrypt(rsa_key_pair))
