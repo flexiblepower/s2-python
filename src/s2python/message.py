@@ -18,7 +18,15 @@ from s2python.frbc import (
     FRBCUsageForecastElement,
 )
 from s2python.ppbc import (
+    PPBCEndInterruptionInstruction,
+    PPBCPowerProfileDefinition,
+    PPBCPowerSequenceContainer,
+    PPBCPowerSequence,
+    PPBCPowerProfileStatus,
+    PPBCPowerSequenceContainerStatus,
+    PPBCPowerSequenceElement,
     PPBCScheduleInstruction,
+    PPBCStartInterruptionInstruction,
 )
 
 from s2python.common import (
@@ -58,8 +66,16 @@ S2Message = Union[
     FRBCSystemDescription,
     FRBCTimerStatus,
     FRBCUsageForecast,
-    PPBCScheduleInstruction,
     FRBCUsageForecastElement,
+    PPBCEndInterruptionInstruction,
+    PPBCPowerProfileDefinition,
+    PPBCPowerSequenceContainer,
+    PPBCPowerSequence,
+    PPBCPowerProfileStatus,
+    PPBCPowerSequenceContainerStatus,
+    PPBCPowerSequenceElement,
+    PPBCScheduleInstruction,
+    PPBCStartInterruptionInstruction,
     Duration,
     Handshake,
     HandshakeResponse,
