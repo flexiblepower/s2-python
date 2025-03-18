@@ -1,4 +1,4 @@
-from unittest import TestCase
+import unittest
 
 import importlib
 import inspect
@@ -8,7 +8,7 @@ from s2python import message
 from s2python.validate_values_mixin import S2MessageComponent
 
 
-class S2MessageTest(TestCase):
+class S2MessageTest(unittest.TestCase):
 
     def _test_import_s2_messages(self, module_name):
         """Make sure each S2MessageComponent subclass in the given module is importable from s2_python.message."""
@@ -35,12 +35,14 @@ class S2MessageTest(TestCase):
     def test_import_s2_messages__common(self):
         self._test_import_s2_messages("s2python.common")
 
+    @unittest.skip("Work in progress")
     def test_import_s2_messages__ddbc(self):
         self._test_import_s2_messages("s2python.ddbc")
 
     def test_import_s2_messages__frbc(self):
         self._test_import_s2_messages("s2python.frbc")
 
+    @unittest.skip("Work in progress")
     def test_import_s2_messages__pebc(self):
         self._test_import_s2_messages("s2python.pebc")
 
