@@ -1,14 +1,21 @@
 from typing import Union
 
 from s2python.frbc import (
+    FRBCActuatorDescription,
     FRBCActuatorStatus,
     FRBCFillLevelTargetProfile,
+    FRBCFillLevelTargetProfileElement,
     FRBCInstruction,
     FRBCLeakageBehaviour,
+    FRBCLeakageBehaviourElement,
+    FRBCOperationMode,
+    FRBCOperationModeElement,
+    FRBCStorageDescription,
     FRBCStorageStatus,
     FRBCSystemDescription,
     FRBCTimerStatus,
-    FRBCUsageForecast
+    FRBCUsageForecast,
+    FRBCUsageForecastElement,
 )
 from s2python.ppbc import (
     PPBCScheduleInstruction,
@@ -37,15 +44,22 @@ from s2python.common import (
 )
 
 S2Message = Union[
+    FRBCActuatorDescription,
     FRBCActuatorStatus,
     FRBCFillLevelTargetProfile,
+    FRBCFillLevelTargetProfileElement,
     FRBCInstruction,
     FRBCLeakageBehaviour,
+    FRBCLeakageBehaviourElement,
+    FRBCOperationMode,
+    FRBCOperationModeElement,
+    FRBCStorageDescription,
     FRBCStorageStatus,
     FRBCSystemDescription,
     FRBCTimerStatus,
     FRBCUsageForecast,
     PPBCScheduleInstruction,
+    FRBCUsageForecastElement,
     Duration,
     Handshake,
     HandshakeResponse,
