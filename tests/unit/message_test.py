@@ -41,14 +41,14 @@ class S2MessageTest(unittest.TestCase):
     def test_import_s2_messages__common(self):
         self._test_import_s2_messages("s2python.common")
 
-    @unittest.skip("Work in progress")
+    # @unittest.skip("Work in progress")
     def test_import_s2_messages__ddbc(self):
         self._test_import_s2_messages("s2python.ddbc")
 
     def test_import_s2_messages__frbc(self):
         self._test_import_s2_messages("s2python.frbc")
 
-    @unittest.skip("Work in progress")
+    # @unittest.skip("Work in progress")
     def test_import_s2_messages__pebc(self):
         self._test_import_s2_messages("s2python.pebc")
 

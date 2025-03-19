@@ -28,7 +28,27 @@ from s2python.ppbc import (
     PPBCScheduleInstruction,
     PPBCStartInterruptionInstruction,
 )
+from s2python.ddbc import (
+    DDBCActuatorDescription,
+    DDBCActuatorStatus,
+    DDBCAverageDemandRateForecast,
+    DDBCAverageDemandRateForecastElement,
+    DDBCInstruction,
+    DDBCOperationMode,
+    DDBCSystemDescription,
+    DDBCTimerStatus,
+)
 
+from s2python.pebc import (
+    PEBCAllowedLimitRange,
+    PEBCEnergyConstraint,
+    PEBCInstruction,
+    PEBCPowerConstraints,
+    PEBCPowerEnvelope,
+    PEBCPowerEnvelopeConsequenceType,
+    PEBCPowerEnvelopeElement,
+    PEBCPowerEnvelopeLimitType
+)
 from s2python.common import (
     Duration,
     Handshake,
@@ -76,6 +96,22 @@ S2Message = Union[
     PPBCPowerSequenceElement,
     PPBCScheduleInstruction,
     PPBCStartInterruptionInstruction,
+    PEBCAllowedLimitRange,
+    PEBCEnergyConstraint,
+    PEBCInstruction,
+    PEBCPowerConstraints,
+    PEBCPowerEnvelope,
+    PEBCPowerEnvelopeConsequenceType,
+    PEBCPowerEnvelopeElement,
+    PEBCPowerEnvelopeLimitType,
+    DDBCActuatorDescription,
+    DDBCActuatorStatus,
+    DDBCAverageDemandRateForecast,
+    DDBCAverageDemandRateForecastElement,
+    DDBCInstruction,
+    DDBCOperationMode,
+    DDBCSystemDescription,
+    DDBCTimerStatus,
     Duration,
     Handshake,
     HandshakeResponse,
