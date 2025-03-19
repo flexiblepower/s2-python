@@ -45,9 +45,7 @@ from s2python.pebc import (
     PEBCInstruction,
     PEBCPowerConstraints,
     PEBCPowerEnvelope,
-    PEBCPowerEnvelopeConsequenceType,
     PEBCPowerEnvelopeElement,
-    PEBCPowerEnvelopeLimitType
 )
 from s2python.common import (
     Duration,
@@ -101,9 +99,7 @@ S2Message = Union[
     PEBCInstruction,
     PEBCPowerConstraints,
     PEBCPowerEnvelope,
-    PEBCPowerEnvelopeConsequenceType,
     PEBCPowerEnvelopeElement,
-    PEBCPowerEnvelopeLimitType,
     DDBCActuatorDescription,
     DDBCActuatorStatus,
     DDBCAverageDemandRateForecast,
