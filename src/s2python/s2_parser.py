@@ -90,9 +90,7 @@ class S2Parser:
         return TYPE_TO_MESSAGE_CLASS[message_type].model_validate(message_json)
 
     @staticmethod
-    def parse_as_message(
-        unparsed_message: Union[dict, str, bytes], as_message: Type[M]
-    ) -> M:
+    def parse_as_message(unparsed_message: Union[dict, str, bytes], as_message: Type[M]) -> M:
         """Parse the message to a specific S2 python message.
 
         :param unparsed_message: The message as a JSON-formatted string or as a JSON-parsed dictionary.
