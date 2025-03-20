@@ -1,22 +1,34 @@
-from typing import TypeVar, Generic, Type, Callable, Any, Union, AbstractSet, Mapping, List, Dict
+from typing import (
+    TypeVar,
+    Type,
+    Callable,
+    Any,
+    Union,
+    AbstractSet,
+    Mapping,
+    List,
+    Dict,
+)
 
-from pydantic import BaseModel, ValidationError  # pylint: disable=no-name-in-module
+from typing_extensions import Self
+
 from pydantic.v1.error_wrappers import display_errors  # pylint: disable=no-name-in-module
+
+from pydantic import (  # pylint: disable=no-name-in-module
+    BaseModel,
+    ValidationError,
+)
 
 from s2python.s2_validation_error import S2ValidationError
 
-B_co = TypeVar("B_co", bound=BaseModel, covariant=True)
 
 IntStr = Union[int, str]
 AbstractSetIntStr = AbstractSet[IntStr]
 MappingIntStrAny = Mapping[IntStr, Any]
 
 
-C = TypeVar("C", bound="BaseModel")
-
-
-class S2MessageComponent(BaseModel, Generic[C]):
-    def to_json(self: C) -> str:
+class S2MessageComponent(BaseModel):
+    def to_json(self) -> str:
         try:
             return self.model_dump_json(by_alias=True, exclude_none=True)
         except (ValidationError, TypeError) as e:
@@ -24,17 +36,17 @@ class S2MessageComponent(BaseModel, Generic[C]):
                 type(self), self, "Pydantic raised a format validation error.", e
             ) from e
 
-    def to_dict(self: C) -> Dict:
+    def to_dict(self) -> Dict[str, Any]:
         return self.model_dump()
 
     @classmethod
-    def from_json(cls: Type[C], json_str: str) -> C:
-        gen_model: C = cls.model_validate_json(json_str)
+    def from_json(cls, json_str: str) -> Self:
+        gen_model = cls.model_validate_json(json_str)
         return gen_model
 
     @classmethod
-    def from_dict(cls: Type[C], json_dict: dict) -> C:
-        gen_model: C = cls.model_validate(json_dict)
+    def from_dict(cls, json_dict: Dict[str, Any]) -> Self:
+        gen_model = cls.model_validate(json_dict)
         return gen_model
 
 

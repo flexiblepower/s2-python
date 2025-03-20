@@ -13,7 +13,7 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class PPBCPowerSequenceContainerStatus(
-    GenPPBCPowerSequenceContainerStatus, S2MessageComponent["PPBCPowerSequenceContainerStatus"]
+    GenPPBCPowerSequenceContainerStatus, S2MessageComponent
 ):
     model_config = GenPPBCPowerSequenceContainerStatus.model_config
     model_config["validate_assignment"] = True

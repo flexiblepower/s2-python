@@ -16,7 +16,7 @@ from s2python.utils import pairwise
 
 
 @catch_and_convert_exceptions
-class FRBCOperationMode(GenFRBCOperationMode, S2MessageComponent["FRBCOperationMode"]):
+class FRBCOperationMode(GenFRBCOperationMode, S2MessageComponent):
     model_config = GenFRBCOperationMode.model_config
     model_config["validate_assignment"] = True
 

@@ -8,7 +8,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class FRBCTimerStatus(GenFRBCTimerStatus, S2MessageComponent["FRBCTimerStatus"]):
+class FRBCTimerStatus(GenFRBCTimerStatus, S2MessageComponent):
     model_config = GenFRBCTimerStatus.model_config
     model_config["validate_assignment"] = True
 

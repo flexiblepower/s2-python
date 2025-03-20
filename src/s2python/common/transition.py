@@ -10,7 +10,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class Transition(GenTransition, S2MessageComponent["Transition"]):
+class Transition(GenTransition, S2MessageComponent):
     model_config = GenTransition.model_config
     model_config["validate_assignment"] = True
 

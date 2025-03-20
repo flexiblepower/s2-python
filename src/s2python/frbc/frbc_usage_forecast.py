@@ -10,7 +10,7 @@ from s2python.frbc.frbc_usage_forecast_element import FRBCUsageForecastElement
 
 
 @catch_and_convert_exceptions
-class FRBCUsageForecast(GenFRBCUsageForecast, S2MessageComponent["FRBCUsageForecast"]):
+class FRBCUsageForecast(GenFRBCUsageForecast, S2MessageComponent):
     model_config = GenFRBCUsageForecast.model_config
     model_config["validate_assignment"] = True
 

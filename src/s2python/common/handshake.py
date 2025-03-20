@@ -8,7 +8,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class Handshake(GenHandshake, S2MessageComponent["Handshake"]):
+class Handshake(GenHandshake, S2MessageComponent):
     model_config = GenHandshake.model_config
     model_config["validate_assignment"] = True
 

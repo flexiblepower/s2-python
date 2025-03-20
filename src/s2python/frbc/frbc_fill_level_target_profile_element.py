@@ -13,13 +13,13 @@ from s2python.validate_values_mixin import catch_and_convert_exceptions, S2Messa
 
 @catch_and_convert_exceptions
 class FRBCFillLevelTargetProfileElement(
-    GenFRBCFillLevelTargetProfileElement, S2MessageComponent["FRBCFillLevelTargetProfileElement"]
+    GenFRBCFillLevelTargetProfileElement, S2MessageComponent
 ):
     model_config = GenFRBCFillLevelTargetProfileElement.model_config
     model_config["validate_assignment"] = True
 
     duration: Duration = GenFRBCFillLevelTargetProfileElement.model_fields["duration"]  # type: ignore[assignment]
-    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.model_fields[
+    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "fill_level_range"
     ]  # type: ignore[assignment]
 

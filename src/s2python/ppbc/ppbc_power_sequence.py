@@ -15,7 +15,7 @@ from s2python.common import Duration
 
 
 @catch_and_convert_exceptions
-class PPBCPowerSequence(GenPPBCPowerSequence, S2MessageComponent["PPBCPowerSequence"]):
+class PPBCPowerSequence(GenPPBCPowerSequence, S2MessageComponent):
     model_config = GenPPBCPowerSequence.model_config
     model_config["validate_assignment"] = True
 

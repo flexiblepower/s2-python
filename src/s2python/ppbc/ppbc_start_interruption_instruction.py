@@ -12,7 +12,7 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class PPBCStartInterruptionInstruction(
-    GenPPBCStartInterruptionInstruction, S2MessageComponent["PPBCStartInterruptionInstruction"]
+    GenPPBCStartInterruptionInstruction, S2MessageComponent
 ):
     model_config = GenPPBCStartInterruptionInstruction.model_config
     model_config["validate_assignment"] = True

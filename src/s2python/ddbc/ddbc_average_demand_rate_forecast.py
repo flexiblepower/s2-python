@@ -17,7 +17,7 @@ from s2python.validate_values_mixin import (
 @catch_and_convert_exceptions
 class DDBCAverageDemandRateForecast(
     GenDDBCAverageDemandRateForecast,
-    S2MessageComponent["DDBCAverageDemandRateForecast"],
+    S2MessageComponent,
 ):
     model_config = GenDDBCAverageDemandRateForecast.model_config
     model_config["validate_assignment"] = True

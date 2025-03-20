@@ -16,7 +16,7 @@ from s2python.ppbc.ppbc_power_sequence import PPBCPowerSequence
 
 @catch_and_convert_exceptions
 class PPBCPowerSequenceContainer(
-    GenPPBCPowerSequenceContainer, S2MessageComponent["PPBCPowerSequenceContainer"]
+    GenPPBCPowerSequenceContainer, S2MessageComponent
 ):
     model_config = GenPPBCPowerSequenceContainer.model_config
     model_config["validate_assignment"] = True
