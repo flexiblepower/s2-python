@@ -1,6 +1,4 @@
-from s2python.frbc.frbc_fill_level_target_profile_element import (
-    FRBCFillLevelTargetProfileElement,
-)
+from s2python.frbc.frbc_fill_level_target_profile_element import FRBCFillLevelTargetProfileElement
 from s2python.frbc.frbc_fill_level_target_profile import FRBCFillLevelTargetProfile
 from s2python.frbc.frbc_instruction import FRBCInstruction
 from s2python.frbc.frbc_leakage_behaviour_element import FRBCLeakageBehaviourElement
@@ -15,3 +13,21 @@ from s2python.frbc.frbc_storage_description import FRBCStorageDescription
 from s2python.frbc.frbc_storage_status import FRBCStorageStatus
 from s2python.frbc.frbc_system_description import FRBCSystemDescription
 from s2python.frbc.frbc_timer_status import FRBCTimerStatus
+
+__all__ = [
+    "FRBCFillLevelTargetProfileElement",
+    "FRBCFillLevelTargetProfile",
+    "FRBCInstruction",
+    "FRBCLeakageBehaviourElement",
+    "FRBCLeakageBehaviour",
+    "FRBCUsageForecastElement",
+    "FRBCUsageForecast",
+    "FRBCOperationModeElement",
+    "FRBCOperationMode",
+    "FRBCActuatorDescription",
+    "FRBCActuatorStatus",
+    "FRBCStorageDescription",
+    "FRBCStorageStatus",
+    "FRBCSystemDescription",
+    "FRBCTimerStatus",
+]

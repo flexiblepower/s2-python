@@ -9,7 +9,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class Duration(GenDuration, S2MessageComponent["Duration"]):
+class Duration(GenDuration, S2MessageComponent):
     def to_timedelta(self) -> timedelta:
         return timedelta(milliseconds=self.root)
 

@@ -8,3 +8,14 @@ from s2python.generated.gen_s2 import (
     PEBCPowerEnvelopeLimitType,
 )
 from s2python.pebc.pebc_instruction import PEBCInstruction
+
+__all__ = [
+    "PEBCAllowedLimitRange",
+    "PEBCPowerConstraints",
+    "PEBCPowerEnvelope",
+    "PEBCPowerEnvelopeElement",
+    "PEBCEnergyConstraint",
+    "PEBCPowerEnvelopeConsequenceType",
+    "PEBCPowerEnvelopeLimitType",
+    "PEBCInstruction",
+]

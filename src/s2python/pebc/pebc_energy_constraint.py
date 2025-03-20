@@ -11,7 +11,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class PEBCEnergyConstraint(GenPEBCEnergyConstraint, S2MessageComponent["PEBCEnergyConstraint"]):
+class PEBCEnergyConstraint(GenPEBCEnergyConstraint, S2MessageComponent):
     model_config = GenPEBCEnergyConstraint.model_config
     model_config["validate_assignment"] = True
 

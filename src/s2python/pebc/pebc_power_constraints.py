@@ -13,7 +13,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class PEBCPowerConstraints(GenPEBCPowerConstraints, S2MessageComponent["PEBCPowerConstraints"]):
+class PEBCPowerConstraints(GenPEBCPowerConstraints, S2MessageComponent):
     model_config = GenPEBCPowerConstraints.model_config
     model_config["validate_assignment"] = True
 

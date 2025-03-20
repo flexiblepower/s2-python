@@ -10,7 +10,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class PowerRange(GenPowerRange, S2MessageComponent["PowerRange"]):
+class PowerRange(GenPowerRange, S2MessageComponent):
     model_config = GenPowerRange.model_config
     model_config["validate_assignment"] = True
 

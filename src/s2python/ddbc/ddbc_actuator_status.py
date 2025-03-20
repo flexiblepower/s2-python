@@ -8,7 +8,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class DDBCActuatorStatus(GenDDBCActuatorStatus, S2MessageComponent["DDBCActuatorStatus"]):
+class DDBCActuatorStatus(GenDDBCActuatorStatus, S2MessageComponent):
     model_config = GenDDBCActuatorStatus.model_config
     model_config["validate_assignment"] = True
 

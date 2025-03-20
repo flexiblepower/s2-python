@@ -16,7 +16,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class DDBCActuatorDescription(GenDDBCActuatorDescription, S2MessageComponent["DDBCActuatorDescription"]):
+class DDBCActuatorDescription(GenDDBCActuatorDescription, S2MessageComponent):
     model_config = GenDDBCActuatorDescription.model_config
     model_config["validate_assignment"] = True
 

@@ -9,7 +9,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class DDBCTimerStatus(GenDDBCTimerStatus, S2MessageComponent["DDBCTimerStatus"]):
+class DDBCTimerStatus(GenDDBCTimerStatus, S2MessageComponent):
     model_config = GenDDBCTimerStatus.model_config
     model_config["validate_assignment"] = True
 

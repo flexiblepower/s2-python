@@ -10,7 +10,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class PowerMeasurement(GenPowerMeasurement, S2MessageComponent["PowerMeasurement"]):
+class PowerMeasurement(GenPowerMeasurement, S2MessageComponent):
     model_config = GenPowerMeasurement.model_config
     model_config["validate_assignment"] = True
 

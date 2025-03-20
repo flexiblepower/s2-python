@@ -13,7 +13,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class ResourceManagerDetails(GenResourceManagerDetails, S2MessageComponent["ResourceManagerDetails"]):
+class ResourceManagerDetails(GenResourceManagerDetails, S2MessageComponent):
     model_config = GenResourceManagerDetails.model_config
     model_config["validate_assignment"] = True
 
