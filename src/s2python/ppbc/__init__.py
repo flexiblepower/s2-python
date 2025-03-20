@@ -10,3 +10,4 @@ from s2python.ppbc.ppbc_power_sequence_container_status import (
     PPBCPowerSequenceContainerStatus as PPBCPowerSequenceContainerStatus,
 )
 from s2python.ppbc.ppbc_power_sequence_element import PPBCPowerSequenceElement as PPBCPowerSequenceElement
+from s2python.ppbc.ppbc_start_interruption_instruction import PPBCStartInterruptionInstruction as PPBCStartInterruptionInstruction
