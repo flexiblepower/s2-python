@@ -9,9 +9,7 @@ from s2python.validate_values_mixin import catch_and_convert_exceptions, S2Messa
 
 
 @catch_and_convert_exceptions
-class FRBCLeakageBehaviourElement(
-    GenFRBCLeakageBehaviourElement, S2MessageComponent
-):
+class FRBCLeakageBehaviourElement(GenFRBCLeakageBehaviourElement, S2MessageComponent):
     model_config = GenFRBCLeakageBehaviourElement.model_config
     model_config["validate_assignment"] = True
 

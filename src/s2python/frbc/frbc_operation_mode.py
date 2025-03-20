@@ -26,7 +26,9 @@ class FRBCOperationMode(GenFRBCOperationMode, S2MessageComponent):
     @model_validator(mode="after")
     def validate_contiguous_fill_levels_operation_mode_elements(self) -> Self:
         elements_by_fill_level_range: Dict[NumberRange, FRBCOperationModeElement]
-        elements_by_fill_level_range = {element.fill_level_range: element for element in self.elements}
+        elements_by_fill_level_range = {
+            element.fill_level_range: element for element in self.elements
+        }
 
         sorted_fill_level_ranges: List[NumberRange]
         sorted_fill_level_ranges = list(elements_by_fill_level_range.keys())

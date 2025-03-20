@@ -12,9 +12,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class PPBCPowerSequenceContainerStatus(
-    GenPPBCPowerSequenceContainerStatus, S2MessageComponent
-):
+class PPBCPowerSequenceContainerStatus(GenPPBCPowerSequenceContainerStatus, S2MessageComponent):
     model_config = GenPPBCPowerSequenceContainerStatus.model_config
     model_config["validate_assignment"] = True
 
@@ -24,9 +22,9 @@ class PPBCPowerSequenceContainerStatus(
     sequence_container_id: uuid.UUID = GenPPBCPowerSequenceContainerStatus.model_fields[
         "sequence_container_id"  # type: ignore[assignment]
     ]
-    selected_sequence_id: Union[uuid.UUID, None] = (
-        GenPPBCPowerSequenceContainerStatus.model_fields["selected_sequence_id"]  # type: ignore[assignment]
-    )
+    selected_sequence_id: Union[uuid.UUID, None] = GenPPBCPowerSequenceContainerStatus.model_fields[
+        "selected_sequence_id"
+    ]  # type: ignore[assignment]
     progress: Union[uuid.UUID, None] = GenPPBCPowerSequenceContainerStatus.model_fields[
         "progress"  # type: ignore[assignment]
     ]

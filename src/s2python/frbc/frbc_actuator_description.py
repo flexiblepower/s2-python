@@ -68,7 +68,9 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent):
 
     @model_validator(mode="after")
     def validate_operation_modes_in_transitions(self) -> Self:
-        operation_mode_by_id = {operation_mode.id: operation_mode for operation_mode in self.operation_modes}
+        operation_mode_by_id = {
+            operation_mode.id: operation_mode for operation_mode in self.operation_modes
+        }
         transition: Transition
         for transition in self.transitions:
             if transition.from_ not in operation_mode_by_id:
