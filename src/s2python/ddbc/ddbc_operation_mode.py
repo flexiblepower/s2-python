@@ -20,7 +20,7 @@ class DDBCOperationMode(GenDDBCOperationMode, S2MessageComponent):
     # ? Id vs id
     id: uuid.UUID = GenDDBCOperationMode.model_fields["Id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     power_ranges: List[PowerRange] = GenDDBCOperationMode.model_fields["power_ranges"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
-    supply_ranges: List[NumberRange] = GenDDBCOperationMode.model_fields["supply_ranges"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    supply_range: List[NumberRange] = GenDDBCOperationMode.model_fields["supply_range"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     abnormal_condition_only: bool = GenDDBCOperationMode.model_fields[
         "abnormal_condition_only"
     ]  # type: ignore[assignment,reportIncompatibleVariableOverride]

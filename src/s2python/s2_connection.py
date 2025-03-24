@@ -254,8 +254,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         """
         if threading.current_thread() == self._thread:
             raise RuntimeError(
-                "Do not call stop from the thread running the S2 connection. This results in an "
-                "infinite block!"
+                "Do not call stop from the thread running the S2 connection. This results in an infinite block!"
             )
         if self._eventloop.is_running():
             asyncio.run_coroutine_threadsafe(self._do_stop(), self._eventloop).result()

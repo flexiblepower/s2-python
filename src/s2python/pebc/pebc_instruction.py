@@ -24,4 +24,4 @@ class PEBCInstruction(GenPEBCInstruction, S2MessageComponent):
     power_envelopes: List[PEBCPowerEnvelope] = [  # type: ignore[reportIncompatibleVariableOverride]
         GenPEBCInstruction.model_fields["power_envelopes"]  # type: ignore[assignment]
     ]
-    abnormal_conditions: bool = GenPEBCInstruction.model_fields["abnormal_conditions"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    abnormal_condition: bool = GenPEBCInstruction.model_fields["abnormal_condition"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
