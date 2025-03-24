@@ -101,6 +101,7 @@ S2Message = Union[
     InstructionStatusUpdate,
     PowerForecast,
     PowerMeasurement,
+    ReceptionStatus,
 ]
 
 S2MessageElement = Union[
@@ -127,7 +128,6 @@ S2MessageElement = Union[
     PowerForecastValue,
     PowerRange,
     PowerValue,
-    ReceptionStatus,
     Role,
     Timer,
     Transition,
