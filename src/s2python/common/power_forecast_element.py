@@ -14,7 +14,7 @@ class PowerForecastElement(GenPowerForecastElement, S2MessageComponent):
     model_config = GenPowerForecastElement.model_config
     model_config["validate_assignment"] = True
 
-    duration: Duration = GenPowerForecastElement.model_fields["duration"]  # type: ignore[assignment]
-    power_values: List[PowerForecastValue] = GenPowerForecastElement.model_fields[
-        "power_values"
-    ]  # type: ignore[assignment]
+    duration: Duration = GenPowerForecastElement.model_fields["duration"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    power_values: List[PowerForecastValue] = (  # type: ignore[reportIncompatibleVariableOverride]
+        GenPowerForecastElement.model_fields["power_values"]  # type: ignore[assignment]
+    )

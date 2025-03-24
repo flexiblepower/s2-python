@@ -20,11 +20,11 @@ class DDBCActuatorDescription(GenDDBCActuatorDescription, S2MessageComponent):
     model_config = GenDDBCActuatorDescription.model_config
     model_config["validate_assignment"] = True
 
-    id: uuid.UUID = GenDDBCActuatorDescription.model_fields["id"]  # type: ignore[assignment]
+    id: uuid.UUID = GenDDBCActuatorDescription.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     supported_commodites: List[Commodity] = GenDDBCActuatorDescription.model_fields[
         "supported_commodites"
-    ]  # type: ignore[assignment]
-    timers: List[Timer] = GenDDBCActuatorDescription.model_fields["timers"]  # type: ignore[assignment]
-    operation_modes: List[DDBCOperationMode] = GenDDBCActuatorDescription.model_fields[
+    ]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    timers: List[Timer] = GenDDBCActuatorDescription.model_fields["timers"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    operation_modes: List[DDBCOperationMode] = GenDDBCActuatorDescription.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "operation_modes"
     ]  # type: ignore[assignment]

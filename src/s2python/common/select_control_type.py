@@ -12,4 +12,4 @@ class SelectControlType(GenSelectControlType, S2MessageComponent):
     model_config = GenSelectControlType.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenSelectControlType.model_fields["message_id"]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenSelectControlType.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

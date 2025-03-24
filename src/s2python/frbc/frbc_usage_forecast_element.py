@@ -14,4 +14,4 @@ class FRBCUsageForecastElement(GenFRBCUsageForecastElement, S2MessageComponent):
     model_config = GenFRBCUsageForecastElement.model_config
     model_config["validate_assignment"] = True
 
-    duration: Duration = GenFRBCUsageForecastElement.model_fields["duration"]  # type: ignore[assignment]
+    duration: Duration = GenFRBCUsageForecastElement.model_fields["duration"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

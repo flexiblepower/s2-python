@@ -31,7 +31,7 @@ class PowerForecastValueTest(TestCase):
 
     def test__to_json__happy_path(self):
         # Arrange
-        power_forecast_value = PowerForecastValue(
+        power_forecast_value = PowerForecastValue(  # pyright: ignore[reportCallIssue]
             commodity_quantity=CommodityQuantity.HEAT_TEMPERATURE,
             value_lower_limit=450.3,
             value_lower_95PPR=470.4,
@@ -60,7 +60,7 @@ class PowerForecastValueTest(TestCase):
 
     def test__to_json__only_value_expected(self):
         # Arrange
-        power_forecast_value = PowerForecastValue(
+        power_forecast_value = PowerForecastValue(  # pyright: ignore[reportCallIssue]
             commodity_quantity=CommodityQuantity.HEAT_TEMPERATURE, value_expected=500.2
         )
 

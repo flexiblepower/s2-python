@@ -12,4 +12,4 @@ class Handshake(GenHandshake, S2MessageComponent):
     model_config = GenHandshake.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenHandshake.model_fields["message_id"]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenHandshake.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

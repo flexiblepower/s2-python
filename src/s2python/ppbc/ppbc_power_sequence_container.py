@@ -19,7 +19,7 @@ class PPBCPowerSequenceContainer(GenPPBCPowerSequenceContainer, S2MessageCompone
     model_config = GenPPBCPowerSequenceContainer.model_config
     model_config["validate_assignment"] = True
 
-    id: uuid.UUID = GenPPBCPowerSequenceContainer.model_fields["id"]  # type: ignore[assignment]
-    power_sequences: List[PPBCPowerSequence] = GenPPBCPowerSequenceContainer.model_fields[
+    id: uuid.UUID = GenPPBCPowerSequenceContainer.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    power_sequences: List[PPBCPowerSequence] = GenPPBCPowerSequenceContainer.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "power_sequences"
     ]  # type: ignore[assignment]

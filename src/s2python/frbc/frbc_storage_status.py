@@ -12,4 +12,4 @@ class FRBCStorageStatus(GenFRBCStorageStatus, S2MessageComponent):
     model_config = GenFRBCStorageStatus.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenFRBCStorageStatus.model_fields["message_id"]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenFRBCStorageStatus.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

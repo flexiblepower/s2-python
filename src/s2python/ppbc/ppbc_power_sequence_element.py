@@ -17,7 +17,7 @@ class PPBCPowerSequenceElement(GenPPBCPowerSequenceElement, S2MessageComponent):
     model_config = GenPPBCPowerSequenceElement.model_config
     model_config["validate_assignment"] = True
 
-    duration: Duration = GenPPBCPowerSequenceElement.model_fields["duration"]  # type: ignore[assignment]
-    power_values: List[PowerForecastValue] = GenPPBCPowerSequenceElement.model_fields[
+    duration: Duration = GenPPBCPowerSequenceElement.model_fields["duration"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    power_values: List[PowerForecastValue] = GenPPBCPowerSequenceElement.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "power_values"
     ]  # type: ignore[assignment]

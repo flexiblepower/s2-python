@@ -10,7 +10,4 @@ ignore-paths=src/s2python/generated/
 # avoid hangs.
 jobs=1
 
-disable=missing-class-docstring,missing-module-docstring,too-few-public-methods,missing-function-docstring,no-member,unsubscriptable-object
-
-[Format]
-max-line-length=120
+disable=missing-class-docstring,missing-module-docstring,too-few-public-methods,missing-function-docstring,no-member,unsubscriptable-object,line-too-long

@@ -15,9 +15,9 @@ class PEBCPowerEnvelope(GenPEBCPowerEnvelope, S2MessageComponent):
     model_config = GenPEBCPowerEnvelope.model_config
     model_config["validate_assignment"] = True
 
-    commodity_quantity: CommodityQuantity = GenPEBCPowerEnvelope.model_fields[
+    commodity_quantity: CommodityQuantity = GenPEBCPowerEnvelope.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "commodity_quantity"
     ]  # type: ignore[assignment]
-    power_envelope_elements: List[PEBCPowerEnvelopeElement] = GenPEBCPowerEnvelope.model_fields[
+    power_envelope_elements: List[PEBCPowerEnvelopeElement] = GenPEBCPowerEnvelope.model_fields[  # type: ignore[assignment,reportIncompatibleVariableOverride]
         "power_envelope_elements"
     ]  # type: ignore[assignment]

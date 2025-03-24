@@ -16,15 +16,15 @@ class PPBCPowerSequenceContainerStatus(GenPPBCPowerSequenceContainerStatus, S2Me
     model_config = GenPPBCPowerSequenceContainerStatus.model_config
     model_config["validate_assignment"] = True
 
-    power_profile_id: uuid.UUID = GenPPBCPowerSequenceContainerStatus.model_fields[
+    power_profile_id: uuid.UUID = GenPPBCPowerSequenceContainerStatus.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "power_profile_id"  # type: ignore[assignment]
     ]
-    sequence_container_id: uuid.UUID = GenPPBCPowerSequenceContainerStatus.model_fields[
+    sequence_container_id: uuid.UUID = GenPPBCPowerSequenceContainerStatus.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "sequence_container_id"  # type: ignore[assignment]
     ]
-    selected_sequence_id: Union[uuid.UUID, None] = GenPPBCPowerSequenceContainerStatus.model_fields[
+    selected_sequence_id: Union[uuid.UUID, None] = GenPPBCPowerSequenceContainerStatus.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "selected_sequence_id"
     ]  # type: ignore[assignment]
-    progress: Union[uuid.UUID, None] = GenPPBCPowerSequenceContainerStatus.model_fields[
+    progress: Union[uuid.UUID, None] = GenPPBCPowerSequenceContainerStatus.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "progress"  # type: ignore[assignment]
     ]

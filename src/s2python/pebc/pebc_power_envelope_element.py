@@ -12,5 +12,5 @@ class PEBCPowerEnvelopeElement(GenPEBCPowerEnvelopeElement, S2MessageComponent):
     model_config = GenPEBCPowerEnvelopeElement.model_config
     model_config["validate_assignment"] = True
 
-    lower_limit: float = GenPEBCPowerEnvelopeElement.model_fields["lower_limit"]  # type: ignore[assignment]
-    upper_limit: float = GenPEBCPowerEnvelopeElement.model_fields["upper_limit"]  # type: ignore[assignment]
+    lower_limit: float = GenPEBCPowerEnvelopeElement.model_fields["lower_limit"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    upper_limit: float = GenPEBCPowerEnvelopeElement.model_fields["upper_limit"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

@@ -14,7 +14,7 @@ class FRBCLeakageBehaviour(GenFRBCLeakageBehaviour, S2MessageComponent):
     model_config = GenFRBCLeakageBehaviour.model_config
     model_config["validate_assignment"] = True
 
-    elements: List[FRBCLeakageBehaviourElement] = GenFRBCLeakageBehaviour.model_fields[
+    elements: List[FRBCLeakageBehaviourElement] = GenFRBCLeakageBehaviour.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "elements"
     ]  # type: ignore[assignment]
-    message_id: uuid.UUID = GenFRBCLeakageBehaviour.model_fields["message_id"]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenFRBCLeakageBehaviour.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

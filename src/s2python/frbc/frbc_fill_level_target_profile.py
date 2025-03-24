@@ -18,7 +18,7 @@ class FRBCFillLevelTargetProfile(GenFRBCFillLevelTargetProfile, S2MessageCompone
     model_config = GenFRBCFillLevelTargetProfile.model_config
     model_config["validate_assignment"] = True
 
-    elements: List[FRBCFillLevelTargetProfileElement] = GenFRBCFillLevelTargetProfile.model_fields[
+    elements: List[FRBCFillLevelTargetProfileElement] = GenFRBCFillLevelTargetProfile.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "elements"
     ]  # type: ignore[assignment]
-    message_id: uuid.UUID = GenFRBCFillLevelTargetProfile.model_fields["message_id"]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenFRBCFillLevelTargetProfile.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

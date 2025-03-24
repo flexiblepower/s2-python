@@ -17,13 +17,13 @@ class DDBCSystemDescription(GenDDBCSystemDescription, S2MessageComponent):
     model_config = GenDDBCSystemDescription.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenDDBCSystemDescription.model_fields["message_id"]  # type: ignore[assignment]
-    actuators: List[DDBCActuatorDescription] = GenDDBCSystemDescription.model_fields[
+    message_id: uuid.UUID = GenDDBCSystemDescription.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    actuators: List[DDBCActuatorDescription] = GenDDBCSystemDescription.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "actuators"
     ]  # type: ignore[assignment]
-    present_demand_rate: NumberRange = GenDDBCSystemDescription.model_fields[
+    present_demand_rate: NumberRange = GenDDBCSystemDescription.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "present_demand_rate"
     ]  # type: ignore[assignment]
-    provides_average_demand_rate_forecast: bool = GenDDBCSystemDescription.model_fields[
+    provides_average_demand_rate_forecast: bool = GenDDBCSystemDescription.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "provides_average_demand_rate_forecast"
     ]  # type: ignore[assignment]

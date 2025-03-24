@@ -16,10 +16,10 @@ class FRBCFillLevelTargetProfileElement(GenFRBCFillLevelTargetProfileElement, S2
     model_config = GenFRBCFillLevelTargetProfileElement.model_config
     model_config["validate_assignment"] = True
 
-    duration: Duration = GenFRBCFillLevelTargetProfileElement.model_fields["duration"]  # type: ignore[assignment]
-    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.model_fields[
+    duration: Duration = GenFRBCFillLevelTargetProfileElement.model_fields["duration"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "fill_level_range"
-    ]  # type: ignore[assignment, reportIncompatibleVariableOverride]
+    ]  # type: ignore[assignment]
 
     @model_validator(mode="after")
     def validate_start_end_order(self) -> Self:

@@ -16,11 +16,11 @@ class PEBCAllowedLimitRange(GenPEBCAllowedLimitRange, S2MessageComponent):
 
     commodity_quantity: CommodityQuantity = GenPEBCAllowedLimitRange.model_fields[
         "commodity_quantity"
-    ]  # type: ignore[assignment]
+    ]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     limit_type: GenPEBCPowerEnvelopeLimitType = GenPEBCAllowedLimitRange.model_fields[
         "limit_type"
-    ]  # type: ignore[assignment]
-    range_boundary: NumberRange = GenPEBCAllowedLimitRange.model_fields["range_boundary"]  # type: ignore[assignment]
+    ]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    range_boundary: NumberRange = GenPEBCAllowedLimitRange.model_fields["range_boundary"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     abnormal_condition_only: bool = [
-        GenPEBCAllowedLimitRange.model_fields["abnormal_condition_only"]  # type: ignore[assignment]
+        GenPEBCAllowedLimitRange.model_fields["abnormal_condition_only"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     ]
