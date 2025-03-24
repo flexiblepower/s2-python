@@ -39,13 +39,11 @@ class S2MessageTest(unittest.TestCase):
                 message, _class.__name__
             ), f"{_class} should be importable from s2_python.message"
             if "message_id" in _class.model_fields:
-                assert (
-                    _class in get_args(message.S2Message),
+                assert _class in get_args(message.S2Message), (
                     f"{_class} should be typed as a s2_python.message.S2Message",
                 )
             else:
-                assert (
-                    _class in get_args(message.S2MessageElement),
+                assert _class in get_args(message.S2MessageElement), (
                     f"{_class} should be typed as a s2_python.message.S2MessageElement",
                 )
 
