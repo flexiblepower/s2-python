@@ -24,4 +24,4 @@ class PEBCInstruction(GenPEBCInstruction, S2MessageComponent["PEBCInstruction"])
     power_envelopes: List[PEBCPowerEnvelope] = [
         GenPEBCInstruction.model_fields["power_envelopes"]  # type: ignore[assignment]
     ]
-    abnormal_conditions: bool = GenPEBCInstruction.model_fields["abnormal_conditions"]  # type: ignore[assignment]
+    abnormal_condition: bool = GenPEBCInstruction.model_fields["abnormal_condition"]  # type: ignore[assignment]
