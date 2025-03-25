@@ -36,7 +36,7 @@ logger = logging.getLogger("s2python")
 
 @dataclass
 class AssetDetails:  # pylint: disable=too-many-instance-attributes
-    resource_id: uuid.UUID
+    resource_id: str
 
     provides_forecast: bool
     provides_power_measurements: List[CommodityQuantity]
@@ -51,13 +51,9 @@ class AssetDetails:  # pylint: disable=too-many-instance-attributes
     firmware_version: Optional[str] = None
     serial_number: Optional[str] = None
 
-    def to_resource_manager_details(
-        self, control_types: List[S2ControlType]
-    ) -> ResourceManagerDetails:
+    def to_resource_manager_details(self, control_types: List[S2ControlType]) -> ResourceManagerDetails:
         return ResourceManagerDetails(
-            available_control_types=[
-                control_type.get_protocol_control_type() for control_type in control_types
-            ],
+            available_control_types=[control_type.get_protocol_control_type() for control_type in control_types],
             currency=self.currency,
             firmware_version=self.firmware_version,
             instruction_processing_delay=self.instruction_processing_delay,
@@ -93,7 +89,7 @@ class SendOkay:
         self.status_is_send.set()
 
         await self.connection.respond_with_reception_status(
-            subject_message_id=self.subject_message_id,
+            subject_message_id=str(self.subject_message_id),
             status=ReceptionStatusValues.OK,
             diagnostic_label="Processed okay.",
         )
@@ -102,7 +98,7 @@ class SendOkay:
         self.status_is_send.set()
 
         self.connection.respond_with_reception_status_sync(
-            subject_message_id=self.subject_message_id,
+            subject_message_id=str(self.subject_message_id),
             status=ReceptionStatusValues.OK,
             diagnostic_label="Processed okay.",
         )
@@ -159,7 +155,7 @@ class MessageHandlers:
             except Exception:
                 if not send_okay.status_is_send.is_set():
                     await connection.respond_with_reception_status(
-                        subject_message_id=msg.message_id,  # type: ignore[attr-defined, union-attr]
+                        subject_message_id=str(msg.message_id),  # type: ignore[attr-defined, union-attr]
                         status=ReceptionStatusValues.PERMANENT_ERROR,
                         diagnostic_label=f"While processing message {msg.message_id} "  # type: ignore[attr-defined, union-attr]  # pylint: disable=line-too-long
                         f"an unrecoverable error occurred.",
@@ -298,9 +294,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 self._eventloop.create_task(wait_till_connection_restart()),
             ]
 
-            (done, pending) = await asyncio.wait(
-                background_tasks, return_when=asyncio.FIRST_COMPLETED
-            )
+            (done, pending) = await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
             if self._current_control_type:
                 self._current_control_type.deactivate(self)
                 self._current_control_type = None
@@ -333,9 +327,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 connection_kwargs["ssl"].verify_mode = ssl.CERT_NONE
 
             if self._bearer_token:
-                connection_kwargs["additional_headers"] = {
-                    "Authorization": f"Bearer {self._bearer_token}"
-                }
+                connection_kwargs["additional_headers"] = {"Authorization": f"Bearer {self._bearer_token}"}
 
             self.ws = await ws_connect(uri=self.url, **connection_kwargs)
         except (EOFError, OSError) as e:
@@ -343,21 +335,15 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
     async def _connect_as_rm(self) -> None:
         await self.send_msg_and_await_reception_status_async(
-            Handshake(
-                message_id=uuid.uuid4(), role=self.role, supported_protocol_versions=[S2_VERSION]
-            )
+            Handshake(message_id=uuid.uuid4(), role=self.role, supported_protocol_versions=[S2_VERSION])
         )
         logger.debug("Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM.")
 
         await self._handle_received_messages()
 
-    async def handle_handshake(
-        self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
-    ) -> None:
+    async def handle_handshake(self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]) -> None:
         if not isinstance(message, Handshake):
-            logger.error(
-                "Handler for Handshake received a message of the wrong type: %s", type(message)
-            )
+            logger.error("Handler for Handshake received a message of the wrong type: %s", type(message))
             return
 
         logger.debug(
@@ -401,12 +387,8 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
         logger.debug("CEM selected control type %s. Activating control type.", message.control_type)
 
-        control_types_by_protocol_name = {
-            c.get_protocol_control_type(): c for c in self.control_types
-        }
-        selected_control_type: Optional[S2ControlType] = control_types_by_protocol_name.get(
-            message.control_type
-        )
+        control_types_by_protocol_name = {c.get_protocol_control_type(): c for c in self.control_types}
+        selected_control_type: Optional[S2ControlType] = control_types_by_protocol_name.get(message.control_type)
 
         if self._current_control_type is not None:
             await self._eventloop.run_in_executor(None, self._current_control_type.deactivate, self)
@@ -424,9 +406,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         to any calls of `send_msg_and_await_reception_status`.
         """
         if self.ws is None:
-            raise RuntimeError(
-                "Cannot receive messages if websocket connection is not yet established."
-            )
+            raise RuntimeError("Cannot receive messages if websocket connection is not yet established.")
 
         logger.info("S2 connection has started to receive messages.")
 
@@ -436,7 +416,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             except json.JSONDecodeError:
                 await self._send_and_forget(
                     ReceptionStatus(
-                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                        subject_message_id="00000000-0000-0000-0000-000000000000",
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Not valid json.",
                     )
@@ -452,7 +432,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                     )
                 else:
                     await self.respond_with_reception_status(
-                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                        subject_message_id="00000000-0000-0000-0000-000000000000",
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Message appears valid json but could not find a message_id field.",
                     )
@@ -470,9 +450,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
     async def _send_and_forget(self, s2_msg: S2Message) -> None:
         if self.ws is None:
-            raise RuntimeError(
-                "Cannot send messages if websocket connection is not yet established."
-            )
+            raise RuntimeError("Cannot send messages if websocket connection is not yet established.")
 
         json_msg = s2_msg.to_json()
         logger.debug("Sending message %s", json_msg)
@@ -483,7 +461,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             self._restart_connection_event.set()
 
     async def respond_with_reception_status(
-        self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
+        self, subject_message_id: str, status: ReceptionStatusValues, diagnostic_label: str
     ) -> None:
         logger.debug("Responding to message %s with status %s", subject_message_id, status)
         await self._send_and_forget(
@@ -495,7 +473,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         )
 
     def respond_with_reception_status_sync(
-        self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
+        self, subject_message_id: str, status: ReceptionStatusValues, diagnostic_label: str
     ) -> None:
         asyncio.run_coroutine_threadsafe(
             self.respond_with_reception_status(subject_message_id, status, diagnostic_label),
@@ -532,9 +510,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self, s2_msg: S2Message, timeout_reception_status: float = 5.0, raise_on_error: bool = True
     ) -> ReceptionStatus:
         return asyncio.run_coroutine_threadsafe(
-            self.send_msg_and_await_reception_status_async(
-                s2_msg, timeout_reception_status, raise_on_error
-            ),
+            self.send_msg_and_await_reception_status_async(s2_msg, timeout_reception_status, raise_on_error),
             self._eventloop,
         ).result()
 
