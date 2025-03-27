@@ -13,13 +13,13 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class ResourceManagerDetails(GenResourceManagerDetails, S2MessageComponent["ResourceManagerDetails"]):
+class ResourceManagerDetails(GenResourceManagerDetails, S2MessageComponent):
     model_config = GenResourceManagerDetails.model_config
     model_config["validate_assignment"] = True
 
-    instruction_processing_delay: Duration = GenResourceManagerDetails.model_fields[
+    instruction_processing_delay: Duration = GenResourceManagerDetails.model_fields[  # type: ignore[assignment,reportIncompatibleVariableOverride]
         "instruction_processing_delay"
-    ]  # type: ignore[assignment]
-    message_id: uuid.UUID = GenResourceManagerDetails.model_fields["message_id"]  # type: ignore[assignment]
-    resource_id: uuid.UUID = GenResourceManagerDetails.model_fields["resource_id"]  # type: ignore[assignment]
-    roles: List[Role] = GenResourceManagerDetails.model_fields["roles"]  # type: ignore[assignment]
+    ]
+    message_id: uuid.UUID = GenResourceManagerDetails.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    resource_id: uuid.UUID = GenResourceManagerDetails.model_fields["resource_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    roles: List[Role] = GenResourceManagerDetails.model_fields["roles"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

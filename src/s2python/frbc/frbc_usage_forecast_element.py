@@ -10,8 +10,8 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class FRBCUsageForecastElement(GenFRBCUsageForecastElement, S2MessageComponent["FRBCUsageForecastElement"]):
+class FRBCUsageForecastElement(GenFRBCUsageForecastElement, S2MessageComponent):
     model_config = GenFRBCUsageForecastElement.model_config
     model_config["validate_assignment"] = True
 
-    duration: Duration = GenFRBCUsageForecastElement.model_fields["duration"]  # type: ignore[assignment]
+    duration: Duration = GenFRBCUsageForecastElement.model_fields["duration"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

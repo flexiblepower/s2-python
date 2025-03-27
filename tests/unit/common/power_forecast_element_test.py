@@ -29,7 +29,7 @@ class PowerForecastElementTest(TestCase):
         self.assertEqual(
             power_forecast_element.power_values,
             [
-                PowerForecastValue(
+                PowerForecastValue(  # pyright: ignore[reportCallIssue]
                     commodity_quantity=CommodityQuantity.NATURAL_GAS_FLOW_RATE,
                     value_expected=500.2,
                 )
@@ -40,7 +40,7 @@ class PowerForecastElementTest(TestCase):
         # Arrange
         power_forecast_element = PowerForecastElement(
             power_values=[
-                PowerForecastValue(
+                PowerForecastValue(  # pyright: ignore[reportCallIssue]
                     commodity_quantity=CommodityQuantity.NATURAL_GAS_FLOW_RATE,
                     value_expected=500.2,
                 )
@@ -54,6 +54,8 @@ class PowerForecastElementTest(TestCase):
         # Assert
         expected_json = {
             "duration": 4000,
-            "power_values": [{"commodity_quantity": "NATURAL_GAS.FLOW_RATE", "value_expected": 500.2}],
+            "power_values": [
+                {"commodity_quantity": "NATURAL_GAS.FLOW_RATE", "value_expected": 500.2}
+            ],
         }
         self.assertEqual(json.loads(json_str), expected_json)

@@ -26,7 +26,7 @@ class TimerTest(TestCase):
 
     def test_optional_parameters(self):
         # Arrange / Act
-        timer = Timer(
+        timer = Timer(  # pyright: ignore[reportCallIssue]
             id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632ccedf"),
             duration=Duration.from_timedelta(timedelta(seconds=5)),
         )
@@ -41,7 +41,9 @@ class TimerTest(TestCase):
 
     def test__from_json__format_validation_error(self):
         # Arrange
-        json_str = '{"id": "2bdec96b-be3b-4ba9-afa0-c4a0632ccedf", "diagnostic_label": "some_label"}'
+        json_str = (
+            '{"id": "2bdec96b-be3b-4ba9-afa0-c4a0632ccedf", "diagnostic_label": "some_label"}'
+        )
 
         # Act / Assert
         with self.assertRaises(S2ValidationError):

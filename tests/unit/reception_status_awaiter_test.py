@@ -24,7 +24,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         # Arrange
         awaiter = ReceptionStatusAwaiter()
         message_id = uuid.uuid4()
-        s2_reception_status = ReceptionStatus(
+        s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
             subject_message_id=message_id, status=ReceptionStatusValues.OK
         )
 
@@ -36,7 +36,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         received_s2_reception_status = wait_task.result()
 
         # Assert
-        expected_s2_reception_status = ReceptionStatus(
+        expected_s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
             subject_message_id=message_id, status=ReceptionStatusValues.OK
         )
 
@@ -47,7 +47,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         # Arrange
         awaiter = ReceptionStatusAwaiter()
         message_id = uuid.uuid4()
-        s2_reception_status = ReceptionStatus(
+        s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
             subject_message_id=message_id, status=ReceptionStatusValues.OK
         )
 
@@ -56,7 +56,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         received_s2_reception_status = await awaiter.wait_for_reception_status(message_id, 1.0)
 
         # Assert
-        expected_s2_reception_status = ReceptionStatus(
+        expected_s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
             subject_message_id=message_id, status=ReceptionStatusValues.OK
         )
         self.assertEqual(expected_s2_reception_status, received_s2_reception_status)
@@ -65,7 +65,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         # Arrange
         awaiter = ReceptionStatusAwaiter()
         message_id = uuid.uuid4()
-        s2_reception_status = ReceptionStatus(
+        s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
             subject_message_id=message_id, status=ReceptionStatusValues.OK
         )
 
@@ -81,7 +81,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         received_s2_reception_status_2 = wait_task_2.result()
 
         # Assert
-        expected_s2_reception_status = ReceptionStatus(
+        expected_s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
             subject_message_id=message_id, status=ReceptionStatusValues.OK
         )
 
@@ -107,7 +107,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
     async def test__receive_reception_status__received_duplicate(self):
         # Arrange
         awaiter = ReceptionStatusAwaiter()
-        s2_reception_status = ReceptionStatus(
+        s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
             subject_message_id=uuid.uuid4(), status=ReceptionStatusValues.OK
         )
 
@@ -120,7 +120,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         # Arrange
         awaiter = ReceptionStatusAwaiter()
         message_id = uuid.uuid4()
-        s2_reception_status = ReceptionStatus(
+        s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
             subject_message_id=message_id, status=ReceptionStatusValues.OK
         )
 
@@ -129,7 +129,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
 
         # Assert
         expected_received = {
-            message_id: ReceptionStatus(
+            message_id: ReceptionStatus(  # pyright: ignore[reportCallIssue]
                 subject_message_id=message_id, status=ReceptionStatusValues.OK
             )
         }
@@ -142,7 +142,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         awaiting_event = asyncio.Event()
         message_id = uuid.uuid4()
         awaiter.awaiting = {message_id: awaiting_event}
-        s2_reception_status = ReceptionStatus(
+        s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
             subject_message_id=message_id, status=ReceptionStatusValues.OK
         )
 
@@ -153,7 +153,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
 
         # Assert
         expected_received = {
-            message_id: ReceptionStatus(
+            message_id: ReceptionStatus(  # pyright: ignore[reportCallIssue]
                 subject_message_id=message_id, status=ReceptionStatusValues.OK
             )
         }

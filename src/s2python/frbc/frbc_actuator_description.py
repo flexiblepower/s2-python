@@ -18,19 +18,19 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent["FRBCActuatorDescription"]):
+class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent):
     model_config = GenFRBCActuatorDescription.model_config
     model_config["validate_assignment"] = True
 
-    id: uuid.UUID = GenFRBCActuatorDescription.model_fields["id"]  # type: ignore[assignment]
-    operation_modes: List[FRBCOperationMode] = GenFRBCActuatorDescription.model_fields[
+    id: uuid.UUID = GenFRBCActuatorDescription.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    operation_modes: List[FRBCOperationMode] = GenFRBCActuatorDescription.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "operation_modes"
     ]  # type: ignore[assignment]
-    transitions: List[Transition] = GenFRBCActuatorDescription.model_fields["transitions"]  # type: ignore[assignment]
-    timers: List[Timer] = GenFRBCActuatorDescription.model_fields["timers"]  # type: ignore[assignment]
+    transitions: List[Transition] = GenFRBCActuatorDescription.model_fields["transitions"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    timers: List[Timer] = GenFRBCActuatorDescription.model_fields["timers"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     supported_commodities: List[Commodity] = GenFRBCActuatorDescription.model_fields[
         "supported_commodities"
-    ]  # type: ignore[assignment]
+    ]  # type: ignore[assignment,reportIncompatibleVariableOverride]
 
     @model_validator(mode="after")
     def validate_timers_in_transitions(self) -> Self:
@@ -68,7 +68,9 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent["FR
 
     @model_validator(mode="after")
     def validate_operation_modes_in_transitions(self) -> Self:
-        operation_mode_by_id = {operation_mode.id: operation_mode for operation_mode in self.operation_modes}
+        operation_mode_by_id = {
+            operation_mode.id: operation_mode for operation_mode in self.operation_modes
+        }
         transition: Transition
         for transition in self.transitions:
             if transition.from_ not in operation_mode_by_id:

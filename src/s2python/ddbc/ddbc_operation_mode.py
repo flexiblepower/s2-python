@@ -13,14 +13,14 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class DDBCOperationMode(GenDDBCOperationMode, S2MessageComponent["DDBCOperationMode"]):
+class DDBCOperationMode(GenDDBCOperationMode, S2MessageComponent):
     model_config = GenDDBCOperationMode.model_config
     model_config["validate_assignment"] = True
 
     # ? Id vs id
-    id: uuid.UUID = GenDDBCOperationMode.model_fields["Id"]  # type: ignore[assignment]
-    power_ranges: List[PowerRange] = GenDDBCOperationMode.model_fields["power_ranges"]  # type: ignore[assignment]
-    supply_range: List[NumberRange] = GenDDBCOperationMode.model_fields["supply_range"]  # type: ignore[assignment]
+    id: uuid.UUID = GenDDBCOperationMode.model_fields["Id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    power_ranges: List[PowerRange] = GenDDBCOperationMode.model_fields["power_ranges"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    supply_range: List[NumberRange] = GenDDBCOperationMode.model_fields["supply_range"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     abnormal_condition_only: bool = GenDDBCOperationMode.model_fields[
         "abnormal_condition_only"
-    ]  # type: ignore[assignment]
+    ]  # type: ignore[assignment,reportIncompatibleVariableOverride]

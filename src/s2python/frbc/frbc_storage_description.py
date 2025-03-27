@@ -9,10 +9,10 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class FRBCStorageDescription(GenFRBCStorageDescription, S2MessageComponent["FRBCStorageDescription"]):
+class FRBCStorageDescription(GenFRBCStorageDescription, S2MessageComponent):
     model_config = GenFRBCStorageDescription.model_config
     model_config["validate_assignment"] = True
 
-    fill_level_range: NumberRange = GenFRBCStorageDescription.model_fields[
+    fill_level_range: NumberRange = GenFRBCStorageDescription.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "fill_level_range"
     ]  # type: ignore[assignment]

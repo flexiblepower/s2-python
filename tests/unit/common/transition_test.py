@@ -129,7 +129,7 @@ class TransitionTest(TestCase):
     def test__to_json__value_validation_error_neg_duration(self):
         # Arrange/ Act / Assert
         with self.assertRaises(S2ValidationError):
-            Transition(
+            Transition(  # pyright: ignore[reportCallIssue]
                 id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
                 from_=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced2"),
                 to=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced1"),
