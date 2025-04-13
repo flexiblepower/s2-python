@@ -10,4 +10,6 @@ class S2ValidationError(Exception):
     class_: Optional[Type]
     obj: object
     msg: str
-    pydantic_validation_error: Union[ValidationErrorV1, ValidationError, TypeError, None]
+    pydantic_validation_error: Union[
+        ValidationErrorV1, ValidationError, TypeError, None
+    ]

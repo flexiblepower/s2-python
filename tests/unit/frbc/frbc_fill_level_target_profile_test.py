@@ -47,7 +47,9 @@ class FRBCFillLevelTargetProfileTest(TestCase):
             frbc_fill_level_target_profile.message_id,
             uuid.UUID("04a6c8af-ca8d-420c-9c11-e96a70fe82b1"),
         )
-        self.assertEqual(frbc_fill_level_target_profile.message_type, "FRBC.FillLevelTargetProfile")
+        self.assertEqual(
+            frbc_fill_level_target_profile.message_type, "FRBC.FillLevelTargetProfile"
+        )
         self.assertEqual(
             frbc_fill_level_target_profile.start_time,
             datetime(

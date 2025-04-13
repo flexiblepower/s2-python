@@ -38,6 +38,13 @@ from s2python.ddbc import (
     DDBCSystemDescription,
     DDBCTimerStatus,
 )
+from s2python.ombc import (
+    OMBCInstruction,
+    OMBCOperationMode,
+    OMBCTimerStatus,
+    OMBCStatus,
+    OMBCSystemDescription,
+)
 
 from s2python.pebc import (
     PEBCAllowedLimitRange,
@@ -82,6 +89,10 @@ S2Message = Union[
     FRBCSystemDescription,
     FRBCTimerStatus,
     FRBCUsageForecast,
+    OMBCSystemDescription,
+    OMBCStatus,
+    OMBCTimerStatus,
+    OMBCInstruction,
     PEBCPowerConstraints,
     PPBCEndInterruptionInstruction,
     PPBCPowerProfileDefinition,
@@ -93,7 +104,6 @@ S2Message = Union[
     SelectControlType,
     SessionRequest,
     DDBCActuatorStatus,
-    FRBCInstruction,
     PEBCEnergyConstraint,
     PEBCInstruction,
     Handshake,
@@ -115,6 +125,7 @@ S2MessageElement = Union[
     FRBCOperationModeElement,
     FRBCStorageDescription,
     FRBCUsageForecastElement,
+    OMBCOperationMode,
     PEBCAllowedLimitRange,
     PEBCPowerEnvelope,
     PEBCPowerEnvelopeElement,

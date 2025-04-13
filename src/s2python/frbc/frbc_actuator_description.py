@@ -61,7 +61,9 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent):
         timer: Timer
         for timer in self.timers:
             if timer.id in ids:
-                raise ValueError(self, f"Id {timer.id} was found multiple times in 'timers'.")
+                raise ValueError(
+                    self, f"Id {timer.id} was found multiple times in 'timers'."
+                )
             ids.append(timer.id)
 
         return self
@@ -113,7 +115,9 @@ class FRBCActuatorDescription(GenFRBCActuatorDescription, S2MessageComponent):
                     power_ranges_for_commodity = [
                         power_range
                         for power_range in operation_mode_element.power_ranges
-                        if commodity_has_quantity(commodity, power_range.commodity_quantity)
+                        if commodity_has_quantity(
+                            commodity, power_range.commodity_quantity
+                        )
                     ]
 
                     if len(power_ranges_for_commodity) > 1:

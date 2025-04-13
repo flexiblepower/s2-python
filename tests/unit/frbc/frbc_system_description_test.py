@@ -151,7 +151,9 @@ class FRBCSystemDescriptionTest(TestCase):
                     timers=[
                         Timer(
                             diagnostic_label="some-test-string4315",
-                            duration=Duration.from_timedelta(timedelta(milliseconds=14099)),
+                            duration=Duration.from_timedelta(
+                                timedelta(milliseconds=14099)
+                            ),
                             id=uuid.UUID("e1ff9e58-935b-4765-92e3-5e7679f73eb6"),
                         )
                     ],
@@ -169,7 +171,9 @@ class FRBCSystemDescriptionTest(TestCase):
             FRBCStorageDescription(
                 diagnostic_label="some-test-string8418",
                 fill_level_label="some-test-string9512",
-                fill_level_range=NumberRange(end_of_range=20876.752745956997, start_of_range=18324.0229135081),
+                fill_level_range=NumberRange(
+                    end_of_range=20876.752745956997, start_of_range=18324.0229135081
+                ),
                 provides_fill_level_target_profile=False,
                 provides_leakage_behaviour=True,
                 provides_usage_forecast=False,
@@ -244,7 +248,9 @@ class FRBCSystemDescriptionTest(TestCase):
                     timers=[
                         Timer(
                             diagnostic_label="some-test-string4315",
-                            duration=Duration.from_timedelta(timedelta(milliseconds=14099)),
+                            duration=Duration.from_timedelta(
+                                timedelta(milliseconds=14099)
+                            ),
                             id=uuid.UUID("e1ff9e58-935b-4765-92e3-5e7679f73eb6"),
                         )
                     ],
@@ -256,7 +262,9 @@ class FRBCSystemDescriptionTest(TestCase):
             storage=FRBCStorageDescription(
                 diagnostic_label="some-test-string8418",
                 fill_level_label="some-test-string9512",
-                fill_level_range=NumberRange(end_of_range=20876.752745956997, start_of_range=18324.0229135081),
+                fill_level_range=NumberRange(
+                    end_of_range=20876.752745956997, start_of_range=18324.0229135081
+                ),
                 provides_fill_level_target_profile=False,
                 provides_leakage_behaviour=True,
                 provides_usage_forecast=False,
