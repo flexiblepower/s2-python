@@ -10,9 +10,9 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class PowerMeasurement(GenPowerMeasurement, S2MessageComponent["PowerMeasurement"]):
+class PowerMeasurement(GenPowerMeasurement, S2MessageComponent):
     model_config = GenPowerMeasurement.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenPowerMeasurement.model_fields["message_id"]  # type: ignore[assignment]
-    values: List[PowerValue] = GenPowerMeasurement.model_fields["values"]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenPowerMeasurement.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    values: List[PowerValue] = GenPowerMeasurement.model_fields["values"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

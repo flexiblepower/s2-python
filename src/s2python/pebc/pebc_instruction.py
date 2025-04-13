@@ -12,16 +12,16 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class PEBCInstruction(GenPEBCInstruction, S2MessageComponent["PEBCInstruction"]):
+class PEBCInstruction(GenPEBCInstruction, S2MessageComponent):
     model_config = GenPEBCInstruction.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenPEBCInstruction.model_fields["message_id"]  # type: ignore[assignment]
-    id: uuid.UUID = GenPEBCInstruction.model_fields["id"]  # type: ignore[assignment]
-    power_constraints_id: uuid.UUID = [
+    message_id: uuid.UUID = GenPEBCInstruction.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    id: uuid.UUID = GenPEBCInstruction.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    power_constraints_id: uuid.UUID = [  # type: ignore[reportIncompatibleVariableOverride]
         GenPEBCInstruction.model_fields["power_constraints_id"]  # type: ignore[assignment]
     ]
-    power_envelopes: List[PEBCPowerEnvelope] = [
+    power_envelopes: List[PEBCPowerEnvelope] = [  # type: ignore[reportIncompatibleVariableOverride]
         GenPEBCInstruction.model_fields["power_envelopes"]  # type: ignore[assignment]
     ]
-    abnormal_conditions: bool = GenPEBCInstruction.model_fields["abnormal_conditions"]  # type: ignore[assignment]
+    abnormal_condition: bool = GenPEBCInstruction.model_fields["abnormal_condition"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

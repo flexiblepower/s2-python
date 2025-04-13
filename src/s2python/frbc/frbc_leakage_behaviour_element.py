@@ -14,13 +14,11 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class FRBCLeakageBehaviourElement(
-    GenFRBCLeakageBehaviourElement, S2MessageComponent["FRBCLeakageBehaviourElement"]
-):
+class FRBCLeakageBehaviourElement(GenFRBCLeakageBehaviourElement, S2MessageComponent):
     model_config = GenFRBCLeakageBehaviourElement.model_config
     model_config["validate_assignment"] = True
 
-    fill_level_range: NumberRange = GenFRBCLeakageBehaviourElement.model_fields[
+    fill_level_range: NumberRange = GenFRBCLeakageBehaviourElement.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "fill_level_range"
     ]  # type: ignore[assignment]
 

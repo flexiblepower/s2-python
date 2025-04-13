@@ -9,9 +9,9 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class Timer(GenTimer, S2MessageComponent["Timer"]):
+class Timer(GenTimer, S2MessageComponent):
     model_config = GenTimer.model_config
     model_config["validate_assignment"] = True
 
-    id: uuid.UUID = GenTimer.model_fields["id"]  # type: ignore[assignment]
-    duration: Duration = GenTimer.model_fields["duration"]  # type: ignore[assignment]
+    id: uuid.UUID = GenTimer.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    duration: Duration = GenTimer.model_fields["duration"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

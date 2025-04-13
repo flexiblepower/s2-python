@@ -4,8 +4,9 @@ import logging
 import time
 import threading
 import uuid
+import ssl
 from dataclasses import dataclass
-from typing import Optional, List, Type, Dict, Callable, Awaitable, Union
+from typing import Any, Optional, List, Type, Dict, Callable, Awaitable, Union
 
 import websockets
 from websockets.asyncio.client import (
@@ -38,7 +39,7 @@ logger = logging.getLogger("s2python")
 
 @dataclass
 class AssetDetails:  # pylint: disable=too-many-instance-attributes
-    resource_id: str
+    resource_id: uuid.UUID
 
     provides_forecast: bool
     provides_power_measurements: List[CommodityQuantity]
@@ -96,7 +97,7 @@ class SendOkay:
         self.status_is_send.set()
 
         await self.connection.respond_with_reception_status(
-            subject_message_id=str(self.subject_message_id),
+            subject_message_id=self.subject_message_id,
             status=ReceptionStatusValues.OK,
             diagnostic_label="Processed okay.",
         )
@@ -105,7 +106,7 @@ class SendOkay:
         self.status_is_send.set()
 
         self.connection.respond_with_reception_status_sync(
-            subject_message_id=str(self.subject_message_id),
+            subject_message_id=self.subject_message_id,
             status=ReceptionStatusValues.OK,
             diagnostic_label="Processed okay.",
         )
@@ -162,7 +163,7 @@ class MessageHandlers:
             except Exception:
                 if not send_okay.status_is_send.is_set():
                     await connection.respond_with_reception_status(
-                        subject_message_id=str(msg.message_id),  # type: ignore[attr-defined, union-attr]
+                        subject_message_id=msg.message_id,  # type: ignore[attr-defined, union-attr]
                         status=ReceptionStatusValues.PERMANENT_ERROR,
                         diagnostic_label=f"While processing message {msg.message_id} "  # type: ignore[attr-defined, union-attr]  # pylint: disable=line-too-long
                         f"an unrecoverable error occurred.",
@@ -204,6 +205,8 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     _eventloop: asyncio.AbstractEventLoop
     _stop_event: asyncio.Event
     _restart_connection_event: asyncio.Event
+    _verify_certificate: bool
+    _bearer_token: Optional[str]
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
@@ -212,6 +215,8 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         control_types: List[S2ControlType],
         asset_details: AssetDetails,
         reconnect: bool = False,
+        verify_certificate: bool = True,
+        bearer_token: Optional[str] = None,
     ) -> None:
         self.url = url
         self.reconnect = reconnect
@@ -227,14 +232,14 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self.control_types = control_types
         self.role = role
         self.asset_details = asset_details
+        self._verify_certificate = verify_certificate
 
         self._handlers.register_handler(
             SelectControlType, self.handle_select_control_type_as_rm
         )
         self._handlers.register_handler(Handshake, self.handle_handshake)
-        self._handlers.register_handler(
-            HandshakeResponse, self.handle_handshake_response_as_rm
-        )
+        self._handlers.register_handler(HandshakeResponse, self.handle_handshake_response_as_rm)
+        self._bearer_token = bearer_token
 
     def start_as_rm(self) -> None:
         self._run_eventloop(self._run_as_rm())
@@ -257,8 +262,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         """
         if threading.current_thread() == self._thread:
             raise RuntimeError(
-                "Do not call stop from the thread running the S2 connection. This results in an "
-                "infinite block!"
+                "Do not call stop from the thread running the S2 connection. This results in an infinite block!"
             )
         if self._eventloop.is_running():
             asyncio.run_coroutine_threadsafe(self._do_stop(), self._eventloop).result()
@@ -332,7 +336,19 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
     async def _connect_ws(self) -> None:
         try:
-            self.ws = await ws_connect(uri=self.url)
+            # set up connection arguments for SSL and bearer token, if required
+            connection_kwargs: Dict[str, Any] = {}
+            if self.url.startswith("wss://") and not self._verify_certificate:
+                connection_kwargs["ssl"] = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+                connection_kwargs["ssl"].check_hostname = False
+                connection_kwargs["ssl"].verify_mode = ssl.CERT_NONE
+
+            if self._bearer_token:
+                connection_kwargs["additional_headers"] = {
+                    "Authorization": f"Bearer {self._bearer_token}"
+                }
+
+            self.ws = await ws_connect(uri=self.url, **connection_kwargs)
         except (EOFError, OSError) as e:
             logger.info("Could not connect due to: %s", str(e))
 
@@ -445,7 +461,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             except json.JSONDecodeError:
                 await self._send_and_forget(
                     ReceptionStatus(
-                        subject_message_id="00000000-0000-0000-0000-000000000000",
+                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Not valid json.",
                     )
@@ -461,7 +477,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                     )
                 else:
                     await self.respond_with_reception_status(
-                        subject_message_id="00000000-0000-0000-0000-000000000000",
+                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Message appears valid json but could not find a message_id field.",
                     )
@@ -492,10 +508,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             self._restart_connection_event.set()
 
     async def respond_with_reception_status(
-        self,
-        subject_message_id: str,
-        status: ReceptionStatusValues,
-        diagnostic_label: str,
+        self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
     ) -> None:
         logger.debug(
             "Responding to message %s with status %s", subject_message_id, status
@@ -509,10 +522,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         )
 
     def respond_with_reception_status_sync(
-        self,
-        subject_message_id: str,
-        status: ReceptionStatusValues,
-        diagnostic_label: str,
+        self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
     ) -> None:
         asyncio.run_coroutine_threadsafe(
             self.respond_with_reception_status(

@@ -29,7 +29,7 @@ class PowerForecastElementTest(TestCase):
         self.assertEqual(
             power_forecast_element.power_values,
             [
-                PowerForecastValue(
+                PowerForecastValue(  # pyright: ignore[reportCallIssue]
                     commodity_quantity=CommodityQuantity.NATURAL_GAS_FLOW_RATE,
                     value_expected=500.2,
                 )
@@ -40,7 +40,7 @@ class PowerForecastElementTest(TestCase):
         # Arrange
         power_forecast_element = PowerForecastElement(
             power_values=[
-                PowerForecastValue(
+                PowerForecastValue(  # pyright: ignore[reportCallIssue]
                     commodity_quantity=CommodityQuantity.NATURAL_GAS_FLOW_RATE,
                     value_expected=500.2,
                 )

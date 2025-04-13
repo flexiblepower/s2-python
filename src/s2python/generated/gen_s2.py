@@ -20,11 +20,15 @@ from typing_extensions import Literal
 
 
 class Duration(RootModel[conint(ge=0)]):
-    root: conint(ge=0) = Field(..., description="Duration in milliseconds")
+    root: conint(ge=0) = Field(  # pyright: ignore[reportInvalidTypeForm]
+        ..., description="Duration in milliseconds"
+    )
 
 
 class ID(RootModel[constr(pattern=r"[a-zA-Z0-9\-_:]{2,64}")]):
-    root: constr(pattern=r"[a-zA-Z0-9\-_:]{2,64}") = Field(..., description="UUID")
+    root: constr(pattern=r"[a-zA-Z0-9\-_:]{2,64}") = (  # pyright: ignore[reportInvalidTypeForm]
+        Field(..., description="UUID")
+    )
 
 
 class Currency(Enum):
@@ -169,12 +173,8 @@ class NumberRange(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    start_of_range: float = Field(
-        ..., description="Number that defines the start of the range"
-    )
-    end_of_range: float = Field(
-        ..., description="Number that defines the end of the range"
-    )
+    start_of_range: float = Field(..., description="Number that defines the start of the range")
+    end_of_range: float = Field(..., description="Number that defines the end of the range")
 
 
 class Transition(BaseModel):
@@ -465,9 +465,7 @@ class FRBCTimerStatus(BaseModel):
     message_type: Literal["FRBC.TimerStatus"] = "FRBC.TimerStatus"
     message_id: ID
     timer_id: ID = Field(..., description="The ID of the timer this message refers to")
-    actuator_id: ID = Field(
-        ..., description="The ID of the actuator the timer belongs to"
-    )
+    actuator_id: ID = Field(..., description="The ID of the actuator the timer belongs to")
     finished_at: AwareDatetime = Field(
         ...,
         description="Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.",
@@ -481,9 +479,7 @@ class DDBCTimerStatus(BaseModel):
     message_type: Literal["DDBC.TimerStatus"] = "DDBC.TimerStatus"
     message_id: ID
     timer_id: ID = Field(..., description="The ID of the timer this message refers to")
-    actuator_id: ID = Field(
-        ..., description="The ID of the actuator the timer belongs to"
-    )
+    actuator_id: ID = Field(..., description="The ID of the actuator the timer belongs to")
     finished_at: AwareDatetime = Field(
         ...,
         description="Indicates when the Timer will be finished. If the DateTimeStamp is in the future, the timer is not yet finished. If the DateTimeStamp is in the past, the timer is finished. If the timer was never started, the value can be an arbitrary DateTimeStamp in the past.",
@@ -533,9 +529,7 @@ class Handshake(BaseModel):
     )
     message_type: Literal["Handshake"] = "Handshake"
     message_id: ID
-    role: EnergyManagementRole = Field(
-        ..., description="The role of the sender of this message"
-    )
+    role: EnergyManagementRole = Field(..., description="The role of the sender of this message")
     supported_protocol_versions: Optional[List[str]] = Field(
         None,
         description="Protocol versions supported by the sender of this message. This field is mandatory for the RM, but optional for the CEM.",
@@ -559,12 +553,8 @@ class ReceptionStatus(BaseModel):
         extra="forbid",
     )
     message_type: Literal["ReceptionStatus"] = "ReceptionStatus"
-    subject_message_id: ID = Field(
-        ..., description="The message this ReceptionStatus refers to"
-    )
-    status: ReceptionStatusValues = Field(
-        ..., description="Enumeration of status values"
-    )
+    subject_message_id: ID = Field(..., description="The message this ReceptionStatus refers to")
+    status: ReceptionStatusValues = Field(..., description="Enumeration of status values")
     diagnostic_label: Optional[str] = Field(
         None,
         description="Diagnostic label that can be used to provide additional information for debugging. However, not for HMI purposes.",
@@ -577,12 +567,8 @@ class InstructionStatusUpdate(BaseModel):
     )
     message_type: Literal["InstructionStatusUpdate"] = "InstructionStatusUpdate"
     message_id: ID
-    instruction_id: ID = Field(
-        ..., description="ID of this instruction (as provided by the CEM) "
-    )
-    status_type: InstructionStatus = Field(
-        ..., description="Present status of this instruction."
-    )
+    instruction_id: ID = Field(..., description="ID of this instruction (as provided by the CEM) ")
+    status_type: InstructionStatus = Field(..., description="Present status of this instruction.")
     timestamp: AwareDatetime = Field(
         ..., description="Timestamp when status_type has changed the last time."
     )
@@ -656,9 +642,7 @@ class PPBCStartInterruptionInstruction(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    message_type: Literal["PPBC.StartInterruptionInstruction"] = (
-        "PPBC.StartInterruptionInstruction"
-    )
+    message_type: Literal["PPBC.StartInterruptionInstruction"] = "PPBC.StartInterruptionInstruction"
     message_id: ID
     id: ID = Field(
         ...,
@@ -689,9 +673,7 @@ class PPBCEndInterruptionInstruction(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    message_type: Literal["PPBC.EndInterruptionInstruction"] = (
-        "PPBC.EndInterruptionInstruction"
-    )
+    message_type: Literal["PPBC.EndInterruptionInstruction"] = "PPBC.EndInterruptionInstruction"
     message_id: ID
     id: ID = Field(
         ...,
@@ -725,9 +707,7 @@ class OMBCStatus(BaseModel):
     )
     message_type: Literal["OMBC.Status"] = "OMBC.Status"
     message_id: ID
-    active_operation_mode_id: ID = Field(
-        ..., description="ID of the active OMBC.OperationMode."
-    )
+    active_operation_mode_id: ID = Field(..., description="ID of the active OMBC.OperationMode.")
     operation_mode_factor: float = Field(
         ...,
         description="The number indicates the factor with which the OMBC.OperationMode should be configured. The factor should be greater than or equal than 0 and less or equal to 1.",
@@ -775,9 +755,7 @@ class FRBCActuatorStatus(BaseModel):
     )
     message_type: Literal["FRBC.ActuatorStatus"] = "FRBC.ActuatorStatus"
     message_id: ID
-    actuator_id: ID = Field(
-        ..., description="ID of the actuator this messages refers to"
-    )
+    actuator_id: ID = Field(..., description="ID of the actuator this messages refers to")
     active_operation_mode_id: ID = Field(
         ..., description="ID of the FRBC.OperationMode that is presently active."
     )
@@ -801,9 +779,7 @@ class FRBCStorageStatus(BaseModel):
     )
     message_type: Literal["FRBC.StorageStatus"] = "FRBC.StorageStatus"
     message_id: ID
-    present_fill_level: float = Field(
-        ..., description="Present fill level of the Storage"
-    )
+    present_fill_level: float = Field(..., description="Present fill level of the Storage")
 
 
 class FRBCLeakageBehaviour(BaseModel):
@@ -834,9 +810,7 @@ class FRBCInstruction(BaseModel):
         ...,
         description="ID of the instruction. Must be unique in the scope of the Resource Manager, for at least the duration of the session between Resource Manager and CEM.",
     )
-    actuator_id: ID = Field(
-        ..., description="ID of the actuator this instruction belongs to."
-    )
+    actuator_id: ID = Field(..., description="ID of the actuator this instruction belongs to.")
     operation_mode: ID = Field(
         ..., description="ID of the FRBC.OperationMode that should be activated."
     )
@@ -894,9 +868,7 @@ class DDBCActuatorStatus(BaseModel):
     )
     message_type: Literal["DDBC.ActuatorStatus"] = "DDBC.ActuatorStatus"
     message_id: ID
-    actuator_id: ID = Field(
-        ..., description="ID of the actuator this messages refers to"
-    )
+    actuator_id: ID = Field(..., description="ID of the actuator this messages refers to")
     active_operation_mode_id: ID = Field(
         ...,
         description="The operation mode that is presently active for this actuator.",
@@ -933,9 +905,7 @@ class DDBCInstruction(BaseModel):
         ...,
         description="Indicates if this is an instruction during an abnormal condition",
     )
-    actuator_id: ID = Field(
-        ..., description="ID of the actuator this Instruction belongs to."
-    )
+    actuator_id: ID = Field(..., description="ID of the actuator this Instruction belongs to.")
     operation_mode_id: ID = Field(..., description="ID of the DDBC.OperationMode")
     operation_mode_factor: float = Field(
         ...,
@@ -947,9 +917,7 @@ class DDBCAverageDemandRateForecast(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    message_type: Literal["DDBC.AverageDemandRateForecast"] = (
-        "DDBC.AverageDemandRateForecast"
-    )
+    message_type: Literal["DDBC.AverageDemandRateForecast"] = "DDBC.AverageDemandRateForecast"
     message_id: ID
     start_time: AwareDatetime = Field(..., description="Start time of the profile.")
     elements: List[DDBCAverageDemandRateForecastElement] = Field(
@@ -1014,9 +982,7 @@ class PowerRange(BaseModel):
     start_of_range: float = Field(
         ..., description="Power value that defines the start of the range."
     )
-    end_of_range: float = Field(
-        ..., description="Power value that defines the end of the range."
-    )
+    end_of_range: float = Field(..., description="Power value that defines the end of the range.")
     commodity_quantity: CommodityQuantity = Field(
         ..., description="The power quantity the values refer to"
     )
@@ -1089,9 +1055,7 @@ class PPBCPowerSequenceElement(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    duration: Duration = Field(
-        ..., description="Duration of the PPBC.PowerSequenceElement."
-    )
+    duration: Duration = Field(..., description="Duration of the PPBC.PowerSequenceElement.")
     power_values: List[PowerForecastValue] = Field(
         ...,
         description="The value of power and deviations for the given duration. The array should contain at least one PowerForecastValue and at most one PowerForecastValue per CommodityQuantity.",

@@ -14,14 +14,12 @@ from s2python.ppbc.ppbc_power_sequence_container import PPBCPowerSequenceContain
 
 
 @catch_and_convert_exceptions
-class PPBCPowerProfileDefinition(
-    GenPPBCPowerProfileDefinition, S2MessageComponent["PPBCPowerProfileDefinition"]
-):
+class PPBCPowerProfileDefinition(GenPPBCPowerProfileDefinition, S2MessageComponent):
     model_config = GenPPBCPowerProfileDefinition.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenPPBCPowerProfileDefinition.model_fields["message_id"]  # type: ignore[assignment]
-    id: uuid.UUID = GenPPBCPowerProfileDefinition.model_fields["id"]  # type: ignore[assignment]
-    power_sequences_containers: List[PPBCPowerSequenceContainer] = (
+    message_id: uuid.UUID = GenPPBCPowerProfileDefinition.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    id: uuid.UUID = GenPPBCPowerProfileDefinition.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    power_sequences_containers: List[PPBCPowerSequenceContainer] = (  # type: ignore[reportIncompatibleVariableOverride]
         GenPPBCPowerProfileDefinition.model_fields["power_sequences_containers"]  # type: ignore[assignment]
     )

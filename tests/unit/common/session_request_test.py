@@ -26,7 +26,7 @@ class SessionRequestTest(TestCase):
 
     def test__to_json__happy_path(self):
         # Arrange
-        session_request = SessionRequest(
+        session_request = SessionRequest(  # pyright: ignore[reportCallIssue]
             message_id=uuid.UUID("3bdec96e-be3b-4ba9-afa0-c4a0632cced5"),
             request=SessionRequestType.RECONNECT,
         )

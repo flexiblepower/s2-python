@@ -8,7 +8,7 @@ from s2python.generated.gen_s2 import NumberRange as GenNumberRange
 
 
 @catch_and_convert_exceptions
-class NumberRange(GenNumberRange, S2MessageComponent["NumberRange"]):
+class NumberRange(GenNumberRange, S2MessageComponent):
     model_config = GenNumberRange.model_config
     model_config["validate_assignment"] = True
 

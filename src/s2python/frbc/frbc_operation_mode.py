@@ -16,12 +16,12 @@ from s2python.utils import pairwise
 
 
 @catch_and_convert_exceptions
-class FRBCOperationMode(GenFRBCOperationMode, S2MessageComponent["FRBCOperationMode"]):
+class FRBCOperationMode(GenFRBCOperationMode, S2MessageComponent):
     model_config = GenFRBCOperationMode.model_config
     model_config["validate_assignment"] = True
 
-    id: uuid.UUID = GenFRBCOperationMode.model_fields["id"]  # type: ignore[assignment]
-    elements: List[FRBCOperationModeElement] = GenFRBCOperationMode.model_fields["elements"]  # type: ignore[assignment]
+    id: uuid.UUID = GenFRBCOperationMode.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    elements: List[FRBCOperationModeElement] = GenFRBCOperationMode.model_fields["elements"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
 
     @model_validator(mode="after")
     def validate_contiguous_fill_levels_operation_mode_elements(self) -> Self:

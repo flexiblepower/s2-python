@@ -22,14 +22,12 @@ class SelectControlTypeTest(TestCase):
             select_control_type.message_id,
             uuid.UUID("3bdec96b-be3b-4ba9-afa0-c4a0632cced5"),
         )
-        self.assertEqual(
-            select_control_type.control_type, ControlType.OPERATION_MODE_BASED_CONTROL
-        )
+        self.assertEqual(select_control_type.control_type, ControlType.OPERATION_MODE_BASED_CONTROL)
 
     def test__to_json__happy_path(self):
         # Arrange
         select_control_type = SelectControlType(
-            message_id="3bdec96b-be3b-4ba9-afa1-c4a0632cced5",
+            message_id=uuid.UUID("3bdec96b-be3b-4ba9-afa1-c4a0632cced5"),
             control_type=ControlType.DEMAND_DRIVEN_BASED_CONTROL,
         )
 

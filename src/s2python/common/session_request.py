@@ -8,8 +8,8 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class SessionRequest(GenSessionRequest, S2MessageComponent["SessionRequest"]):
+class SessionRequest(GenSessionRequest, S2MessageComponent):
     model_config = GenSessionRequest.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenSessionRequest.model_fields["message_id"]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenSessionRequest.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]

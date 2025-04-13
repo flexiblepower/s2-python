@@ -8,9 +8,9 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class RevokeObject(GenRevokeObject, S2MessageComponent["RevokeObject"]):
+class RevokeObject(GenRevokeObject, S2MessageComponent):
     model_config = GenRevokeObject.model_config
     model_config["validate_assignment"] = True
 
-    message_id: uuid.UUID = GenRevokeObject.model_fields["message_id"]  # type: ignore[assignment]
-    object_id: uuid.UUID = GenRevokeObject.model_fields["object_id"]  # type: ignore[assignment]
+    message_id: uuid.UUID = GenRevokeObject.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    object_id: uuid.UUID = GenRevokeObject.model_fields["object_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
