@@ -13,9 +13,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class OMBCSystemDescription(
-    GenOMBCSystemDescription, S2MessageComponent["OMBCSystemDescription"]
-):
+class OMBCSystemDescription(GenOMBCSystemDescription, S2MessageComponent):
     model_config = GenOMBCSystemDescription.model_config
     model_config["validate_assignment"] = True
 

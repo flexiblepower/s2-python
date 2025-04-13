@@ -9,7 +9,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class OMBCStatus(GenOMBCStatus, S2MessageComponent["OMBCStatus"]):
+class OMBCStatus(GenOMBCStatus, S2MessageComponent):
     model_config = GenOMBCStatus.model_config
     model_config["validate_assignment"] = True
 

@@ -9,7 +9,7 @@ from s2python.validate_values_mixin import (
 
 
 @catch_and_convert_exceptions
-class OMBCTimerStatus(GenOMBCTimerStatus, S2MessageComponent["OMBCTimerStatus"]):
+class OMBCTimerStatus(GenOMBCTimerStatus, S2MessageComponent):
     model_config = GenOMBCTimerStatus.model_config
     model_config["validate_assignment"] = True
 
