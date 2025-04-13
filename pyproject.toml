@@ -1,3 +1,13 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "s2-python"
+description = "S2 Protocol Python Implementation"
+version = "0.5.0"
+
+[project.optional-dependencies]
+ws = ["websockets"]
+fastapi = ["fastapi"]
+flask = ["Flask"]
