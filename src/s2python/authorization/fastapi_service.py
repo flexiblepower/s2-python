@@ -1,3 +1,5 @@
+import requests
+
 try:
     from fastapi import FastAPI
 except ImportError as exc:
@@ -15,6 +17,7 @@ class FastAPIAuthServer(AbstractAuthServer, FastAPI):
 app = FastAPIAuthServer()
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+@app.get("requestPairing/")
+async def root(request_data):
+    pairing_response = app.handle_pairing_request(request_data)
+    return pairing_response
