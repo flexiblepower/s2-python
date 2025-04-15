@@ -5,8 +5,14 @@ except ImportError as exc:
         "The 'fastapi' package is required. Run 'pip install s2-python[fastapi]' to use this feature."
     ) from exc
 
+from s2python.authorization.server import AbstractAuthServer
 
-app = FastAPI()
+
+class FastAPIAuthServer(AbstractAuthServer, FastAPI):
+    ...
+
+
+app = FastAPIAuthServer()
 
 
 @app.get("/")
