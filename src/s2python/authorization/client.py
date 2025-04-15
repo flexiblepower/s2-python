@@ -7,7 +7,6 @@ import base64
 import json
 import uuid
 import datetime
-import logging
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union, List, Any, Mapping
 
@@ -33,9 +32,6 @@ REQTEST_TIMEOUT = 10
 PAIRING_TIMEOUT = datetime.timedelta(minutes=5)
 KEY_ALGORITHM = "RSA-OAEP-256"
 
-# Set up module-level logger
-logger = logging.getLogger(__name__)
-
 
 class PairingDetails(BaseModel):
     """Contains all details from the pairing process."""
@@ -56,7 +52,8 @@ class S2AbstractClient(abc.ABC):
     """
 
     # pylint: disable=too-many-instance-attributes
-    def __init__(
+    # pylint: disable=too-many-arguments
+    def __init__(   
         self,
         pairing_uri: Optional[str] = None,
         token: Optional[PairingToken] = None,
@@ -139,7 +136,7 @@ class S2AbstractClient(abc.ABC):
             try:
                 self._key_pair = Jwk.from_pem(private_key)
             except (ValueError, TypeError, KeyError) as e:
-                logger.warning("Failed to parse private key as Jwk: %s", e)
+                print(f"Failed to parse private key as Jwk: {e}")
 
     def load_key_pair(self, key_file_path: Union[str, Path]) -> Tuple[str, str]:
         """Load public/private key pair from file.
@@ -294,12 +291,12 @@ class S2AbstractClient(abc.ABC):
                     connection_data["connectionUri"] = full_ws_url
                     # Recreate the ConnectionDetails object
                     connection_details = ConnectionDetails.model_validate(connection_data)
-                    logger.debug("Updated relative WebSocket URI to absolute: %s", full_ws_url)
+                    print(f"Updated relative WebSocket URI to absolute: {full_ws_url}")
                 except (ValueError, TypeError, KeyError) as e:
-                    logger.warning("Failed to update WebSocket URI: %s", e)
+                    print(f"Failed to update WebSocket URI: {e}")
             else:
                 # Log a warning but don't modify the URI if we can't create a proper absolute URI
-                logger.warning(
+                print(
                     "Received relative WebSocket URI but pairing_uri is not available to create absolute URL"
                 )
 
