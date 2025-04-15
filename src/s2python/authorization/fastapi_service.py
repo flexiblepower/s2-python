@@ -1,5 +1,3 @@
-import requests
-
 try:
     from fastapi import FastAPI
 except ImportError as exc:
@@ -11,14 +9,23 @@ from s2python.authorization.server import AbstractAuthServer
 from s2python.generated.gen_s2_pairing import ConnectionDetails, ConnectionRequest, PairingResponse, PairingRequest
 
 
-class FastAPIAuthServer(FastAPI):
+class FastAPIAuthServer(AbstractAuthServer):
+
+    def handle_pairing_request(self, request_data: PairingRequest) -> PairingResponse:
+        return PairingResponse()
+
+    def handle_connection_request(self, request_data: ConnectionRequest) -> ConnectionDetails:
+        return ConnectionDetails()
+
+
+class MyFastAPI(FastAPI):
 
     def __init__(self, *args, **kwargs):
-        self.s2 = AbstractAuthServer()
+        self.s2 = FastAPIAuthServer()
         super().__init__(*args, **kwargs)
 
 
-app = FastAPIAuthServer()
+app = MyFastAPI()
 
 
 @app.post('/requestConnection', response_model=ConnectionDetails)

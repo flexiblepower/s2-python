@@ -7,6 +7,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
+from pydantic import BaseModel
 from typing import List, Optional
 
 
@@ -66,8 +67,7 @@ class PairingInfo:
     validUntil: Optional[datetime] = None
 
 
-@dataclass
-class PairingRequest:
+class PairingRequest(BaseModel):
     """Request to initiate pairing."""
 
     token: Optional[PairingToken] = None
@@ -77,8 +77,7 @@ class PairingRequest:
     supportedProtocols: Optional[List[Protocols]] = None
 
 
-@dataclass
-class PairingResponse:
+class PairingResponse(BaseModel):
     """Response to a pairing request."""
 
     s2ServerNodeId: Optional[uuid.UUID] = None
@@ -86,16 +85,14 @@ class PairingResponse:
     requestConnectionUri: Optional[str] = None
 
 
-@dataclass
-class ConnectionRequest:
+class ConnectionRequest(BaseModel):
     """Request to establish a connection."""
 
     s2ClientNodeId: Optional[uuid.UUID] = None
     supportedProtocols: Optional[List[Protocols]] = None
 
 
-@dataclass
-class ConnectionDetails:
+class ConnectionDetails(BaseModel):
     """Details for establishing a connection."""
 
     selectedProtocol: Optional[Protocols] = None
