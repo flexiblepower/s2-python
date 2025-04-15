@@ -30,15 +30,25 @@ class PowerMeasurementTest(TestCase):
         )
         self.assertEqual(
             power_measurement.values,
-            [PowerValue(commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42)],
+            [
+                PowerValue(
+                    commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42
+                )
+            ],
         )
 
     def test__to_json__happy_path(self):
         # Arrange
         power_measurement = PowerMeasurement(
-            values=[PowerValue(commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42)],
+            values=[
+                PowerValue(
+                    commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42
+                )
+            ],
             message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced8"),
-            measurement_timestamp=datetime(2023, 8, 3, 12, 48, 42, tzinfo=offset(timedelta(hours=1))),
+            measurement_timestamp=datetime(
+                2023, 8, 3, 12, 48, 42, tzinfo=offset(timedelta(hours=1))
+            ),
         )
 
         # Act
