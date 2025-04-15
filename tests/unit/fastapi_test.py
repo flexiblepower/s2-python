@@ -7,7 +7,7 @@ client = TestClient(app)
 
 
 def test_post_pairing_request():
-    response = client.post("/requestPairing")
+    response = client.post("/requestPairing", json={"hallo": "world"})
     assert response.status_code == 200
     assert response.json() == {
         "requestConnectionUri": None,
@@ -17,7 +17,7 @@ def test_post_pairing_request():
 
 
 def test_post_connection_request():
-    response = client.post("/requestConnection")
+    response = client.post("/requestConnection", json={"hallo": "world"})
     assert response.status_code == 200
     assert response.json() == {
         "challenge": None,
