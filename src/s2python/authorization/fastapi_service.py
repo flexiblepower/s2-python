@@ -8,6 +8,7 @@ except ImportError as exc:
     ) from exc
 
 from s2python.authorization.server import AbstractAuthServer
+from s2python.generated.gen_s2_pairing import ConnectionDetails, ConnectionRequest, PairingResponse, PairingRequest
 
 
 class FastAPIAuthServer(AbstractAuthServer, FastAPI):
@@ -17,7 +18,11 @@ class FastAPIAuthServer(AbstractAuthServer, FastAPI):
 app = FastAPIAuthServer()
 
 
-@app.get("requestPairing/")
-async def root(request_data):
-    pairing_response = app.handle_pairing_request(request_data)
-    return pairing_response
+@app.post('/requestConnection', response_model=ConnectionDetails)
+async def post_request_connection(body: ConnectionRequest = None) -> ConnectionDetails:
+    return app.handle_connection_request(body)
+
+
+@app.post('/requestPairing', response_model=PairingResponse)
+async def post_request_pairing(body: PairingRequest = None) -> PairingResponse:
+    return app.handle_pairing_request(body)
