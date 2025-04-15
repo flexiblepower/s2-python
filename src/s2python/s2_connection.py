@@ -1,3 +1,10 @@
+try:
+    import websockets
+except ImportError as exc:
+    raise ImportError(
+        "The 'websockets' package is required. Run 'pip install s2-python[ws]' to use this feature."
+    ) from exc
+
 import asyncio
 import json
 import logging
@@ -8,7 +15,6 @@ import ssl
 from dataclasses import dataclass
 from typing import Any, Optional, List, Type, Dict, Callable, Awaitable, Union
 
-import websockets
 from websockets.asyncio.client import (
     ClientConnection as WSConnection,
     connect as ws_connect,

@@ -1,3 +1,61 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "s2-python"
+authors = [
+    {name = "Flexiblepower", email = "info@info.nl"}
+]
+description = "S2 Protocol Python Wrapper"
+version = "0.5.0"
+readme = "README.rst"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.8, < 3.13"
+dependencies = [
+    "pydantic>=2.8.2",
+    "pytz",
+    "click",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+[project.urls]
+    "Source code" = "https://github.com/flexiblepower/s2-ws-json-python"
+
+[project.optional-dependencies]
+ws = [
+    "websockets~=13.1",
+]
+testing = [
+    "pytest",
+    "pytest-coverage",
+    "pytest-timer",
+    "mypy",
+    "types-pytz",
+    "pylint",
+    "pyright",
+]
+development = [
+    "pip-tools",
+    "datamodel-code-generator",
+    "pre-commit",
+    "tox",
+]
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme >= 1.2",
+    "sphinx-tabs",
+    "sphinx_copybutton",
+    "sphinx_fontawesome",
+    "sphinxcontrib.httpdomain",
+]
+
+[project.scripts]
+s2python = "s2python.tools.cli:s2python_cmd"
