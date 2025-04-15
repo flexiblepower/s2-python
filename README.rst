@@ -14,13 +14,13 @@ Currently, the package supports the *common* and *FILL RATE BASED CONTROL* types
 
 To Install
 -----------
-You can install this package using pip or any Python dependency manager that collects the packages from Pypi:
+You can install this package using pip or any Python dependency manager that collects the packages from PyPI:
 
 .. code-block:: bash
 
     pip install s2-python
 
-The packages on Pypi may be found `here <https://pypi.org/project/s2-python/>`_
+The packages on PyPI may be found `here <https://pypi.org/project/s2-python/>`_
 
 Mypy support
 ------------
