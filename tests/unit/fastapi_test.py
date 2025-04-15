@@ -9,4 +9,8 @@ client = TestClient(app)
 def test_post_pairing_request():
     response = client.post("/requestPairing")
     assert response.status_code == 200
-    assert response.json() == {"msg": "Hello World"}
+    assert response.json() == {
+        "requestConnectionUri": None,
+        "s2ServerNodeId": None,
+        "serverNodeDescription": None,
+    }
