@@ -5,6 +5,8 @@ except ImportError as exc:
         "The 'fastapi' package is required. Run 'pip install s2-python[fastapi]' to use this feature."
     ) from exc
 
+from typing import Any
+
 from s2python.authorization.server import AbstractAuthServer
 from s2python.generated.gen_s2_pairing import ConnectionDetails, ConnectionRequest, PairingResponse, PairingRequest
 
@@ -20,7 +22,7 @@ class FastAPIAuthServer(AbstractAuthServer):
 
 class MyFastAPI(FastAPI):
 
-    def __init__(self, *args: list, **kwargs: dict):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self.s2 = FastAPIAuthServer()
 
