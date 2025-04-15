@@ -32,6 +32,8 @@ classifiers = [
 [project.optional-dependencies]
 ws = [
     "websockets~=13.1",
+    "jwskate~=0.11",
+    "requests~=2.32.3",
 ]
 fastapi = [
     "fastapi",
