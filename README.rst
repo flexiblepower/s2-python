@@ -19,6 +19,7 @@ You can install this package using pip or any Python dependency manager that col
 .. code-block:: bash
 
     pip install s2-python
+    pip install s2-python[ws]  # for S2 over WebSockets
 
 The packages on PyPI may be found `here <https://pypi.org/project/s2-python/>`_
 
