@@ -53,7 +53,7 @@ class S2AbstractClient(abc.ABC):
 
     # pylint: disable=too-many-instance-attributes
     # pylint: disable=too-many-arguments
-    def __init__(   
+    def __init__(
         self,
         pairing_uri: Optional[str] = None,
         token: Optional[PairingToken] = None,
