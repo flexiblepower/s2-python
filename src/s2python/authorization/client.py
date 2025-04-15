@@ -4,22 +4,19 @@ S2 protocol client for handling pairing and secure connections.
 
 import abc
 import base64
-import http.client
 import json
-import ssl
 import uuid
 import datetime
 import logging
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union, List, Any, cast, Mapping
+from typing import Dict, Optional, Tuple, Union, List, Any, Mapping
 
 # Type annotation for requests, even though stubs might be missing
 import requests
 from requests import Response
 
-import websockets.client
-from jwskate import JweCompact, Jwk, Jwt, SignedJwt
-from pydantic import AnyUrl, BaseModel
+from jwskate import JweCompact, Jwk, Jwt
+from pydantic import BaseModel
 
 from s2python.generated.gen_s2_pairing import (
     ConnectionDetails,
@@ -56,9 +53,9 @@ class S2AbstractClient(abc.ABC):
     - Storage of connection request URI
     - Storage of public/private key pairs
     - Challenge solving
-    - Websocket connection establishment
     """
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(
         self,
         pairing_uri: Optional[str] = None,
@@ -141,8 +138,8 @@ class S2AbstractClient(abc.ABC):
         if self._key_pair is None and private_key:
             try:
                 self._key_pair = Jwk.from_pem(private_key)
-            except Exception as e:
-                logger.warning(f"Failed to parse private key as Jwk: {e}")
+            except (ValueError, TypeError, KeyError) as e:
+                logger.warning("Failed to parse private key as Jwk: %s", e)
 
     def load_key_pair(self, key_file_path: Union[str, Path]) -> Tuple[str, str]:
         """Load public/private key pair from file.
@@ -297,9 +294,9 @@ class S2AbstractClient(abc.ABC):
                     connection_data["connectionUri"] = full_ws_url
                     # Recreate the ConnectionDetails object
                     connection_details = ConnectionDetails.model_validate(connection_data)
-                    logger.debug(f"Updated relative WebSocket URI to absolute: {full_ws_url}")
-                except Exception as e:
-                    logger.warning(f"Failed to update WebSocket URI: {e}")
+                    logger.debug("Updated relative WebSocket URI to absolute: %s", full_ws_url)
+                except (ValueError, TypeError, KeyError) as e:
+                    logger.warning("Failed to update WebSocket URI: %s", e)
             else:
                 # Log a warning but don't modify the URI if we can't create a proper absolute URI
                 logger.warning(
@@ -378,10 +375,7 @@ class S2AbstractClient(abc.ABC):
             print(f"Decrypted challenge: {decrypted_challenge_str}")
             return decrypted_challenge_str
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, json.JSONDecodeError) as e:
             error_msg = f"Failed to solve challenge: {e}"
             print(error_msg)
             raise RuntimeError(error_msg) from e
-
-
-
