@@ -13,4 +13,3 @@ venv
 dist/
 build/
 %LOCALAPPDATA%
-s2-python/src/s2python/specification/s2-pairing/s2-over-ip-pairing.yaml
