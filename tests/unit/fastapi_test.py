@@ -7,6 +7,6 @@ client = TestClient(app)
 
 
 def test_post_pairing_request():
-    response = client.post("/pairingRequest")
+    response = client.post("/requestPairing")
     assert response.status_code == 200
     assert response.json() == {"msg": "Hello World"}
