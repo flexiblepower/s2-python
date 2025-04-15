@@ -17,7 +17,6 @@ class AbstractConnectionClient(ABC):
         Build the payload for the ConnectionRequest schema.
         Returns a dictionary with keys: s2ClientNodeId, supportedProtocols.
         """
-        pass
 
     @abstractmethod
     def execute_connection_request(self, request_data: Dict) -> Dict:
@@ -26,7 +25,6 @@ class AbstractConnectionClient(ABC):
         Implementations should send the request_data to the endpoint
         and return the JSON response as a dictionary.
         """
-        pass
 
     @abstractmethod
     def handle_connection_response(self, response_data: Dict) -> Any:
@@ -34,7 +32,6 @@ class AbstractConnectionClient(ABC):
         Process the ConnectionDetails response (e.g., extract challenge and connection URI).
         The response_data contains keys: selectedProtocol, challenge, connectionUri.
         """
-        pass
 
 
 class AbstractPairingClient(ABC):
@@ -53,7 +50,6 @@ class AbstractPairingClient(ABC):
         Returns a dictionary with keys: token, publicKey, s2ClientNodeId,
         s2ClientNodeDescription, supportedProtocols.
         """
-        pass
 
     @abstractmethod
     def execute_pairing_request(self, request_data: Dict) -> Dict:
@@ -62,7 +58,6 @@ class AbstractPairingClient(ABC):
         Implementations should send the request_data to the endpoint
         and return the JSON response as a dictionary.
         """
-        pass
 
     @abstractmethod
     def handle_pairing_response(self, response_data: Dict) -> Any:
@@ -70,4 +65,3 @@ class AbstractPairingClient(ABC):
         Process the PairingResponse (e.g., extract server details).
         The response_data contains keys: s2ServerNodeId, serverNodeDescription, requestConnectionUri.
         """
-        pass
