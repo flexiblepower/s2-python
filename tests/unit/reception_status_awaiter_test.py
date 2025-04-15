@@ -29,7 +29,9 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         )
 
         # Act
-        wait_task = asyncio.create_task(awaiter.wait_for_reception_status(message_id, 1.0))
+        wait_task = asyncio.create_task(
+            awaiter.wait_for_reception_status(message_id, 1.0)
+        )
         should_be_waiting_still = not wait_task.done()
         await awaiter.receive_reception_status(s2_reception_status)
         await wait_task
@@ -53,7 +55,9 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
 
         # Act
         await awaiter.receive_reception_status(s2_reception_status)
-        received_s2_reception_status = await awaiter.wait_for_reception_status(message_id, 1.0)
+        received_s2_reception_status = await awaiter.wait_for_reception_status(
+            message_id, 1.0
+        )
 
         # Assert
         expected_s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
@@ -70,8 +74,12 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         )
 
         # Act
-        wait_task_1 = asyncio.create_task(awaiter.wait_for_reception_status(message_id, 1.0))
-        wait_task_2 = asyncio.create_task(awaiter.wait_for_reception_status(message_id, 1.0))
+        wait_task_1 = asyncio.create_task(
+            awaiter.wait_for_reception_status(message_id, 1.0)
+        )
+        wait_task_2 = asyncio.create_task(
+            awaiter.wait_for_reception_status(message_id, 1.0)
+        )
         should_be_waiting_still_1 = not wait_task_1.done()
         should_be_waiting_still_2 = not wait_task_2.done()
         await awaiter.receive_reception_status(s2_reception_status)

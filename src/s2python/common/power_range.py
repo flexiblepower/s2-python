@@ -17,6 +17,8 @@ class PowerRange(GenPowerRange, S2MessageComponent):
     @model_validator(mode="after")
     def validate_start_end_order(self) -> Self:
         if self.start_of_range > self.end_of_range:
-            raise ValueError(self, "start_of_range should not be higher than end_of_range")
+            raise ValueError(
+                self, "start_of_range should not be higher than end_of_range"
+            )
 
         return self

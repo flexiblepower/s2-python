@@ -34,8 +34,13 @@ class FRBCOperationMode(GenFRBCOperationMode, S2MessageComponent):
         sorted_fill_level_ranges = list(elements_by_fill_level_range.keys())
         sorted_fill_level_ranges.sort(key=lambda r: r.start_of_range)
 
-        for current_fill_level_range, next_fill_level_range in pairwise(sorted_fill_level_ranges):
-            if current_fill_level_range.end_of_range != next_fill_level_range.start_of_range:
+        for current_fill_level_range, next_fill_level_range in pairwise(
+            sorted_fill_level_ranges
+        ):
+            if (
+                current_fill_level_range.end_of_range
+                != next_fill_level_range.start_of_range
+            ):
                 raise ValueError(
                     self,
                     f"Elements with fill level ranges {current_fill_level_range} and "
