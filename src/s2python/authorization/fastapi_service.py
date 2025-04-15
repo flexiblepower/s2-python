@@ -21,8 +21,8 @@ class FastAPIAuthServer(AbstractAuthServer):
 class MyFastAPI(FastAPI):
 
     def __init__(self, *args, **kwargs):
-        self.s2 = FastAPIAuthServer()
         super().__init__(*args, **kwargs)
+        self.s2 = FastAPIAuthServer()
 
 
 app = MyFastAPI()

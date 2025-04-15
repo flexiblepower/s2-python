@@ -1,9 +1,9 @@
 from fastapi.testclient import TestClient
 
-from s2python.authorization.fastapi_service import MyFastAPI
+from s2python.authorization.fastapi_service import app
 
 
-client = TestClient(MyFastAPI)
+client = TestClient(app)
 
 
 def test_post_pairing_request():
