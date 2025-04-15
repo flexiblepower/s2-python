@@ -1,7 +1,7 @@
 try:
     import websockets
-except ImportError:
-    raise ImportError("You need to run 'pip install s2-python[ws]' to use this feature.")
+except ImportError as exc:
+    raise ImportError("You need to run 'pip install s2-python[ws]' to use this feature.") from exc
 
 import asyncio
 import json
