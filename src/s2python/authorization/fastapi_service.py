@@ -20,7 +20,7 @@ class FastAPIAuthServer(AbstractAuthServer):
 
 class MyFastAPI(FastAPI):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: list, **kwargs: dict):
         super().__init__(*args, **kwargs)
         self.s2 = FastAPIAuthServer()
 
@@ -29,10 +29,10 @@ app = MyFastAPI()
 
 
 @app.post('/requestConnection', response_model=ConnectionDetails)
-async def post_request_connection(body: ConnectionRequest = None) -> ConnectionDetails:
+async def post_request_connection(body: ConnectionRequest) -> ConnectionDetails:
     return app.s2.handle_connection_request(body)
 
 
 @app.post('/requestPairing', response_model=PairingResponse)
-async def post_request_pairing(body: PairingRequest = None) -> PairingResponse:
+async def post_request_pairing(body: PairingRequest) -> PairingResponse:
     return app.s2.handle_pairing_request(body)
