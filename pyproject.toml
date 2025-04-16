@@ -33,6 +33,12 @@ classifiers = [
 ws = [
     "websockets~=13.1",
 ]
+fastapi = [
+    "fastapi",
+]
+flask = [
+    "Flask",
+]
 testing = [
     "pytest",
     "pytest-coverage",
