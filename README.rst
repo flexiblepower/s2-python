@@ -59,7 +59,7 @@ Development
 
 For development, you can install the required dependencies using the following command:
 
-    pip install -e .[testing,development]
+    pip install -e .[testing,development,ws]
 
 
 The tests can be run using tox:
