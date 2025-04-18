@@ -45,11 +45,24 @@ class MockS2Handler(http.server.BaseHTTPRequestHandler):
 
         try:
             request_json = json.loads(post_data)
-            logger.info(f"Received request at {self.path}: {request_json}")
+            logger.info(f"Received request at {self.path} ")
+            # logger.info(f"Request body: {request_json}")
 
             if self.path == "/requestPairing":
                 # Handle pairing request
-                if request_json.get("token") == PAIRING_TOKEN:
+                # The token in the S2 protocol is a PairingToken object with a token field
+                token_obj = request_json.get("token", {})
+
+                # Handle case where token is directly the string or a dict with token field
+                if isinstance(token_obj, dict) and "token" in token_obj:
+                    request_token_string = token_obj["token"]
+                else:
+                    request_token_string = token_obj
+
+                logger.info(f"Extracted token: {request_token_string}")
+                logger.info(f"Expected token: {PAIRING_TOKEN}")
+
+                if request_token_string == PAIRING_TOKEN:
                     self.send_response(200)
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
