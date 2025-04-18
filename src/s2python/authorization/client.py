@@ -236,26 +236,23 @@ class S2AbstractClient(abc.ABC):
 
         # Create connection request
         connection_request = ConnectionRequest(
-            s2ClientNodeId=self.client_node_id,  # Will be converted to string by model_dump
+            s2ClientNodeId=str(self.client_node_id),
             supportedProtocols=self.supported_protocols,
         )
 
-        # Dump the model to JSON, handling UUID conversion
-        json_connection_request = connection_request.model_dump(exclude_none=True)
-
-        # Make request
-        response: Response = requests.post(
+        # Make a POST request to the connection request URI
+        connection_response: Response = requests.post(
             url=self._connection_request_uri,
-            json=json_connection_request,
+            json=connection_request.model_dump(exclude_none=True),
             verify=self.verify_certificate,
             timeout=REQTEST_TIMEOUT,
         )
 
         # Parse response
-        if response.status_code != 200:
-            raise ValueError(f"Connection request failed with status {response.status_code}: {response.text}")
+        if connection_response.status_code != 200:
+            raise ValueError(f"Connection request failed with status {connection_response.status_code}: {connection_response.text}")
 
-        connection_details = ConnectionDetails.model_validate(response.json())
+        connection_details = ConnectionDetails.model_validate(connection_response.json())
 
         # Handle relative WebSocket URI paths
         if (

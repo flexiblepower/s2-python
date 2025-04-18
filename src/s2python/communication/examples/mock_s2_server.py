@@ -104,6 +104,7 @@ class MockS2Handler(http.server.BaseHTTPRequestHandler):
                 response = {
                     "connectionUri": f"ws://localhost:{WS_PORT}/s2/mock-websocket",
                     "challenge": challenge,
+                    "selectedProtocol": "WebSocketSecure",
                 }
 
                 self.wfile.write(json.dumps(response).encode())
