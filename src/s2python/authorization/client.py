@@ -84,6 +84,8 @@ class S2AbstractClient(abc.ABC):
         self._connection_request_uri: Optional[str] = None
         self._public_key: Optional[str] = None
         self._private_key: Optional[str] = None
+        self._public_jwk: Optional[Jwk] = None
+        self._private_jwk: Optional[Jwk] = None
         self._key_pair: Optional[Jwk] = None
         self._pairing_response: Optional[PairingResponse] = None
         self._connection_details: Optional[ConnectionDetails] = None
@@ -119,36 +121,25 @@ class S2AbstractClient(abc.ABC):
         Returns:
             Tuple[str, str]: (public_key, private_key) pair as base64 encoded strings
         """
+        print("Generating key pair")
         self._key_pair = Jwk.generate_for_alg(KEY_ALGORITHM).with_kid_thumbprint()
-        return self._key_pair.public_jwk().to_pem(), self._key_pair.private_jwk().to_pem()
+        self._public_jwk = self._key_pair
+        self._private_jwk = self._key_pair
+        return (
+            self._public_jwk.to_pem(),
+            self._private_jwk.to_pem(),
+        )
 
     def store_key_pair(self, public_key: str, private_key: str) -> None:
         """Store the public/private key pair.
-
+            #! TODO: Use Sqlite3 to store the key pair
         Args:
             public_key: Base64 encoded public key
             private_key: Base64 encoded private key
         """
+        print("Storing key pair")
         self._public_key = public_key
         self._private_key = private_key
-        # Attempt to parse the private key into a Jwk if it's not already set
-        if self._key_pair is None and private_key:
-            try:
-                self._key_pair = Jwk.from_pem(private_key)
-            except (ValueError, TypeError, KeyError) as e:
-                print(f"Failed to parse private key as Jwk: {e}")
-
-    def load_key_pair(self, key_file_path: Union[str, Path]) -> Tuple[str, str]:
-        """Load public/private key pair from file.
-
-        Args:
-            key_file_path: Path to the key file
-
-        Returns:
-            Tuple[str, str]: (public_key, private_key) pair
-        """
-        # This method should be implemented in concrete subclasses
-        raise NotImplementedError("Subclasses must implement load_key_pair")
 
     def _make_https_request(
         self,
@@ -200,21 +191,24 @@ class S2AbstractClient(abc.ABC):
             self.store_key_pair(public_key, private_key)
 
         # Create pairing request
+        print("Creating pairing request")
         pairing_request = PairingRequest(
             token=self.token,
             publicKey=self._public_key,
-            s2ClientNodeId=self.client_node_id,
+            s2ClientNodeId=str(self.client_node_id),
             s2ClientNodeDescription=self.node_description,
             supportedProtocols=self.supported_protocols,
         )
 
-        # Make request using requests directly
+        # Make pairing request
+        print("Making pairing request")
         response: Response = requests.post(
             url=self.pairing_uri,
             json=pairing_request.model_dump(exclude_none=True),
             verify=self.verify_certificate,
             timeout=REQTEST_TIMEOUT,
         )
+        print(f"Pairing request response: {response.status_code} {response.text}")
 
         # Parse response
         if response.status_code != 200:
@@ -242,14 +236,17 @@ class S2AbstractClient(abc.ABC):
 
         # Create connection request
         connection_request = ConnectionRequest(
-            s2ClientNodeId=self.client_node_id,
+            s2ClientNodeId=self.client_node_id,  # Will be converted to string by model_dump
             supportedProtocols=self.supported_protocols,
         )
+
+        # Dump the model to JSON, handling UUID conversion
+        json_connection_request = connection_request.model_dump(exclude_none=True)
 
         # Make request
         response: Response = requests.post(
             url=self._connection_request_uri,
-            json=connection_request.model_dump(exclude_none=True),
+            json=json_connection_request,
             verify=self.verify_certificate,
             timeout=REQTEST_TIMEOUT,
         )
@@ -296,9 +293,7 @@ class S2AbstractClient(abc.ABC):
                     print(f"Failed to update WebSocket URI: {e}")
             else:
                 # Log a warning but don't modify the URI if we can't create a proper absolute URI
-                print(
-                    "Received relative WebSocket URI but pairing_uri is not available to create absolute URL"
-                )
+                print("Received relative WebSocket URI but pairing_uri is not available to create absolute URL")
 
         # Store for later use
         self._connection_details = connection_details
