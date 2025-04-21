@@ -5,23 +5,17 @@ import ssl
 from typing import Optional
 
 from s2python.communication.examples.example_frbc_rm import start_s2_session
-from s2python.authorization.client import S2AbstractClient
+from s2python.authorization.default_client import S2DefaultClient
 from s2python.generated.gen_s2_pairing import (
     S2NodeDescription,
     Deployment,
     PairingToken,
     S2Role,
+    Protocols,
 )
 
 logger = logging.getLogger("s2python")
 
-
-class S2PairingClient(S2AbstractClient):
-    """Implementation of S2AbstractClient for pairing example."""
-
-    def solve_challenge(self, challenge: Optional[str] = None) -> str:
-        """Solve the challenge using the key pair."""
-        return super().solve_challenge(challenge)
 
 
 if __name__ == "__main__":
@@ -61,11 +55,12 @@ if __name__ == "__main__":
     )
 
     # Create a client to perform the pairing
-    client = S2PairingClient(
+    client = S2DefaultClient(
         pairing_uri=args.endpoint,
         token=PairingToken(token=args.pairing_token, ),
         node_description=node_description,
         verify_certificate=args.verify_ssl,
+        supported_protocols=[Protocols.WebSocketSecure],
     )
 
     try:

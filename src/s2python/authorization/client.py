@@ -49,6 +49,11 @@ class S2AbstractClient(abc.ABC):
     - Storage of connection request URI
     - Storage of public/private key pairs
     - Challenge solving
+
+    This class serves as an interface that developers can extend to implement
+    S2 protocol functionality with their preferred technology stack.
+    Concrete implementations should override the abstract methods marked
+    with @abc.abstractmethod.
     """
 
     # pylint: disable=too-many-instance-attributes
@@ -115,32 +120,32 @@ class S2AbstractClient(abc.ABC):
             # No valid URI could be determined
             self._connection_request_uri = None
 
+    @abc.abstractmethod
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair.
+
+        This method should be implemented by concrete subclasses to use their
+        preferred cryptographic libraries or key management systems.
 
         Returns:
             Tuple[str, str]: (public_key, private_key) pair as base64 encoded strings
         """
-        print("Generating key pair")
-        self._key_pair = Jwk.generate_for_alg(KEY_ALGORITHM).with_kid_thumbprint()
-        self._public_jwk = self._key_pair
-        self._private_jwk = self._key_pair
-        return (
-            self._public_jwk.to_pem(),
-            self._private_jwk.to_pem(),
-        )
+        pass
 
+    @abc.abstractmethod
     def store_key_pair(self, public_key: str, private_key: str) -> None:
         """Store the public/private key pair.
-            #! TODO: Use Sqlite3 to store the key pair
+
+        This method should be implemented by concrete subclasses to store keys
+        according to their security requirements (e.g., secure storage, HSM, etc.).
+
         Args:
             public_key: Base64 encoded public key
             private_key: Base64 encoded private key
         """
-        print("Storing key pair")
-        self._public_key = public_key
-        self._private_key = private_key
+        pass
 
+    @abc.abstractmethod
     def _make_https_request(
         self,
         url: str,
@@ -149,6 +154,9 @@ class S2AbstractClient(abc.ABC):
         headers: Optional[Dict[str, str]] = None,
     ) -> Tuple[int, str]:
         """Make an HTTPS request.
+
+        This method should be implemented by concrete subclasses to use their
+        preferred HTTP client library or framework.
 
         Args:
             url: Target URL
@@ -159,16 +167,7 @@ class S2AbstractClient(abc.ABC):
         Returns:
             Tuple[int, str]: (status_code, response_text)
         """
-        # Using requests library with verification settings from instance
-        response: Response = requests.request(
-            method=method,
-            url=url,
-            json=data,
-            headers=headers or {"Content-Type": "application/json"},
-            verify=self.verify_certificate,
-            timeout=REQTEST_TIMEOUT,
-        )
-        return response.status_code, response.text
+        pass
 
     def request_pairing(self) -> PairingResponse:
         """Send a pairing request to the server using client configuration.
@@ -202,19 +201,19 @@ class S2AbstractClient(abc.ABC):
 
         # Make pairing request
         print("Making pairing request")
-        response: Response = requests.post(
+        status_code, response_text = self._make_https_request(
             url=self.pairing_uri,
-            json=pairing_request.model_dump(exclude_none=True),
-            verify=self.verify_certificate,
-            timeout=REQTEST_TIMEOUT,
+            method="POST",
+            data=pairing_request.model_dump(exclude_none=True),
+            headers={"Content-Type": "application/json"},
         )
-        print(f"Pairing request response: {response.status_code} {response.text}")
+        print(f"Pairing request response: {status_code} {response_text}")
 
         # Parse response
-        if response.status_code != 200:
-            raise ValueError(f"Pairing request failed with status {response.status_code}: {response.text}")
+        if status_code != 200:
+            raise ValueError(f"Pairing request failed with status {status_code}: {response_text}")
 
-        pairing_response = PairingResponse.model_validate(response.json())
+        pairing_response = PairingResponse.model_validate(json.loads(response_text))
 
         # Store for later use
         self._pairing_response = pairing_response
@@ -241,18 +240,18 @@ class S2AbstractClient(abc.ABC):
         )
 
         # Make a POST request to the connection request URI
-        connection_response: Response = requests.post(
+        status_code, response_text = self._make_https_request(
             url=self._connection_request_uri,
-            json=connection_request.model_dump(exclude_none=True),
-            verify=self.verify_certificate,
-            timeout=REQTEST_TIMEOUT,
+            method="POST",
+            data=connection_request.model_dump(exclude_none=True),
+            headers={"Content-Type": "application/json"},
         )
 
         # Parse response
-        if connection_response.status_code != 200:
-            raise ValueError(f"Connection request failed with status {connection_response.status_code}: {connection_response.text}")
+        if status_code != 200:
+            raise ValueError(f"Connection request failed with status {status_code}: {response_text}")
 
-        connection_details = ConnectionDetails.model_validate(connection_response.json())
+        connection_details = ConnectionDetails.model_validate(json.loads(response_text))
 
         # Handle relative WebSocket URI paths
         if (
@@ -297,6 +296,7 @@ class S2AbstractClient(abc.ABC):
 
         return connection_details
 
+    @abc.abstractmethod
     def solve_challenge(self, challenge: Optional[str] = None) -> str:
         """Solve the connection challenge using the public key.
 
@@ -316,55 +316,35 @@ class S2AbstractClient(abc.ABC):
             ValueError: If the public key is not available
             RuntimeError: If challenge decryption fails
         """
-        if challenge is None:
-            if not self._connection_details or not self._connection_details.challenge:
-                raise ValueError("Challenge not provided and not available in connection details")
-            challenge = self._connection_details.challenge
+        pass
 
-        if not self._key_pair and not self._public_key:
-            raise ValueError("Public key is not available. Generate or load a key pair first.")
+    @abc.abstractmethod
+    def establish_secure_connection(self) -> Any:
+        """Establish a secure connection to the server.
 
-        try:
-            # If we have a jwskate Jwk object, use it directly
-            if self._key_pair:
-                rsa_key_pair = self._key_pair
-            # Otherwise try to parse the public key
-            elif self._public_key:
-                rsa_key_pair = Jwk.from_pem(self._public_key)
-            else:
-                raise ValueError("No public key available")
+        This method should be implemented by concrete subclasses to establish
+        a secure connection using the connection details and solved challenge.
+        Implementations needs to use WebSocket Secure.
 
-            # Decrypt the JWE challenge - get result as bytes and convert to string
-            jwe_compact = JweCompact(challenge)
-            decrypted_bytes = jwe_compact.decrypt(rsa_key_pair)
-            # Make sure we have a proper string
-            if hasattr(decrypted_bytes, "decode"):
-                decrypted_string = decrypted_bytes.decode("utf-8")
-            else:
-                decrypted_string = str(decrypted_bytes)
+        Returns:
+            Any: A connection object or handler specific to the implementation
 
-            # Parse the JSON payload
-            challenge_mapping: Mapping[str, Any] = json.loads(decrypted_string)
+        Raises:
+            ValueError: If connection details or solved challenge are not available
+            RuntimeError: If connection establishment fails
+        """
+        pass
 
-            # Create an unprotected JWT from the challenge
-            jwt_token = Jwt.unprotected(challenge_mapping)
-            jwt_token_str = str(jwt_token)
+    @abc.abstractmethod
+    def close_connection(self) -> None:
+        """Close the connection to the server.
 
-            # Encode the token as base64
-            decrypted_challenge_str: str = base64.b64encode(jwt_token_str.encode("utf-8")).decode("utf-8")
+        This method should be implemented by concrete subclasses to properly
+        close the connection established by establish_secure_connection.
+        """
+        pass
 
-            # Store the pairing details if we have all required components
-            if self._pairing_response and self._connection_details:
-                self._pairing_details = PairingDetails(
-                    pairing_response=self._pairing_response,
-                    connection_details=self._connection_details,
-                    decrypted_challenge_str=decrypted_challenge_str,
-                )
-
-            print(f"Decrypted challenge: {decrypted_challenge_str}")
-            return decrypted_challenge_str
-
-        except (ValueError, TypeError, KeyError, json.JSONDecodeError) as e:
-            error_msg = f"Failed to solve challenge: {e}"
-            print(error_msg)
-            raise RuntimeError(error_msg) from e
+    @property
+    def pairing_details(self) -> Optional[PairingDetails]:
+        """Get the stored pairing details."""
+        return self._pairing_details
