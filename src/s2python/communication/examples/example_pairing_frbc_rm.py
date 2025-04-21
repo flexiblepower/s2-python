@@ -1,8 +1,5 @@
 import argparse
-import uuid
 import logging
-import ssl
-from typing import Optional
 
 from s2python.communication.examples.example_frbc_rm import start_s2_session
 from s2python.authorization.default_client import S2DefaultClient
@@ -15,7 +12,6 @@ from s2python.generated.gen_s2_pairing import (
 )
 
 logger = logging.getLogger("s2python")
-
 
 
 if __name__ == "__main__":
@@ -57,7 +53,9 @@ if __name__ == "__main__":
     # Create a client to perform the pairing
     client = S2DefaultClient(
         pairing_uri=args.endpoint,
-        token=PairingToken(token=args.pairing_token, ),
+        token=PairingToken(
+            token=args.pairing_token,
+        ),
         node_description=node_description,
         verify_certificate=args.verify_ssl,
         supported_protocols=[Protocols.WebSocketSecure],

@@ -16,12 +16,16 @@ from requests import Response
 from jwskate import JweCompact, Jwk, Jwt
 
 from s2python.generated.gen_s2_pairing import (
-    ConnectionDetails,
     PairingToken,
     S2NodeDescription,
     Protocols,
 )
-from s2python.authorization.client import S2AbstractClient, REQTEST_TIMEOUT, KEY_ALGORITHM, PairingDetails
+from s2python.authorization.client import (
+    S2AbstractClient,
+    REQTEST_TIMEOUT,
+    KEY_ALGORITHM,
+    PairingDetails,
+)
 
 
 class S2DefaultClient(S2AbstractClient):
@@ -128,11 +132,15 @@ class S2DefaultClient(S2AbstractClient):
         """
         if challenge is None:
             if not self._connection_details or not self._connection_details.challenge:
-                raise ValueError("Challenge not provided and not available in connection details")
+                raise ValueError(
+                    "Challenge not provided and not available in connection details"
+                )
             challenge = self._connection_details.challenge
 
         if not self._key_pair and not self._public_key:
-            raise ValueError("Public key is not available. Generate or load a key pair first.")
+            raise ValueError(
+                "Public key is not available. Generate or load a key pair first."
+            )
 
         try:
             # If we have a jwskate Jwk object, use it directly
@@ -161,7 +169,9 @@ class S2DefaultClient(S2AbstractClient):
             jwt_token_str = str(jwt_token)
 
             # Encode the token as base64
-            decrypted_challenge_str: str = base64.b64encode(jwt_token_str.encode("utf-8")).decode("utf-8")
+            decrypted_challenge_str: str = base64.b64encode(
+                jwt_token_str.encode("utf-8")
+            ).decode("utf-8")
 
             # Store the pairing details if we have all required components
             if self._pairing_response and self._connection_details:
@@ -196,17 +206,30 @@ class S2DefaultClient(S2AbstractClient):
             RuntimeError: If connection establishment fails
         """
         if not self._connection_details:
-            raise ValueError("Connection details not available. Call request_connection first.")
+            raise ValueError(
+                "Connection details not available. Call request_connection first."
+            )
 
-        if not self._pairing_details or not self._pairing_details.decrypted_challenge_str:
-            raise ValueError("Challenge solution not available. Call solve_challenge first.")
+        if (
+            not self._pairing_details
+            or not self._pairing_details.decrypted_challenge_str
+        ):
+            raise ValueError(
+                "Challenge solution not available. Call solve_challenge first."
+            )
 
-
-        print(f"Would establish WebSocket connection to {self._connection_details.connectionUri}")
-        print(f"Using solved challenge: {self._pairing_details.decrypted_challenge_str}")
+        print(
+            f"Would establish WebSocket connection to {self._connection_details.connectionUri}"
+        )
+        print(
+            f"Using solved challenge: {self._pairing_details.decrypted_challenge_str}"
+        )
 
         # Placeholder for the connection object
-        self._ws_connection = {"status": "connected", "uri": str(self._connection_details.connectionUri)}
+        self._ws_connection = {
+            "status": "connected",
+            "uri": str(self._connection_details.connectionUri),
+        }
 
         return self._ws_connection
 
@@ -216,7 +239,6 @@ class S2DefaultClient(S2AbstractClient):
         TODO: Implement
         """
         if self._ws_connection:
-            
 
             print("Would close WebSocket connection")
             self._ws_connection = None
