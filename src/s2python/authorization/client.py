@@ -162,7 +162,6 @@ class S2AbstractClient(abc.ABC):
         Returns:
             Tuple[int, str]: (status_code, response_text)
         """
-        pass
 
     def request_pairing(self) -> PairingResponse:
         """Send a pairing request to the server using client configuration.
