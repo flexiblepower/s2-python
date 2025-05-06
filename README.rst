@@ -1,4 +1,4 @@
-Python Wrapper for S2 Flexibility Protocol
+Python Wrapper for S2 Flexibility Protocol 
 ===========================================
 .. image:: https://img.shields.io/pypi/v/s2-python
    :alt: PyPI - Version
