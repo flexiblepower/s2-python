@@ -78,8 +78,7 @@ jobs:
       - name: Run tests
         run: >-
           pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox --installpkg '${{ needs.prepare.outputs.wheel-distribution }}'
-          -- -rFEx --durations 10 --color yes  # pytest args
+          tox --develop -rFEx --durations 10 --color yes  # pytest args  
       # - name: Generate coverage report
       #   run: pipx run coverage lcov -o coverage.lcov
       # - name: Upload partial coverage report
@@ -116,7 +115,7 @@ jobs:
       - name: Run tests
         run: >-
           pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e lint --installpkg '${{ needs.prepare.outputs.wheel-distribution }}'
+          tox -e lint --develop
 
   typecheck:
     needs: prepare
@@ -144,7 +143,7 @@ jobs:
       - name: Run tests
         run: >-
           pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e typecheck --installpkg '${{ needs.prepare.outputs.wheel-distribution }}'
+          tox -e typecheck --develop
 
   finalize:
     needs: [test, lint, typecheck]
