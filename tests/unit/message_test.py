@@ -61,3 +61,5 @@ class S2MessageTest(unittest.TestCase):
 
     def test_import_s2_messages__ppbc(self):
         self._test_import_s2_messages("s2python.ppbc")
+    def test_import_s2_messages__ombc(self):
+        self._test_import_s2_messages("s2python.ombc")
