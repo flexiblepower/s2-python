@@ -236,7 +236,6 @@ class S2DefaultClient(S2AbstractClient):
     def close_connection(self) -> None:
         """Close the WebSocket connection.
 
-        TODO: Implement
         """
         if self._ws_connection:
 
