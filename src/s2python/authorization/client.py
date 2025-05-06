@@ -348,7 +348,6 @@ class S2AbstractClient(abc.ABC):
         This method should be implemented by concrete subclasses to properly
         close the connection established by establish_secure_connection.
         """
-        pass
 
     @property
     def pairing_details(self) -> Optional[PairingDetails]:
