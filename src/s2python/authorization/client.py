@@ -139,7 +139,6 @@ class S2AbstractClient(abc.ABC):
             public_key: Base64 encoded public key
             private_key: Base64 encoded private key
         """
-        pass
 
     @abc.abstractmethod
     def _make_https_request(
