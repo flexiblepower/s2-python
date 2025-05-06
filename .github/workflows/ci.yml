@@ -78,7 +78,7 @@ jobs:
       - name: Run tests
         run: >-
           pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox --develop -rFEx --durations 10 --color yes  # pytest args  
+          tox --develop
       # - name: Generate coverage report
       #   run: pipx run coverage lcov -o coverage.lcov
       # - name: Upload partial coverage report
