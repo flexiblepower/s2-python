@@ -324,7 +324,6 @@ class S2AbstractClient(abc.ABC):
             ValueError: If the public key is not available
             RuntimeError: If challenge decryption fails
         """
-        pass
 
     @abc.abstractmethod
     def establish_secure_connection(self) -> Any:
