@@ -127,7 +127,6 @@ class S2AbstractClient(abc.ABC):
         Returns:
             Tuple[str, str]: (public_key, private_key) pair as base64 encoded strings
         """
-        pass
 
     @abc.abstractmethod
     def store_key_pair(self, public_key: str, private_key: str) -> None:
