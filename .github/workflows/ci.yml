@@ -60,7 +60,8 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-          - "3.12"  # newest Python that is stable
+          - "3.12"
+          - "3.13"  # newest Python that is stable          
         platform:
         - ubuntu-latest
         # - macos-latest
@@ -97,7 +98,8 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-          - "3.12"  # newest Python that is stable
+          - "3.12"
+          - "3.13"  # newest Python that is stable
         platform:
         - ubuntu-latest
         # - macos-latest
@@ -125,7 +127,8 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-          - "3.12"  # newest Python that is stable
+          - "3.12"
+          - "3.13"  # newest Python that is stable          
         platform:
         - ubuntu-latest
         # - macos-latest
