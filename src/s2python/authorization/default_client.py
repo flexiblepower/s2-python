@@ -241,4 +241,5 @@ class S2DefaultClient(S2AbstractClient):
         if self._ws_connection:
 
             print("Would close WebSocket connection")
+            self._ws_connection.close()
             self._ws_connection = None
