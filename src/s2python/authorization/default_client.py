@@ -35,6 +35,7 @@ class S2DefaultClient(S2AbstractClient):
     This implementation can be used directly or as a reference for custom implementations.
     """
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         pairing_uri: Optional[str] = None,
