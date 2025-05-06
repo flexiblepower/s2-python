@@ -340,7 +340,6 @@ class S2AbstractClient(abc.ABC):
             ValueError: If connection details or solved challenge are not available
             RuntimeError: If connection establishment fails
         """
-        pass
 
     @abc.abstractmethod
     def close_connection(self) -> None:
