@@ -57,14 +57,13 @@ jobs:
     strategy:
       matrix:
         python:
-          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
-          - "3.12"  # newest Python that is stable
+          - "3.12"
+          - "3.13"  # newest Python that is stable          
         platform:
-        -  ubuntu-22.04
-        # - ubuntu-latest
+        - ubuntu-latest
         # - macos-latest
         # - windows-latest
     runs-on: ${{ matrix.platform }}
@@ -80,8 +79,7 @@ jobs:
       - name: Run tests
         run: >-
           pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox --installpkg '${{ needs.prepare.outputs.wheel-distribution }}'
-          -- -rFEx --durations 10 --color yes  # pytest args
+          tox --develop
       # - name: Generate coverage report
       #   run: pipx run coverage lcov -o coverage.lcov
       # - name: Upload partial coverage report
@@ -97,11 +95,11 @@ jobs:
     strategy:
       matrix:
         python:
-#          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
-          - "3.12"  # newest Python that is stable
+          - "3.12"
+          - "3.13"  # newest Python that is stable
         platform:
         - ubuntu-latest
         # - macos-latest
@@ -119,18 +117,18 @@ jobs:
       - name: Run tests
         run: >-
           pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e lint --installpkg '${{ needs.prepare.outputs.wheel-distribution }}'
+          tox -e lint --develop
 
   typecheck:
     needs: prepare
     strategy:
       matrix:
         python:
-#          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
-          - "3.12"  # newest Python that is stable
+          - "3.12"
+          - "3.13"  # newest Python that is stable          
         platform:
         - ubuntu-latest
         # - macos-latest
@@ -148,7 +146,7 @@ jobs:
       - name: Run tests
         run: >-
           pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e typecheck --installpkg '${{ needs.prepare.outputs.wheel-distribution }}'
+          tox -e typecheck --develop
 
   finalize:
     needs: [test, lint, typecheck]
