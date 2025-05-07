@@ -8,6 +8,7 @@ for developers to use directly or as a reference for their own implementations.
 import base64
 import json
 import uuid
+import logging
 from typing import Dict, Optional, Tuple, Union, List, Any, Mapping
 
 import requests
@@ -27,6 +28,9 @@ from s2python.authorization.client import (
     PairingDetails,
 )
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("S2DefaultClient")
 
 class S2DefaultClient(S2AbstractClient):
     """Default implementation of the S2AbstractClient using the requests library for HTTP
@@ -63,7 +67,7 @@ class S2DefaultClient(S2AbstractClient):
         Returns:
             Tuple[str, str]: (public_key, private_key) pair as PEM encoded strings
         """
-        print("Generating key pair")
+        logger.info("Generating key pair")
         self._key_pair = Jwk.generate_for_alg(KEY_ALGORITHM).with_kid_thumbprint()
         self._public_jwk = self._key_pair
         self._private_jwk = self._key_pair
@@ -82,7 +86,7 @@ class S2DefaultClient(S2AbstractClient):
             public_key: PEM encoded public key
             private_key: PEM encoded private key
         """
-        print("Storing key pair")
+        logger.info("Storing key pair")
         self._public_key = public_key
         self._private_key = private_key
 
@@ -182,12 +186,12 @@ class S2DefaultClient(S2AbstractClient):
                     decrypted_challenge_str=decrypted_challenge_str,
                 )
 
-            print(f"Decrypted challenge: {decrypted_challenge_str}")
+            logger.info('Decrypted challenge: %s', decrypted_challenge_str)
             return decrypted_challenge_str
 
         except (ValueError, TypeError, KeyError, json.JSONDecodeError) as e:
             error_msg = f"Failed to solve challenge: {e}"
-            print(error_msg)
+            logger.info(error_msg)
             raise RuntimeError(error_msg) from e
 
     def establish_secure_connection(self) -> Dict[str, Any]:
@@ -219,12 +223,8 @@ class S2DefaultClient(S2AbstractClient):
                 "Challenge solution not available. Call solve_challenge first."
             )
 
-        print(
-            f"Would establish WebSocket connection to {self._connection_details.connectionUri}"
-        )
-        print(
-            f"Using solved challenge: {self._pairing_details.decrypted_challenge_str}"
-        )
+        logger.info('Establishing WebSocket connection to %s,', self._connection_details.connectionUri)
+        logger.info('Using solved challenge: %s', self._pairing_details.decrypted_challenge_str)
 
         # Placeholder for the connection object
         self._ws_connection = {
@@ -240,6 +240,5 @@ class S2DefaultClient(S2AbstractClient):
         """
         if self._ws_connection:
 
-            print("Would close WebSocket connection")
-            self._ws_connection.close()
+            logger.info("Would close WebSocket connection")
             self._ws_connection = None
