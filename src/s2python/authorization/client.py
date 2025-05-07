@@ -127,7 +127,6 @@ class S2AbstractClient(abc.ABC):
         Returns:
             Tuple[str, str]: (public_key, private_key) pair as base64 encoded strings
         """
-        pass
 
     @abc.abstractmethod
     def store_key_pair(self, public_key: str, private_key: str) -> None:
@@ -140,7 +139,6 @@ class S2AbstractClient(abc.ABC):
             public_key: Base64 encoded public key
             private_key: Base64 encoded private key
         """
-        pass
 
     @abc.abstractmethod
     def _make_https_request(
@@ -164,7 +162,6 @@ class S2AbstractClient(abc.ABC):
         Returns:
             Tuple[int, str]: (status_code, response_text)
         """
-        pass
 
     def request_pairing(self) -> PairingResponse:
         """Send a pairing request to the server using client configuration.
@@ -327,7 +324,6 @@ class S2AbstractClient(abc.ABC):
             ValueError: If the public key is not available
             RuntimeError: If challenge decryption fails
         """
-        pass
 
     @abc.abstractmethod
     def establish_secure_connection(self) -> Any:
@@ -344,7 +340,6 @@ class S2AbstractClient(abc.ABC):
             ValueError: If connection details or solved challenge are not available
             RuntimeError: If connection establishment fails
         """
-        pass
 
     @abc.abstractmethod
     def close_connection(self) -> None:
@@ -353,7 +348,6 @@ class S2AbstractClient(abc.ABC):
         This method should be implemented by concrete subclasses to properly
         close the connection established by establish_secure_connection.
         """
-        pass
 
     @property
     def pairing_details(self) -> Optional[PairingDetails]:
