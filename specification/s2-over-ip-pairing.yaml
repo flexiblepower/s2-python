@@ -1,0 +1,136 @@
+openapi: 3.0.3
+info:
+  version: "0.1"
+  title: s2-over-ip pairing and connection initiation
+  description: "Description of the pairing process over IP for S2"
+paths:
+  /requestPairing:
+    post:
+      description: Initiate pairing
+      requestBody:
+        description: TODO
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PairingRequest'
+      responses:
+        '200':
+          description: TODO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PairingResponse'
+  /requestConnection:
+    post:
+      description: TODO
+      requestBody:
+        description: TODO
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionRequest'
+      responses:
+        '200':
+          description: TODO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionDetails'      
+components:
+  schemas:
+    PairingInfo:
+      type: object
+      properties:
+        pairingUri:
+          type: string
+          format: uri
+        token:
+          $ref: "#/components/schemas/PairingToken"
+        validUntil:
+          type: string
+          format: date-time
+    PairingRequest:
+      type: object
+      properties:
+        token:
+          $ref: "#/components/schemas/PairingToken"
+        publicKey:
+          type: string
+          format: byte
+        s2ClientNodeId:
+          type: string
+          format: uuid
+        s2ClientNodeDescription:
+          $ref: "#/components/schemas/S2NodeDescription"
+        supportedProtocols:
+          type: array
+          items:
+            $ref: "#/components/schemas/Protocols"
+    PairingResponse:
+      type: object
+      properties:
+        s2ServerNodeId:
+          type: string
+          format: uuid
+        serverNodeDescription:
+          $ref: "#/components/schemas/S2NodeDescription"
+        requestConnectionUri:
+          type: string
+          format: uri
+    ConnectionRequest:
+      type: object
+      properties:
+        s2ClientNodeId:
+          type: string
+          format: uuid
+        supportedProtocols:
+          type: array
+          items:
+            $ref: "#/components/schemas/Protocols"
+    ConnectionDetails:
+      type: object
+      properties:
+        selectedProtocol:
+          $ref: "#/components/schemas/Protocols"  
+        challenge:
+          type: string
+          format: byte
+        connectionUri:
+          type: string
+          format: uri
+    S2NodeDescription:
+      type: object
+      description: TODO nog even over nadenken
+      properties:
+        brand:
+          type: string
+        logoUri:
+          type: string
+          format: uri
+        type:
+          type: string
+        modelName:
+          type: string
+        userDefinedName:
+          type: string
+        role:
+          $ref: "#/components/schemas/S2Role"
+        deployment:
+          $ref: "#/components/schemas/Deployment"
+    Protocols:
+      type: string
+      enum:
+        - WebSocketSecure
+    S2Role:
+      type: string
+      enum:
+        - CEM
+        - RM
+    Deployment:
+      type: string
+      enum:
+        - WAN
+        - LAN
+    PairingToken:
+      type: string
+      pattern: "^[0-9a-zA-Z]{32}$"
