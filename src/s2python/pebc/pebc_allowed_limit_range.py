@@ -1,3 +1,5 @@
+from typing_extensions import Self
+from pydantic import model_validator
 from s2python.generated.gen_s2 import (
     PEBCAllowedLimitRange as GenPEBCAllowedLimitRange,
     PEBCPowerEnvelopeLimitType as GenPEBCPowerEnvelopeLimitType,
@@ -24,3 +26,18 @@ class PEBCAllowedLimitRange(GenPEBCAllowedLimitRange, S2MessageComponent):
     abnormal_condition_only: bool = [
         GenPEBCAllowedLimitRange.model_fields["abnormal_condition_only"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     ]
+
+    @model_validator(mode="after")
+    def validate_range_boundary(self) -> Self:
+        # According to the specification "There shall be at least one PEBC.AllowedLimitRange for the UPPER_LIMIT
+        # and at least one AllowedLimitRange for the LOWER_LIMIT." However for something that produces energy
+        # end_of_range=-2000 and start_of_range=0 is valid. Therefore absolute value used here.
+        # TODO: Check that this is the correct interpretation of the wording
+        if abs(self.range_boundary.start_of_range) > abs(
+            self.range_boundary.end_of_range
+        ):
+            raise ValueError(
+                self,
+                f"The start of the range must shall be smaller or equal than the end of the range.",
+            )
+        return self
