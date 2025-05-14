@@ -24,6 +24,7 @@ from s2python.frbc import (
     FRBCTimerStatus,
     FRBCUsageForecast,
 )
+from s2python.pebc import PEBCPowerConstraints, PEBCEnergyConstraint, PEBCInstruction
 from s2python.ppbc import PPBCScheduleInstruction
 
 from s2python.message import S2Message
@@ -48,6 +49,9 @@ TYPE_TO_MESSAGE_CLASS: Dict[str, Type[S2Message]] = {
     "FRBC.TimerStatus": FRBCTimerStatus,
     "FRBC.UsageForecast": FRBCUsageForecast,
     "PPBC.ScheduleInstruction": PPBCScheduleInstruction,
+    "PEBC.PowerConstraints": PEBCPowerConstraints,
+    "PEBC.Instruction": PEBCInstruction,
+    "PEBC.EnergyConstraint": PEBCEnergyConstraint,
     "Handshake": Handshake,
     "HandshakeResponse": HandshakeResponse,
     "InstructionStatusUpdate": InstructionStatusUpdate,
@@ -90,7 +94,9 @@ class S2Parser:
         return TYPE_TO_MESSAGE_CLASS[message_type].model_validate(message_json)
 
     @staticmethod
-    def parse_as_message(unparsed_message: Union[dict, str, bytes], as_message: Type[M]) -> M:
+    def parse_as_message(
+        unparsed_message: Union[dict, str, bytes], as_message: Type[M]
+    ) -> M:
         """Parse the message to a specific S2 python message.
 
         :param unparsed_message: The message as a JSON-formatted string or as a JSON-parsed dictionary.
