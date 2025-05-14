@@ -24,9 +24,7 @@ from s2python.frbc import (
     FRBCTimerStatus,
     FRBCUsageForecast,
 )
-from s2python.pebc import (
-    PEBCPowerConstraints,
-)
+from s2python.pebc import PEBCPowerConstraints, PEBCEnergyConstraint, PEBCInstruction
 from s2python.ppbc import PPBCScheduleInstruction
 
 from s2python.message import S2Message
@@ -52,6 +50,8 @@ TYPE_TO_MESSAGE_CLASS: Dict[str, Type[S2Message]] = {
     "FRBC.UsageForecast": FRBCUsageForecast,
     "PPBC.ScheduleInstruction": PPBCScheduleInstruction,
     "PEBC.PowerConstraints": PEBCPowerConstraints,
+    "PEBC.Instruction": PEBCInstruction,
+    "PEBC.EnergyConstraint": PEBCEnergyConstraint,
     "Handshake": Handshake,
     "HandshakeResponse": HandshakeResponse,
     "InstructionStatusUpdate": InstructionStatusUpdate,
