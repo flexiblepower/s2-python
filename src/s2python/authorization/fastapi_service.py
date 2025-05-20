@@ -7,11 +7,11 @@ except ImportError as exc:
 
 from typing import Any
 
-from s2python.authorization.server import AbstractAuthServer
+from s2python.authorization.server import S2AbstractServer
 from s2python.generated.gen_s2_pairing import ConnectionDetails, ConnectionRequest, PairingResponse, PairingRequest
 
 
-class FastAPIAuthServer(AbstractAuthServer):
+class FastAPIAuthServer(S2AbstractServer):
 
     def handle_pairing_request(self, request_data: PairingRequest) -> PairingResponse:
         return PairingResponse()
