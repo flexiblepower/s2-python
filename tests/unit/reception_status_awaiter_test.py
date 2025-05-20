@@ -16,7 +16,7 @@ from s2python.common import (
     InstructionStatus,
     InstructionStatusUpdate,
 )
-from s2python.reception_status_awaiter import ReceptionStatusAwaiter
+from s2python.communication.reception_status_awaiter import ReceptionStatusAwaiter
 
 
 class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
