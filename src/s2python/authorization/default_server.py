@@ -148,17 +148,14 @@ class S2DefaultServer(S2AbstractServer):
         Returns:
             Tuple[str, str]: (public_key, private_key) pair as base64 encoded strings
         """
-        # Generate RSA key pair
-        key_pair = Jwk.generate_for_alg("RSA-OAEP-256")
-
-        # Store JWK for later use
-        self._private_jwk = key_pair
-
-        # Export keys in PEM format
-        public_key = key_pair.export_public()
-        private_key = key_pair.export_private()
-
-        return public_key, private_key
+        logger.info("Generating key pair")
+        self._key_pair = Jwk.generate_for_alg("RSA-OAEP-256").with_kid_thumbprint()
+        self._public_jwk = self._key_pair
+        self._private_jwk = self._key_pair
+        return (
+            self._public_jwk.to_pem(),
+            self._private_jwk.to_pem(),
+        )
 
     def store_key_pair(self, public_key: str, private_key: str) -> None:
         """Store the server's public/private key pair.
@@ -182,7 +179,8 @@ class S2DefaultServer(S2AbstractServer):
             str: The signed JWT token
         """
         if not self._private_jwk:
-            raise ValueError("Server private key not set")
+            # TODO: Generate key pair
+            self.generate_key_pair()
 
         # Add expiration to claims
         claims["exp"] = int(expiry_date.timestamp())
@@ -209,16 +207,15 @@ class S2DefaultServer(S2AbstractServer):
         # Convert client's public key to JWK
         client_jwk = Jwk.from_pem(client_public_key)
 
-        # Create encrypted JWT with nested token
-        challenge = Jwt.sign(
-            claims={
-                "S2ClientNodeId": client_node_id,
-                "signedToken": nested_signed_token,
-                "exp": int(expiry_date.timestamp()),
-            },
-            key=self._private_jwk,
-            alg="RS256",
-        ).encrypt(key=client_jwk, alg="RSA-OAEP-256", enc="A256GCM")
+        # Create the payload to encrypt
+        payload = {
+            "S2ClientNodeId": client_node_id,
+            "signedToken": nested_signed_token,
+            "exp": int(expiry_date.timestamp()),
+        }
+
+        # Create JWE directly
+        challenge = Jwt.encrypt(payload=json.dumps(payload), key=client_jwk, alg="RSA-OAEP-256", enc="A256GCM")
 
         return str(challenge)
 

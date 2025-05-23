@@ -154,7 +154,7 @@ class S2AbstractServer(abc.ABC):
         # Create full URLs for endpoints
         base_url = self.get_base_url()
         request_connection_uri = f"{base_url}/requestConnection"
-
+        logger.info(f"Request connection URI: {request_connection_uri}")
         # Create pairing response
         pairing_response = PairingResponse(
             s2ServerNodeId=str(self.server_node_id),
