@@ -241,19 +241,3 @@ class S2AbstractServer(abc.ABC):
         Returns:
             str: The encrypted challenge
         """
-
-    # @abc.abstractmethod
-    # def start_server(self) -> None:
-    #     """Start the server.
-    #
-    #     This method should be implemented by concrete subclasses to start
-    #     the server using their preferred web framework.
-    #     """
-    #
-    # @abc.abstractmethod
-    # def stop_server(self) -> None:
-    #     """Stop the server.
-    #
-    #     This method should be implemented by concrete subclasses to stop
-    #     the server gracefully.
-    #     """
