@@ -56,7 +56,7 @@ if __name__ == "__main__":
         token=PairingToken(
             token=args.pairing_token,
         ),
-        node_description=node_description,
+        node_description=node_description, 
         verify_certificate=args.verify_ssl,
         supported_protocols=[Protocols.WebSocketSecure],
     )
