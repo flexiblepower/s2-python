@@ -197,7 +197,7 @@ class S2DefaultClient(S2AbstractClient):
     def establish_secure_connection(self) -> Dict[str, Any]:
         """Establish a secure WebSocket connection.
 
-        This implementation would establish a WebSocket connection
+        This implementation establishes a WebSocket connection
         using the connection details and solved challenge.
 
         Note: This is a placeholder implementation. In a real implementation,
