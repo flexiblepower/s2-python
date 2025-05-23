@@ -7,17 +7,17 @@ except ImportError as exc:
 
 from typing import Any
 
-from s2python.authorization.server import S2AbstractServer
+from s2python.authorization.default_server import S2DefaultServer
 from s2python.generated.gen_s2_pairing import ConnectionDetails, ConnectionRequest, PairingResponse, PairingRequest
 
 
-class FastAPIAuthServer(S2AbstractServer):
+class FastAPIAuthServer(S2DefaultServer):
 
     def handle_pairing_request(self, request_data: PairingRequest) -> PairingResponse:
-        return PairingResponse()
+        return super().handle_pairing_request(request_data)
 
     def handle_connection_request(self, request_data: ConnectionRequest) -> ConnectionDetails:
-        return ConnectionDetails()
+        return super().handle_connection_request(request_data)
 
 
 class MyFastAPI(FastAPI):
