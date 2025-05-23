@@ -42,6 +42,7 @@ flask = [
     "Flask",
 ]
 testing = [
+    "httpx",
     "pytest",
     "pytest-coverage",
     "pytest-timer",
