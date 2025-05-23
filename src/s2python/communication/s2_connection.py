@@ -33,7 +33,7 @@ from s2python.common import (
     SelectControlType,
 )
 from s2python.generated.gen_s2 import CommodityQuantity
-from s2python.reception_status_awaiter import ReceptionStatusAwaiter
+from s2python.communication.reception_status_awaiter import ReceptionStatusAwaiter
 from s2python.s2_control_type import S2ControlType
 from s2python.s2_parser import S2Parser
 from s2python.s2_validation_error import S2ValidationError
@@ -244,7 +244,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             SelectControlType, self.handle_select_control_type_as_rm
         )
         self._handlers.register_handler(Handshake, self.handle_handshake)
-        self._handlers.register_handler(HandshakeResponse, self.handle_handshake_response_as_rm)
+        self._handlers.register_handler(
+            HandshakeResponse, self.handle_handshake_response_as_rm
+        )
         self._bearer_token = bearer_token
 
     def start_as_rm(self) -> None:
@@ -431,9 +433,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         control_types_by_protocol_name = {
             c.get_protocol_control_type(): c for c in self.control_types
         }
-        selected_control_type: Optional[S2ControlType] = (
-            control_types_by_protocol_name.get(message.control_type)
-        )
+        selected_control_type: Optional[
+            S2ControlType
+        ] = control_types_by_protocol_name.get(message.control_type)
 
         if self._current_control_type is not None:
             await self._eventloop.run_in_executor(
@@ -467,7 +469,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             except json.JSONDecodeError:
                 await self._send_and_forget(
                     ReceptionStatus(
-                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                        subject_message_id=uuid.UUID(
+                            "00000000-0000-0000-0000-000000000000"
+                        ),
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Not valid json.",
                     )
@@ -483,7 +487,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                     )
                 else:
                     await self.respond_with_reception_status(
-                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                        subject_message_id=uuid.UUID(
+                            "00000000-0000-0000-0000-000000000000"
+                        ),
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Message appears valid json but could not find a message_id field.",
                     )
@@ -514,7 +520,10 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             self._restart_connection_event.set()
 
     async def respond_with_reception_status(
-        self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
+        self,
+        subject_message_id: uuid.UUID,
+        status: ReceptionStatusValues,
+        diagnostic_label: str,
     ) -> None:
         logger.debug(
             "Responding to message %s with status %s", subject_message_id, status
@@ -528,7 +537,10 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         )
 
     def respond_with_reception_status_sync(
-        self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
+        self,
+        subject_message_id: uuid.UUID,
+        status: ReceptionStatusValues,
+        diagnostic_label: str,
     ) -> None:
         asyncio.run_coroutine_threadsafe(
             self.respond_with_reception_status(
