@@ -222,6 +222,9 @@ class S2DefaultServer(S2AbstractServer):
 
         return str(challenge)
 
+
+class S2DefaultHTTPServer(S2DefaultServer):
+
     def start_server(self) -> None:
         """Start the HTTP server."""
 

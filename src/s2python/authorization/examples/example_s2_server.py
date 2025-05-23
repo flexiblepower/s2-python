@@ -9,7 +9,7 @@ import sys
 from datetime import datetime, timedelta
 from typing import Any
 
-from s2python.authorization.default_server import S2DefaultServer
+from s2python.authorization.default_server import S2DefaultHTTPServer
 from s2python.generated.gen_s2_pairing import (
     S2NodeDescription,
     Deployment,
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     )
 
     # Create and configure the server
-    server = S2DefaultServer(
+    server = S2DefaultHTTPServer(
         host=args.host,
         http_port=args.http_port,
         ws_port=args.ws_port,
