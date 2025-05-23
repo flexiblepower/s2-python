@@ -11,20 +11,11 @@ from s2python.authorization.default_server import S2DefaultServer
 from s2python.generated.gen_s2_pairing import ConnectionDetails, ConnectionRequest, PairingResponse, PairingRequest
 
 
-class FastAPIAuthServer(S2DefaultServer):
-
-    def handle_pairing_request(self, request_data: PairingRequest) -> PairingResponse:
-        return super().handle_pairing_request(request_data)
-
-    def handle_connection_request(self, request_data: ConnectionRequest) -> ConnectionDetails:
-        return super().handle_connection_request(request_data)
-
-
 class MyFastAPI(FastAPI):
 
     def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self.s2 = FastAPIAuthServer()
+        self.s2 = S2DefaultServer()
 
 
 app = MyFastAPI()
