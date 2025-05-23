@@ -6,6 +6,7 @@ import abc
 import json
 import uuid
 import datetime
+import logging
 from typing import Dict, Optional, Tuple, Union, List, Any
 
 
@@ -27,6 +28,9 @@ REQTEST_TIMEOUT = 10
 PAIRING_TIMEOUT = datetime.timedelta(minutes=5)
 KEY_ALGORITHM = "RSA-OAEP-256"
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("S2AbstractClient")
 
 class PairingDetails(BaseModel):
     """Contains all details from the pairing process."""
@@ -125,7 +129,6 @@ class S2AbstractClient(abc.ABC):
         Returns:
             Tuple[str, str]: (public_key, private_key) pair as base64 encoded strings
         """
-        pass
 
     @abc.abstractmethod
     def store_key_pair(self, public_key: str, private_key: str) -> None:
@@ -138,7 +141,6 @@ class S2AbstractClient(abc.ABC):
             public_key: Base64 encoded public key
             private_key: Base64 encoded private key
         """
-        pass
 
     @abc.abstractmethod
     def _make_https_request(
@@ -162,7 +164,6 @@ class S2AbstractClient(abc.ABC):
         Returns:
             Tuple[int, str]: (status_code, response_text)
         """
-        pass
 
     def request_pairing(self) -> PairingResponse:
         """Send a pairing request to the server using client configuration.
@@ -185,7 +186,7 @@ class S2AbstractClient(abc.ABC):
             self.store_key_pair(public_key, private_key)
 
         # Create pairing request
-        print("Creating pairing request")
+        logger.info("Creating pairing request")
         pairing_request = PairingRequest(
             token=self.token,
             publicKey=self._public_key,
@@ -195,14 +196,14 @@ class S2AbstractClient(abc.ABC):
         )
 
         # Make pairing request
-        print("Making pairing request")
+        logger.info("Making pairing request")
         status_code, response_text = self._make_https_request(
             url=self.pairing_uri,
             method="POST",
             data=pairing_request.model_dump(exclude_none=True),
             headers={"Content-Type": "application/json"},
         )
-        print(f"Pairing request response: {status_code} {response_text}")
+        logger.info('Pairing request response: %s %s', status_code, response_text)
 
         # Parse response
         if status_code != 200:
@@ -278,13 +279,15 @@ class S2AbstractClient(abc.ABC):
                     # Replace the URI with the full WebSocket URL
                     connection_data["connectionUri"] = full_ws_url
                     # Recreate the ConnectionDetails object
-                    connection_details = ConnectionDetails.model_validate(connection_data)
-                    print(f"Updated relative WebSocket URI to absolute: {full_ws_url}")
+                    connection_details = ConnectionDetails.model_validate(
+                        connection_data
+                    )
+                    logger.info('Updated relative WebSocket URI to absolute: %s', full_ws_url)
                 except (ValueError, TypeError, KeyError) as e:
-                    print(f"Failed to update WebSocket URI: {e}")
+                    logger.info('Failed to update WebSocket URI: %s', e)
             else:
                 # Log a warning but don't modify the URI if we can't create a proper absolute URI
-                print("Received relative WebSocket URI but pairing_uri is not available to create absolute URL")
+                logger.info('Received relative WebSocket URI but pairing_uri is not available to create absolute URL')
 
         # Store for later use
         self._connection_details = connection_details
@@ -311,7 +314,6 @@ class S2AbstractClient(abc.ABC):
             ValueError: If the public key is not available
             RuntimeError: If challenge decryption fails
         """
-        pass
 
     @abc.abstractmethod
     def establish_secure_connection(self) -> Any:
@@ -328,7 +330,6 @@ class S2AbstractClient(abc.ABC):
             ValueError: If connection details or solved challenge are not available
             RuntimeError: If connection establishment fails
         """
-        pass
 
     @abc.abstractmethod
     def close_connection(self) -> None:
@@ -337,7 +338,6 @@ class S2AbstractClient(abc.ABC):
         This method should be implemented by concrete subclasses to properly
         close the connection established by establish_secure_connection.
         """
-        pass
 
     @property
     def pairing_details(self) -> Optional[PairingDetails]:

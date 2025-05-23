@@ -3,9 +3,6 @@ import socketserver
 import json
 from typing import Any
 import uuid
-from urllib.parse import urlparse, parse_qs
-import ssl
-import threading
 import logging
 import random
 import string
@@ -39,14 +36,14 @@ HTTP_PORT = 8000
 
 
 class MockS2Handler(http.server.BaseHTTPRequestHandler):
-    def do_POST(self) -> None:
+    def do_POST(self) -> None: # pylint: disable=C0103
         content_length = int(self.headers.get("Content-Length", 0))
         post_data = self.rfile.read(content_length).decode("utf-8")
 
         try:
             request_json = json.loads(post_data)
-            logger.info(f"Received request at {self.path} ")
-            # logger.info(f"Request body: {request_json}")
+            logger.info('Received request at %s', self.path)
+            logger.debug('Request body: %s', request_json)
 
             if self.path == "/requestPairing":
                 # Handle pairing request
@@ -59,8 +56,8 @@ class MockS2Handler(http.server.BaseHTTPRequestHandler):
                 else:
                     request_token_string = token_obj
 
-                logger.info(f"Extracted token: {request_token_string}")
-                logger.info(f"Expected token: {PAIRING_TOKEN}")
+                logger.info('Extracted token: %s', request_token_string)
+                logger.info('Expected token: %s', PAIRING_TOKEN)
 
                 if request_token_string == PAIRING_TOKEN:
                     self.send_response(200)
@@ -115,24 +112,25 @@ class MockS2Handler(http.server.BaseHTTPRequestHandler):
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode())
-                logger.error(f"Unknown endpoint: {self.path}")
+                logger.error('Unknown endpoint: %s', self.path)
 
         except Exception as e:
             self.send_response(500)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())
-            logger.error(f"Error handling request: {e}")
+            logger.error('Error handling request: %s', e)
+            raise e
 
-    def log_message(self, format: str, *args: Any) -> None:
-        logger.info(format % args)
+    def log_message(self, format: str, *args: Any) -> None: # pylint: disable=W0622
+        logger.info(format % args) # pylint: disable=W1201
 
 
 def run_server() -> None:
     with socketserver.TCPServer(("localhost", HTTP_PORT), MockS2Handler) as httpd:
-        logger.info(f"Mock S2 Server running at http://localhost:{HTTP_PORT}")
-        logger.info(f"Use pairing token: {PAIRING_TOKEN}")
-        logger.info(f"Pairing endpoint: http://localhost:{HTTP_PORT}/requestPairing")
+        logger.info('Mock S2 Server running at: http://localhost:%s', HTTP_PORT)
+        logger.info('Use pairing token: %s', PAIRING_TOKEN)
+        logger.info('Pairing endpoint: http://localhost:%s/requestPairing', HTTP_PORT)
         httpd.serve_forever()
 
 
