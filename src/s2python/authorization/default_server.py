@@ -69,7 +69,7 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             logger.error("Error handling request: %s", e)
             raise e
 
-    def _send_json_response(self, status_code: int, response_body: dict | str):
+    def _send_json_response(self, status_code: int, response_body: dict | str) -> None:
         """
         Helper function to send a JSON response.
         :param handler: The HTTP handler instance (self).
