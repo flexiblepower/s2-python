@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from s2python.communication.examples.example_frbc_rm import start_s2_session
+from examples.example_frbc_rm import start_s2_session
 from s2python.authorization.default_client import S2DefaultClient
 from s2python.generated.gen_s2_pairing import (
     S2NodeDescription,
@@ -82,7 +82,6 @@ if __name__ == "__main__":
         logger.info("Starting S2 session...")
         start_s2_session(
             str(connection_details.connectionUri),
-            bearer_token=challenge_result,
         )
 
     except Exception as e:

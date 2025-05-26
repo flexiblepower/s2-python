@@ -13,6 +13,7 @@ from typing import Dict, Any, Tuple, Optional
 
 from jwskate import Jwk, Jwt
 from jwskate.jwe.compact import JweCompact
+import websockets
 
 from s2python.authorization.server import S2AbstractServer
 from s2python.generated.gen_s2_pairing import (
@@ -28,7 +29,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("S2DefaultServer")
 
 
-class S2DefaultHandler(http.server.BaseHTTPRequestHandler):
+class S2DefaultWebSocketHandler(websockets.WebSocketServerProtocol):
+    """Default WebSocket handler for S2 protocol server."""
+
+    def __init__(self, *args: Any, server_instance: Any = None, **kwargs: Any) -> None:
+        """Initialize the handler with server instance."""
+        self.server_instance = server_instance
+        super().__init__(*args, **kwargs)
+
+class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
     """Default HTTP handler for S2 protocol server."""
 
     def __init__(self, *args: Any, server_instance: Any = None, **kwargs: Any) -> None:
@@ -237,12 +246,13 @@ class S2DefaultServer(S2AbstractServer):
         """Start the HTTP server."""
 
         # Create handler class with server instance
-        def handler_factory(*args: Any, **kwargs: Any) -> S2DefaultHandler:
-            return S2DefaultHandler(*args, server_instance=self, **kwargs)
+        def handler_factory(*args: Any, **kwargs: Any) -> S2DefaultHTTPHandler:
+            return S2DefaultHTTPHandler(*args, server_instance=self, **kwargs)
 
         # Create and start server
         self._httpd = socketserver.TCPServer((self.host, self.http_port), handler_factory)
         logger.info("S2 Server running at: http://%s:%s", self.host, self.http_port)
+        
         self._httpd.serve_forever()
 
     def stop_server(self) -> None:
@@ -259,4 +269,3 @@ class S2DefaultServer(S2AbstractServer):
             str: The base URL (e.g., "http://localhost:8000")
         """
         return f"http://{self.host}:{self.http_port}"
-
