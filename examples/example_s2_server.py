@@ -52,6 +52,12 @@ if __name__ == "__main__":
         help="WebSocket port to use (default: 8080)",
     )
     parser.add_argument(
+        "--instance",
+        type=str,
+        default="http",
+        help="Instance to use (default: http)",
+    )
+    parser.add_argument(
         "--pairing-token",
         type=str,
         default="ca14fda4",
@@ -77,6 +83,7 @@ if __name__ == "__main__":
         ws_port=args.ws_port,
         server_node_description=server_node_description,
         token=PairingToken(token=args.pairing_token),
+        instance=args.instance,
         supported_protocols=[Protocols.WebSocketSecure],
     )
 
@@ -85,6 +92,11 @@ if __name__ == "__main__":
 
     # Start the server
     logger.info("Starting S2 server...")
-    logger.info("Server will be available at: http://%s:%s", args.host, args.http_port)
+    if args.instance == "http":
+        logger.info("Server will be available at: http://%s:%s", args.host, args.http_port)
+    elif args.instance == "ws":
+        logger.info("Server will be available at: ws://%s:%s", args.host, args.ws_port)
+    else:
+        raise ValueError("Invalid instance type")
     logger.info("Pairing token: %s", args.pairing_token)
     server.start_server()

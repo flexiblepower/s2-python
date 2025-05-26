@@ -115,15 +115,6 @@ class S2AbstractServer(abc.ABC):
         """
         return self._client_keys.get(client_node_id)
 
-    def get_base_url(self) -> str:
-        """Get the base URL for the server.
-
-        Returns:
-            str: The base URL (e.g., "http://localhost:8000")
-        """
-        # This should be overridden by concrete implementations
-        return "http://localhost:8000"
-
     def handle_pairing_request(self, pairing_request: PairingRequest) -> PairingResponse:
         """Handle a pairing request from a client.
 
@@ -152,7 +143,7 @@ class S2AbstractServer(abc.ABC):
         self.store_client_public_key(str(pairing_request.s2ClientNodeId), pairing_request.publicKey)
 
         # Create full URLs for endpoints
-        base_url = self.get_base_url()
+        base_url = self._get_base_url()
         request_connection_uri = f"{base_url}/requestConnection"
         logger.info(f"Request connection URI: {request_connection_uri}")
         # Create pairing response
@@ -203,12 +194,12 @@ class S2AbstractServer(abc.ABC):
         challenge = self._create_encrypted_challenge(
             client_public_key, connection_request.s2ClientNodeId, nested_signed_token, expiry_date
         )
-       
+        ws_url = self._get_ws_url()
         # Create connection details
         connection_details = ConnectionDetails(
             selectedProtocol=Protocols.WebSocketSecure,
             challenge=challenge,
-            connectionUri="/ws",  # This should be configurable
+            connectionUri=ws_url,  # This should be configurable
         )
 
         logger.info(f"Connection details: {connection_details}")
@@ -241,6 +232,24 @@ class S2AbstractServer(abc.ABC):
         Returns:
             str: The encrypted challenge
         """
+
+    @abc.abstractmethod
+    def _get_ws_url(self) -> str:
+        """Get the WebSocket URL for the server.
+
+        Returns:
+            str: The WebSocket URL
+        """
+
+    @abc.abstractmethod
+    def _get_base_url(self) -> str:
+        """Get the base URL for the server.
+
+        Returns:
+            str: The base URL (e.g., "http://localhost:8000")
+        """
+        # This should be overridden by concrete implementations
+        return "http://localhost:8000"
 
     @abc.abstractmethod
     def start_server(self) -> None:
