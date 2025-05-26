@@ -257,6 +257,7 @@ class S2AbstractClient(abc.ABC):
         ):
 
             # If websocket address doesn't start with ws:// or wss:// assume it's relative to the pairing URI
+            logger.info("Connection details ->>>>>>>>>>>: %s", connection_details.connectionUri)
             if self.pairing_uri:
                 base_uri = self.pairing_uri
                 # Convert to WebSocket protocol and remove the requestPairing path
