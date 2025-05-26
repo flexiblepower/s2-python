@@ -35,8 +35,10 @@ Add to your pyproject.toml:
     [tool.mypy]
     plugins = ['pydantic.mypy']
 
-Example
+Examples
 ---------
+
+Use S2 classes in your code:
 
 .. code-block:: python
 
@@ -53,6 +55,14 @@ Example
     # deserialize s2 messages
     json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
     PowerRange.from_json(json_str)
+
+Run an example CEM server and RM client:
+
+.. code-block:: bash
+
+    python -m examples.example_s2_server --host localhost --http-port 8000 --ws-port 8080 --pairing-token ca14fda4
+    python -m examples.example_pairing_frbc_rm --endpoint http://localhost:8000/requestPairing --pairing_token ca14fda4
+
 
 Development
 -------------
