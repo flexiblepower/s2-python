@@ -37,6 +37,7 @@ class S2DefaultWebSocketHandler(websockets.WebSocketServerProtocol):
         self.server_instance = server_instance
         super().__init__(*args, **kwargs)
 
+
 class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
     """Default HTTP handler for S2 protocol server."""
 
