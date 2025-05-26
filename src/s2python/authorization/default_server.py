@@ -7,8 +7,9 @@ import http.server
 import json
 import logging
 import socketserver
+import asyncio
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, Tuple, Optional, Union
 
 from jwskate import Jwk, Jwt
@@ -135,7 +136,13 @@ class S2DefaultServer(S2AbstractServer):
     """Default implementation of the S2 protocol server using http.server."""
 
     def __init__(
-        self, host: str = "localhost", http_port: int = 8000, ws_port: int = 8080, *args: Any, **kwargs: Any
+        self,
+        host: str = "localhost",
+        http_port: int = 8000,
+        ws_port: int = 8080,
+        instance: str = "http",
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         """Initialize the default server implementation.
 
@@ -149,6 +156,64 @@ class S2DefaultServer(S2AbstractServer):
         self.http_port = http_port
         self.ws_port = ws_port
         self._httpd: Optional[socketserver.TCPServer] = None
+        self._ws_server: Optional[websockets.serve] = None
+        self.instance = instance
+
+    async def _handle_websocket_connection(self, websocket: websockets.WebSocketServerProtocol, path: str) -> None:
+        client_id = str(uuid.uuid4())
+        logger.info("Client %s connected on path: %s", client_id, path)
+
+        try:
+            # Send handshake message to client
+            handshake = {
+                "type": "Handshake",
+                "messageId": str(uuid.uuid4()),
+                "protocolVersion": "0.0.2-beta",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+            await websocket.send(json.dumps(handshake))
+            logger.info("Sent handshake to client %s", client_id)
+
+            # Listen for messages
+            async for message in websocket:
+                try:
+                    data = json.loads(message)
+                    logger.info("Received message from client %s: %s", client_id, data)
+
+                    # Extract message type
+                    message_type = data.get("type", "")
+                    message_id = data.get("messageId", str(uuid.uuid4()))
+
+                    # Send reception status
+                    reception_status = {
+                        "type": "ReceptionStatus",
+                        "messageId": str(uuid.uuid4()),
+                        "refMessageId": message_id,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "status": "OK",
+                    }
+                    await websocket.send(json.dumps(reception_status))
+                    logger.info("Sent reception status for message %s", message_id)
+
+                    # Handle specific message types
+                    if message_type == "HandshakeResponse":
+                        logger.info("Received handshake response")
+
+                    # For FRBC messages, you could add specific handling here
+
+                except json.JSONDecodeError:
+                    logger.error("Invalid JSON received from client %s", client_id)
+                except Exception as e:
+                    logger.error("Error processing message from client %s: %s", client_id, e)
+                    raise e
+
+        except websockets.exceptions.ConnectionClosed:
+            logger.info("Connection with client %s closed", client_id)
+        except Exception as e:
+            logger.error("Error with client %s: %s", client_id, e)
+            raise e
+        finally:
+            logger.info("Client %s disconnected", client_id)
 
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair for the server.
@@ -245,6 +310,15 @@ class S2DefaultHTTPServer(S2DefaultServer):
 
     def start_server(self) -> None:
         """Start the HTTP server."""
+        if self.instance == "http":
+            self.start_http_server()
+        elif self.instance == "ws":
+            self.start_ws_server()
+        else:
+            raise ValueError("Invalid instance type")
+
+    def start_http_server(self) -> None:
+        """Start the HTTP server."""
 
         # Create handler class with server instance
         def handler_factory(*args: Any, **kwargs: Any) -> S2DefaultHTTPHandler:
@@ -253,7 +327,8 @@ class S2DefaultHTTPServer(S2DefaultServer):
         # Create and start server
         self._httpd = socketserver.TCPServer((self.host, self.http_port), handler_factory)
         logger.info("S2 Server running at: http://%s:%s", self.host, self.http_port)
-        
+        # Start the WebSocket server
+        self.start_ws_server()
         self._httpd.serve_forever()
 
     def stop_server(self) -> None:
@@ -263,10 +338,25 @@ class S2DefaultHTTPServer(S2DefaultServer):
             self._httpd.server_close()
             self._httpd = None
 
-    def get_base_url(self) -> str:
+    def start_ws_server(self) -> None:
+        """Start the WebSocket server."""
+        self._ws_server = websockets.serve(self._handle_websocket_connection, self.host, self.ws_port)
+        logger.info("S2 WebSocket server running at: ws://%s:%s", self.host, self.ws_port)
+        asyncio.get_event_loop().run_until_complete(self._ws_server)
+        asyncio.get_event_loop().run_forever()
+
+    def _get_base_url(self) -> str:
         """Get the base URL for the server.
 
         Returns:
             str: The base URL (e.g., "http://localhost:8000")
         """
         return f"http://{self.host}:{self.http_port}"
+
+    def _get_ws_url(self) -> str:
+        """Get the WebSocket URL for the server.
+
+        Returns:
+            str: The WebSocket URL
+        """
+        return f"ws://{self.host}:{self.ws_port}"
