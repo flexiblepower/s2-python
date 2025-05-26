@@ -10,7 +10,7 @@ import socketserver
 import asyncio
 import uuid
 from datetime import datetime, timezone
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Tuple, Optional, Union
 
 from jwskate import Jwk, Jwt
 from jwskate.jwe.compact import JweCompact
@@ -28,6 +28,15 @@ from s2python.generated.gen_s2_pairing import (
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("S2DefaultServer")
+
+
+class S2DefaultWebSocketHandler(websockets.WebSocketServerProtocol):
+    """Default WebSocket handler for S2 protocol server."""
+
+    def __init__(self, *args: Any, server_instance: Any = None, **kwargs: Any) -> None:
+        """Initialize the handler with server instance."""
+        self.server_instance = server_instance
+        super().__init__(*args, **kwargs)
 
 
 class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
@@ -53,19 +62,28 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             elif self.path == "/requestConnection":
                 self._handle_connection_request(request_json)
             else:
-                self.send_response(404)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode())
+                self._send_json_response(404, {"error": "Endpoint not found"})
                 logger.error("Unknown endpoint: %s", self.path)
 
         except Exception as e:
-            self.send_response(500)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self._send_json_response(500, {"error": str(e)})
             logger.error("Error handling request: %s", e)
             raise e
+
+    def _send_json_response(self, status_code: int, response_body: Union[dict, str]) -> None:
+        """
+        Helper function to send a JSON response.
+        :param handler: The HTTP handler instance (self).
+        :param status_code: HTTP status code.
+        :param response_body: Dictionary or JSON string containing the response body.
+        """
+        self.send_response(status_code)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        if isinstance(response_body, str):
+            self.wfile.write(response_body.encode())
+        else:
+            self.wfile.write(json.dumps(response_body).encode())
 
     def _handle_pairing_request(self, request_json: Dict[str, Any]) -> None:
         """Handle a pairing request.
@@ -81,17 +99,11 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             response = self.server_instance.handle_pairing_request(pairing_request)
 
             # Send response
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(response.model_dump_json().encode())
+            self._send_json_response(200, response.model_dump_json())
             logger.info("Pairing request successful")
 
         except ValueError as e:
-            self.send_response(400)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self._send_json_response(400, {"error": str(e)})
             logger.error("Invalid pairing request: %s", e)
 
     def _handle_connection_request(self, request_json: Dict[str, Any]) -> None:
@@ -108,17 +120,11 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             response = self.server_instance.handle_connection_request(connection_request)
 
             # Send response
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(response.model_dump_json().encode())
+            self._send_json_response(200, response.model_dump_json())
             logger.info("Connection request successful")
 
         except ValueError as e:
-            self.send_response(400)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self._send_json_response(400, {"error": str(e)})
             logger.error("Invalid connection request: %s", e)
 
     def log_message(self, format: str, *args: Any) -> None:  # pylint: disable=W0622
@@ -299,6 +305,9 @@ class S2DefaultServer(S2AbstractServer):
         # try to decrypt the JWE
         return str(jwe)
 
+
+class S2DefaultHTTPServer(S2DefaultServer):
+
     def start_server(self) -> None:
         """Start the HTTP server."""
         if self.instance == "http":
@@ -328,7 +337,7 @@ class S2DefaultServer(S2AbstractServer):
             # self._httpd.shutdown()
             self._httpd.server_close()
             self._httpd = None
-        
+
     def start_ws_server(self) -> None:
         """Start the WebSocket server."""
         self._ws_server = websockets.serve(self._handle_websocket_connection, self.host, self.ws_port)

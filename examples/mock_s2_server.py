@@ -1,4 +1,3 @@
-import http.server
 import socketserver
 import json
 from typing import Any
@@ -6,6 +5,8 @@ import uuid
 import logging
 import random
 import string
+
+from s2python.authorization.default_server import S2DefaultHTTPHandler
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +36,7 @@ WS_PORT = 8080
 HTTP_PORT = 8000
 
 
-class MockS2Handler(http.server.BaseHTTPRequestHandler):
+class MockS2Handler(S2DefaultHTTPHandler):
     def do_POST(self) -> None: # pylint: disable=C0103
         content_length = int(self.headers.get("Content-Length", 0))
         post_data = self.rfile.read(content_length).decode("utf-8")
@@ -60,10 +61,6 @@ class MockS2Handler(http.server.BaseHTTPRequestHandler):
                 logger.info('Expected token: %s', PAIRING_TOKEN)
 
                 if request_token_string == PAIRING_TOKEN:
-                    self.send_response(200)
-                    self.send_header("Content-Type", "application/json")
-                    self.end_headers()
-
                     # Create pairing response
                     response = {
                         "s2ServerNodeId": SERVER_NODE_ID,
@@ -78,22 +75,13 @@ class MockS2Handler(http.server.BaseHTTPRequestHandler):
                         },
                         "requestConnectionUri": f"http://localhost:{HTTP_PORT}/requestConnection",
                     }
-
-                    self.wfile.write(json.dumps(response).encode())
+                    self._send_json_response(200, response)
                     logger.info("Pairing request successful")
                 else:
-                    self.send_response(401)
-                    self.send_header("Content-Type", "application/json")
-                    self.end_headers()
-                    self.wfile.write(json.dumps({"error": "Invalid token"}).encode())
+                    self._send_json_response(401, {"error": "Invalid token"})
                     logger.error("Invalid pairing token")
 
             elif self.path == "/requestConnection":
-                # Handle connection request
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-
                 # Create challenge (normally would be a JWE)
                 challenge = "mock_challenge_string"
 
@@ -104,21 +92,16 @@ class MockS2Handler(http.server.BaseHTTPRequestHandler):
                     "selectedProtocol": "WebSocketSecure",
                 }
 
-                self.wfile.write(json.dumps(response).encode())
+                # Handle connection request
+                self._send_json_response(200, response)
                 logger.info("Connection request successful")
 
             else:
-                self.send_response(404)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode())
+                self._send_json_response(404, {"error": "Endpoint not found"})
                 logger.error('Unknown endpoint: %s', self.path)
 
         except Exception as e:
-            self.send_response(500)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self._send_json_response(500, {"error": str(e)})
             logger.error('Error handling request: %s', e)
             raise e
 
