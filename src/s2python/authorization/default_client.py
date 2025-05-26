@@ -119,7 +119,7 @@ class S2DefaultClient(S2AbstractClient):
         )
         return response.status_code, response.text
 
-    def solve_challenge(self, challenge: Optional[str] = None) -> str:
+    def solve_challenge(self, challenge: Optional[Any] = None) -> str:
         """Solve the connection challenge using the public key.
 
         If no challenge is provided, uses the challenge from connection_details.
@@ -156,10 +156,16 @@ class S2DefaultClient(S2AbstractClient):
                 rsa_key_pair = Jwk.from_pem(self._public_key)
             else:
                 raise ValueError("No public key available")
+            #check that the challenge is a JweCompact
+            if not isinstance(challenge, str):
+                raise ValueError("Challenge is not a string")
+            # Log the challenge
+            # logger.info("Challenge: %s", challenge)
 
             # Decrypt the JWE challenge - get result as bytes and convert to string
-            jwe_compact = JweCompact(challenge)
-            decrypted_bytes = jwe_compact.decrypt(rsa_key_pair)
+            compact_jwe = JweCompact(challenge)
+            # logger.info("Compact JWE: %s", compact_jwe)
+            decrypted_bytes = compact_jwe.decrypt(rsa_key_pair)
             # Make sure we have a proper string
             if hasattr(decrypted_bytes, "decode"):
                 decrypted_string = decrypted_bytes.decode("utf-8")

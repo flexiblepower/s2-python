@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
         # Solve challenge
         challenge_result = client.solve_challenge()
-        logger.info("Challenge solved successfully")
+        logger.info("Challenge decrypted successfully")
 
         # Log connection details
         logger.info("Connection URI: %s", connection_details.connectionUri)
