@@ -60,19 +60,28 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             elif self.path == "/requestConnection":
                 self._handle_connection_request(request_json)
             else:
-                self.send_response(404)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode())
+                self._send_json_response(404, {"error": "Endpoint not found"})
                 logger.error("Unknown endpoint: %s", self.path)
 
         except Exception as e:
-            self.send_response(500)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self._send_json_response(500, {"error": str(e)})
             logger.error("Error handling request: %s", e)
             raise e
+
+    def _send_json_response(self, status_code, response_body):
+        """
+        Helper function to send a JSON response.
+        :param handler: The HTTP handler instance (self).
+        :param status_code: HTTP status code.
+        :param response_body: Dictionary or JSON string containing the response body.
+        """
+        self.send_response(status_code)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        if isinstance(response_body, str):
+            self.wfile.write(response_body.encode())
+        else:
+            self.wfile.write(json.dumps(response_body).encode())
 
     def _handle_pairing_request(self, request_json: Dict[str, Any]) -> None:
         """Handle a pairing request.
@@ -88,17 +97,11 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             response = self.server_instance.handle_pairing_request(pairing_request)
 
             # Send response
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(response.model_dump_json().encode())
+            self._send_json_response(200, response.model_dump_json())
             logger.info("Pairing request successful")
 
         except ValueError as e:
-            self.send_response(400)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self._send_json_response(400, {"error": str(e)})
             logger.error("Invalid pairing request: %s", e)
 
     def _handle_connection_request(self, request_json: Dict[str, Any]) -> None:
@@ -115,17 +118,11 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             response = self.server_instance.handle_connection_request(connection_request)
 
             # Send response
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(response.model_dump_json().encode())
+            self._send_json_response(200, response.model_dump_json())
             logger.info("Connection request successful")
 
         except ValueError as e:
-            self.send_response(400)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self._send_json_response(400, {"error": str(e)})
             logger.error("Invalid connection request: %s", e)
 
     def log_message(self, format: str, *args: Any) -> None:  # pylint: disable=W0622
