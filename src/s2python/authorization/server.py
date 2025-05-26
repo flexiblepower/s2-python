@@ -203,11 +203,11 @@ class S2AbstractServer(abc.ABC):
         challenge = self._create_encrypted_challenge(
             client_public_key, connection_request.s2ClientNodeId, nested_signed_token, expiry_date
         )
-
+       
         # Create connection details
         connection_details = ConnectionDetails(
             selectedProtocol=Protocols.WebSocketSecure,
-            challenge=base64.b64encode(challenge.encode()).decode(),
+            challenge=challenge,
             connectionUri="/ws",  # This should be configurable
         )
 
@@ -229,9 +229,9 @@ class S2AbstractServer(abc.ABC):
     @abc.abstractmethod
     def _create_encrypted_challenge(
         self, client_public_key: str, client_node_id: str, nested_signed_token: str, expiry_date: datetime
-    ) -> str:
+    ) -> Any:
         """Create an encrypted challenge for the client.
-
+            TODO: using Any to avoid stringification of the JWE. Pros/Cons?
         Args:
             client_public_key: The client's public key
             client_node_id: The client's node ID

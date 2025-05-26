@@ -12,6 +12,7 @@ from datetime import datetime
 from typing import Dict, Any, Tuple, Optional
 
 from jwskate import Jwk, Jwt
+from jwskate.jwe.compact import JweCompact
 
 from s2python.authorization.server import S2AbstractServer
 from s2python.generated.gen_s2_pairing import (
@@ -179,13 +180,15 @@ class S2DefaultServer(S2AbstractServer):
             str: The signed JWT token
         """
         if not self._private_jwk:
-            # TODO: Generate key pair
-            self.generate_key_pair()
+            # Generate key pair with correct algorithm
+            self._key_pair = Jwk.generate_for_alg("RS256").with_kid_thumbprint()
+            self._private_jwk = self._key_pair
+            self._public_jwk = self._key_pair
 
         # Add expiration to claims
         claims["exp"] = int(expiry_date.timestamp())
 
-        # Create JWT with claims
+        # Create JWT with claims using RS256 for signing
         token = Jwt.sign(claims=claims, key=self._private_jwk, alg="RS256")
 
         return str(token)
@@ -207,17 +210,28 @@ class S2DefaultServer(S2AbstractServer):
         # Convert client's public key to JWK
         client_jwk = Jwk.from_pem(client_public_key)
 
-        # Create the payload to encrypt
+        # Create the payload to encrypt - this will be decrypted and used as an unprotected JWT
         payload = {
             "S2ClientNodeId": client_node_id,
             "signedToken": nested_signed_token,
             "exp": int(expiry_date.timestamp()),
         }
 
-        # Create JWE directly
-        challenge = Jwt.encrypt(payload=json.dumps(payload), key=client_jwk, alg="RSA-OAEP-256", enc="A256GCM")
+        # Create JWE with all required components
+        jwe = JweCompact.encrypt(
+            plaintext=json.dumps(payload).encode(),
+            key=client_jwk,  # Using client's public key for encryption
+            alg="RSA-OAEP-256",
+            enc="A256GCM",
+        )
+        # test the decryption of the JWE
+        # decrypted_payload = jwe.decrypt(client_jwk)
+        # logger.info("Original payload: %s", jwe)
+        # logger.info("Decrypted payload: %s", decrypted_payload)
 
-        return str(challenge)
+        logger.info("JWE: %s", str(jwe))
+        # try to decrypt the JWE
+        return str(jwe)
 
     def start_server(self) -> None:
         """Start the HTTP server."""
@@ -245,3 +259,4 @@ class S2DefaultServer(S2AbstractServer):
             str: The base URL (e.g., "http://localhost:8000")
         """
         return f"http://{self.host}:{self.http_port}"
+

@@ -234,7 +234,7 @@ class S2AbstractClient(abc.ABC):
             s2ClientNodeId=str(self.client_node_id),
             supportedProtocols=self.supported_protocols,
         )
-
+        logger.info("Connection request URI: %s", self._connection_request_uri)
         # Make a POST request to the connection request URI
         status_code, response_text = self._make_https_request(
             url=self._connection_request_uri,
@@ -295,7 +295,7 @@ class S2AbstractClient(abc.ABC):
         return connection_details
 
     @abc.abstractmethod
-    def solve_challenge(self, challenge: Optional[str] = None) -> str:
+    def solve_challenge(self, challenge: Optional[Any] = None) -> str:
         """Solve the connection challenge using the public key.
 
         If no challenge is provided, uses the challenge from connection_details.

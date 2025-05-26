@@ -346,6 +346,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         try:
             # set up connection arguments for SSL and bearer token, if required
             connection_kwargs: Dict[str, Any] = {}
+            logger.info("Connecting to %s", self.url)
             if self.url.startswith("wss://") and not self._verify_certificate:
                 connection_kwargs["ssl"] = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
                 connection_kwargs["ssl"].check_hostname = False
