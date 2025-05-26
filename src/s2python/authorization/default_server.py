@@ -9,7 +9,7 @@ import logging
 import socketserver
 import uuid
 from datetime import datetime
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Tuple, Optional, Union
 
 from jwskate import Jwk, Jwt
 from jwskate.jwe.compact import JweCompact
@@ -69,7 +69,7 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             logger.error("Error handling request: %s", e)
             raise e
 
-    def _send_json_response(self, status_code: int, response_body: dict | str) -> None:
+    def _send_json_response(self, status_code: int, response_body: Union[dict, str]) -> None:
         """
         Helper function to send a JSON response.
         :param handler: The HTTP handler instance (self).
