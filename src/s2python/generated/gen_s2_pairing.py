@@ -20,6 +20,9 @@ class Deployment(str, Enum):
     LAN = "LAN"
 
 
+class EncryptionAlgorithm(str, Enum):
+    RSA_OAEP_256 = "RSA-OAEP-256"
+
 class Protocols(str, Enum):
     WebSocketSecure = "WebSocketSecure"
 
@@ -57,6 +60,7 @@ class PairingRequest(BaseModel):
     )
     token: PairingToken
     publicKey: str
+    encryptionAlgorithm: EncryptionAlgorithm
     s2ClientNodeId: str
     s2ClientNodeDescription: S2NodeDescription
     supportedProtocols: List[Protocols]

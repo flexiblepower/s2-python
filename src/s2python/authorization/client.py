@@ -21,6 +21,7 @@ from s2python.generated.gen_s2_pairing import (
     PairingToken,
     S2NodeDescription,
     Protocols,
+    EncryptionAlgorithm,
 )
 
 
@@ -31,6 +32,7 @@ KEY_ALGORITHM = "RSA-OAEP-256"
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("S2AbstractClient")
+
 
 class PairingDetails(BaseModel):
     """Contains all details from the pairing process."""
@@ -191,19 +193,21 @@ class S2AbstractClient(abc.ABC):
             token=self.token,
             publicKey=self._public_key,
             s2ClientNodeId=str(self.client_node_id),
+            encryptionAlgorithm=EncryptionAlgorithm.RSA_OAEP_256,
             s2ClientNodeDescription=self.node_description,
             supportedProtocols=self.supported_protocols,
         )
 
         # Make pairing request
-        logger.info("Making pairing request")
+        logger.info("Making pairing requessst")
+        logger.info("pairing_uri: %s", self.pairing_uri)
         status_code, response_text = self._make_https_request(
             url=self.pairing_uri,
             method="POST",
             data=pairing_request.model_dump(exclude_none=True),
             headers={"Content-Type": "application/json"},
         )
-        logger.info('Pairing request response: %s %s', status_code, response_text)
+        logger.info("Pairing request response: %s %s", status_code, response_text)
 
         # Parse response
         if status_code != 200:
@@ -279,15 +283,13 @@ class S2AbstractClient(abc.ABC):
                     # Replace the URI with the full WebSocket URL
                     connection_data["connectionUri"] = full_ws_url
                     # Recreate the ConnectionDetails object
-                    connection_details = ConnectionDetails.model_validate(
-                        connection_data
-                    )
-                    logger.info('Updated relative WebSocket URI to absolute: %s', full_ws_url)
+                    connection_details = ConnectionDetails.model_validate(connection_data)
+                    logger.info("Updated relative WebSocket URI to absolute: %s", full_ws_url)
                 except (ValueError, TypeError, KeyError) as e:
-                    logger.info('Failed to update WebSocket URI: %s', e)
+                    logger.info("Failed to update WebSocket URI: %s", e)
             else:
                 # Log a warning but don't modify the URI if we can't create a proper absolute URI
-                logger.info('Received relative WebSocket URI but pairing_uri is not available to create absolute URL')
+                logger.info("Received relative WebSocket URI but pairing_uri is not available to create absolute URL")
 
         # Store for later use
         self._connection_details = connection_details

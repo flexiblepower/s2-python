@@ -75,7 +75,8 @@ if __name__ == "__main__":
         role=S2Role.RM,
         deployment=Deployment.LAN,
     )
-
+    logger.info("http_port: %s", args.http_port)
+    logger.info("ws_port: %s", args.ws_port)
     # Create and configure the server
     server = S2DefaultHTTPServer(
         host=args.host,
@@ -99,4 +100,5 @@ if __name__ == "__main__":
     else:
         raise ValueError("Invalid instance type")
     logger.info("Pairing token: %s", args.pairing_token)
+    logger.info("--------------------------------")
     server.start_server()

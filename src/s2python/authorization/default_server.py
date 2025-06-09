@@ -146,7 +146,7 @@ class S2DefaultServer(S2AbstractServer):
     ) -> None:
         """Initialize the default server implementation.
 
-        Args:
+        Args: 
             host: The host to bind to
             http_port: The HTTP port to use
             ws_port: The WebSocket port to use
@@ -167,7 +167,7 @@ class S2DefaultServer(S2AbstractServer):
             # Send handshake message to client
             handshake = {
                 "type": "Handshake",
-                "messageId": str(uuid.uuid4()),
+                "message_id": str(uuid.uuid4()),
                 "protocolVersion": "0.0.2-beta",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
@@ -182,13 +182,13 @@ class S2DefaultServer(S2AbstractServer):
 
                     # Extract message type
                     message_type = data.get("type", "")
-                    message_id = data.get("messageId", str(uuid.uuid4()))
+                    message_id = data.get("message_id", str(uuid.uuid4()))
 
                     # Send reception status
                     reception_status = {
                         "type": "ReceptionStatus",
-                        "messageId": str(uuid.uuid4()),
-                        "refMessageId": message_id,
+                        "message_id": str(uuid.uuid4()),
+                        "ref_message_id": message_id,
                         "timestamp": datetime.now(timezone.utc).isoformat(),
                         "status": "OK",
                     }
@@ -311,8 +311,10 @@ class S2DefaultHTTPServer(S2DefaultServer):
     def start_server(self) -> None:
         """Start the HTTP server."""
         if self.instance == "http":
+            logger.info("Starting HTTP server------>")
             self.start_http_server()
         elif self.instance == "ws":
+            logger.info("Starting WebSocket server------>")
             self.start_ws_server()
         else:
             raise ValueError("Invalid instance type")
@@ -328,7 +330,6 @@ class S2DefaultHTTPServer(S2DefaultServer):
         self._httpd = socketserver.TCPServer((self.host, self.http_port), handler_factory)
         logger.info("S2 Server running at: http://%s:%s", self.host, self.http_port)
         # Start the WebSocket server
-        self.start_ws_server()
         self._httpd.serve_forever()
 
     def stop_server(self) -> None:

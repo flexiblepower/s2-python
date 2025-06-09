@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from examples.example_frbc_rm import start_s2_session
+from .example_frbc_rm import start_s2_session
 from s2python.authorization.default_client import S2DefaultClient
 from s2python.generated.gen_s2_pairing import (
     S2NodeDescription,
@@ -15,9 +15,7 @@ logger = logging.getLogger("s2python")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="A simple S2 resource manager example."
-    )
+    parser = argparse.ArgumentParser(description="A simple S2 resource manager example.")
     parser.add_argument(
         "--endpoint",
         type=str,
@@ -56,7 +54,7 @@ if __name__ == "__main__":
         token=PairingToken(
             token=args.pairing_token,
         ),
-        node_description=node_description, 
+        node_description=node_description,
         verify_certificate=args.verify_ssl,
         supported_protocols=[Protocols.WebSocketSecure],
     )
