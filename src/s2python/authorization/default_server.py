@@ -10,7 +10,7 @@ import socketserver
 import asyncio
 import uuid
 from datetime import datetime, timezone
-from typing import Dict, Any, Tuple, Optional, Union
+from typing import Dict, Any, Tuple, Optional, Union, Awaitable
 
 from jwskate import Jwk, Jwt
 from jwskate.jwe.compact import JweCompact
@@ -24,6 +24,20 @@ from s2python.generated.gen_s2_pairing import (
     PairingResponse,
     Protocols,
 )
+from s2python.message import S2Message
+
+from s2python.common import (
+    ReceptionStatusValues,
+    ReceptionStatus,
+    Handshake,
+    HandshakeResponse,
+    EnergyManagementRole,
+    SelectControlType,
+)
+from s2python.version import S2_VERSION
+from s2python.communication.s2_connection import MessageHandlers, S2Connection
+
+from s2python.s2_parser import S2Parser
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -146,7 +160,7 @@ class S2DefaultServer(S2AbstractServer):
     ) -> None:
         """Initialize the default server implementation.
 
-        Args: 
+        Args:
             host: The host to bind to
             http_port: The HTTP port to use
             ws_port: The WebSocket port to use
@@ -155,65 +169,11 @@ class S2DefaultServer(S2AbstractServer):
         self.host = host
         self.http_port = http_port
         self.ws_port = ws_port
-        self._httpd: Optional[socketserver.TCPServer] = None
-        self._ws_server: Optional[websockets.serve] = None
         self.instance = instance
+        self._connection: Optional[S2Connection] = None
+        self._handlers = MessageHandlers()
+        self.s2_parser = S2Parser()
 
-    async def _handle_websocket_connection(self, websocket: websockets.WebSocketServerProtocol, path: str) -> None:
-        client_id = str(uuid.uuid4())
-        logger.info("Client %s connected on path: %s", client_id, path)
-
-        try:
-            # Send handshake message to client
-            handshake = {
-                "type": "Handshake",
-                "message_id": str(uuid.uuid4()),
-                "protocolVersion": "0.0.2-beta",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
-            await websocket.send(json.dumps(handshake))
-            logger.info("Sent handshake to client %s", client_id)
-
-            # Listen for messages
-            async for message in websocket:
-                try:
-                    data = json.loads(message)
-                    logger.info("Received message from client %s: %s", client_id, data)
-
-                    # Extract message type
-                    message_type = data.get("type", "")
-                    message_id = data.get("message_id", str(uuid.uuid4()))
-
-                    # Send reception status
-                    reception_status = {
-                        "type": "ReceptionStatus",
-                        "message_id": str(uuid.uuid4()),
-                        "ref_message_id": message_id,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
-                        "status": "OK",
-                    }
-                    await websocket.send(json.dumps(reception_status))
-                    logger.info("Sent reception status for message %s", message_id)
-
-                    # Handle specific message types
-                    if message_type == "HandshakeResponse":
-                        logger.info("Received handshake response")
-
-                    # For FRBC messages, you could add specific handling here
-
-                except json.JSONDecodeError:
-                    logger.error("Invalid JSON received from client %s", client_id)
-                except Exception as e:
-                    logger.error("Error processing message from client %s: %s", client_id, e)
-                    raise e
-
-        except websockets.exceptions.ConnectionClosed:
-            logger.info("Connection with client %s closed", client_id)
-        except Exception as e:
-            logger.error("Error with client %s: %s", client_id, e)
-            raise e
-        finally:
-            logger.info("Client %s disconnected", client_id)
 
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair for the server.
@@ -305,8 +265,9 @@ class S2DefaultServer(S2AbstractServer):
         # try to decrypt the JWE
         return str(jwe)
 
-
-class S2DefaultHTTPServer(S2DefaultServer):
+    def start_ws_server(self) -> None:
+        """Start the WebSocket server."""
+        
 
     def start_server(self) -> None:
         """Start the HTTP server."""
@@ -338,13 +299,6 @@ class S2DefaultHTTPServer(S2DefaultServer):
             # self._httpd.shutdown()
             self._httpd.server_close()
             self._httpd = None
-
-    def start_ws_server(self) -> None:
-        """Start the WebSocket server."""
-        self._ws_server = websockets.serve(self._handle_websocket_connection, self.host, self.ws_port)
-        logger.info("S2 WebSocket server running at: ws://%s:%s", self.host, self.ws_port)
-        asyncio.get_event_loop().run_until_complete(self._ws_server)
-        asyncio.get_event_loop().run_forever()
 
     def _get_base_url(self) -> str:
         """Get the base URL for the server.
