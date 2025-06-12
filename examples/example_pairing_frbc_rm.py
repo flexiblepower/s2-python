@@ -11,7 +11,7 @@ from s2python.generated.gen_s2_pairing import (
     Protocols,
 )
 
-logger = logging.getLogger("s2python")
+logger = logging.getLogger("s2python") 
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ from websockets.asyncio.client import (
     ClientConnection as WSConnection,
     connect as ws_connect,
 )
+from websockets.asyncio.server import serve as ws_serve
 
 from s2python.common import (
     ReceptionStatusValues,
@@ -233,6 +234,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         if role == EnergyManagementRole.RM:
             self._register_rm_handlers()
         else:
+            logger.info("Registering CEM handlers")
             self._register_cem_handlers()
 
     def _register_rm_handlers(self) -> None:
@@ -325,8 +327,10 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
     async def _connect_and_run(self) -> None:
         self._received_messages = asyncio.Queue()
-        await self._connect_ws()
-        if self.ws:
+        if self.ws is None:
+            await self._connect_ws()
+        else:
+            self.ws = self.ws
 
             async def wait_till_stop() -> None:
                 await self._stop_event.wait()
@@ -368,21 +372,52 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             await self.ws.wait_closed()
 
     async def _connect_ws(self) -> None:
-        try:
-            # set up connection arguments for SSL and bearer token, if required
-            connection_kwargs: Dict[str, Any] = {}
-            logger.info("Connecting to %s", self.url)
-            if self.url.startswith("wss://") and not self._verify_certificate:
-                connection_kwargs["ssl"] = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-                connection_kwargs["ssl"].check_hostname = False
-                connection_kwargs["ssl"].verify_mode = ssl.CERT_NONE
+        max_retries = 3
+        retry_delay = 1  # seconds
 
-            if self._bearer_token:
-                connection_kwargs["additional_headers"] = {"Authorization": f"Bearer {self._bearer_token}"}
+        for attempt in range(max_retries):
+            try:
+                # set up connection arguments for SSL and bearer token, if required
+                connection_kwargs: Dict[str, Any] = {}
+                logger.info("Connecting to %s (attempt %d/%d)", self.url, attempt + 1, max_retries)
 
-            self.ws = await ws_connect(uri=self.url, **connection_kwargs)
-        except (EOFError, OSError) as e:
-            logger.info("Could not connect due to: %s", str(e))
+                if self.url.startswith("wss://") and not self._verify_certificate:
+                    connection_kwargs["ssl"] = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+                    connection_kwargs["ssl"].check_hostname = False
+                    connection_kwargs["ssl"].verify_mode = ssl.CERT_NONE
+
+                if self._bearer_token:
+                    connection_kwargs["additional_headers"] = {"Authorization": f"Bearer {self._bearer_token}"}
+
+                self.ws = await ws_connect(uri=self.url, **connection_kwargs)
+                logger.info("Successfully connected to WebSocket server")
+                return
+
+            except (EOFError, OSError) as e:
+                logger.warning("Could not connect due to: %s (attempt %d/%d)", str(e), attempt + 1, max_retries)
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay)
+                    continue
+                raise RuntimeError(f"Failed to connect after {max_retries} attempts: {str(e)}")
+
+    async def _start_server(self) -> None:
+        max_retries = 3
+        retry_delay = 1  # seconds
+
+        for attempt in range(max_retries):
+            try:
+                logger.info("Starting WebSocket server (attempt %d/%d)", attempt + 1, max_retries)
+
+                self.ws = await ws_serve(self._handle_websocket_connection, self.url)
+                logger.info("Successfully started WebSocket server")
+                return
+
+            except (EOFError, OSError) as e:
+                logger.warning("Could not start WebSocket server due to: %s (attempt %d/%d)", str(e), attempt + 1, max_retries)
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay)
+                    continue
+                raise RuntimeError(f"Failed to start WebSocket server after {max_retries} attempts: {str(e)}")
 
     async def _connect_as_rm(self) -> None:
         await self.send_msg_and_await_reception_status_async(
@@ -417,6 +452,12 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 type(message),
             )
             return
+        logger.info("Received Handshake-------------------------------- %s", message.to_json())
+        await self.respond_with_reception_status(
+            subject_message_id=message.message_id,
+            status=ReceptionStatusValues.OK,
+            diagnostic_label="Handshake received",
+        )
 
         logger.debug(
             "%s supports S2 protocol versions: %s",
@@ -633,4 +674,18 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     async def _handle_received_messages(self) -> None:
         while True:
             msg = await self._received_messages.get()
+            logger.info("Received message in _handle_received_messages %s", msg.to_json())
             await self._handlers.handle_message(self, msg)
+
+    # Add these methods for backward compatibility
+    def start_as_rm(self) -> None:
+        """Start the S2 connection as RM (for backward compatibility)."""
+        if self.role != EnergyManagementRole.RM:
+            raise RuntimeError("Cannot start as RM when role is not RM")
+        self.start()
+
+    def start_as_cem(self) -> None:
+        """Start the S2 connection as CEM (for backward compatibility)."""
+        if self.role != EnergyManagementRole.CEM:
+            raise RuntimeError("Cannot start as CEM when role is not CEM")
+        self.start()

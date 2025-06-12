@@ -8,8 +8,10 @@ import signal
 import sys
 from datetime import datetime, timedelta
 from typing import Any
+import asyncio
 
-from s2python.authorization.default_server import S2DefaultHTTPServer
+from s2python.authorization.default_http_server import S2DefaultHTTPServer
+from s2python.authorization.default_ws_server import S2DefaultWSServer
 from s2python.generated.gen_s2_pairing import (
     S2NodeDescription,
     Deployment,
@@ -17,18 +19,66 @@ from s2python.generated.gen_s2_pairing import (
     S2Role,
     Protocols,
 )
+from s2python.common import (
+    EnergyManagementRole,
+    ControlType,
+    Handshake,
+    ReceptionStatusValues,
+)
+from s2python.frbc import (
+    FRBCSystemDescription,
+)
+from s2python.message import S2Message
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("example_s2_server")
 
 
-def signal_handler(sig: int, frame: Any) -> None:
-    """Handle Ctrl+C to gracefully shut down the server."""
-    logger.info("Shutting down server...")
-    if server:
-        server.stop_server()
-    sys.exit(0)
+def create_signal_handler(server):
+    """Create a signal handler function for the given server."""
+
+    def handler(signum, frame):
+        logger.info("Received signal %d. Shutting down...", signum)
+        server.stop()
+        sys.exit(0)
+
+    return handler
+
+
+async def handle_FRBC_system_description(
+    server: S2DefaultWSServer, message: S2Message, send_okay: asyncio.Future
+) -> None:
+    """Handle FRBC system description messages."""
+    if not isinstance(message, FRBCSystemDescription):
+        logger.error("Handler for FRBCSystemDescription received a message of the wrong type: %s", type(message))
+        return
+
+    logger.info("Received FRBCSystemDescription: %s", message.to_json())
+    await server.respond_with_reception_status(
+        subject_message_id=message.message_id,
+        status=ReceptionStatusValues.OK,
+        diagnostic_label="FRBCSystemDescription received",
+    )
+
+
+async def handle_handshake(server: S2DefaultWSServer, message: S2Message, send_okay: asyncio.Future) -> None:
+    """Handle handshake messages and send control type selection if client is RM."""
+    if not isinstance(message, Handshake):
+        logger.error("Handler for Handshake received a message of the wrong type: %s", type(message))
+        return
+
+    logger.info("Received Handshake: %s", message.to_json())
+    await server.respond_with_reception_status(
+        subject_message_id=message.message_id,
+        status=ReceptionStatusValues.OK,
+        diagnostic_label="Handshake received",
+    )
+
+    # If client is RM, send control type selection
+    if message.role == EnergyManagementRole.RM:
+        # Then send the control type selection
+        await server.send_select_control_type(ControlType.FILL_RATE_BASED_CONTROL, send_okay)
 
 
 if __name__ == "__main__":
@@ -77,28 +127,41 @@ if __name__ == "__main__":
     )
     logger.info("http_port: %s", args.http_port)
     logger.info("ws_port: %s", args.ws_port)
-    # Create and configure the server
-    server = S2DefaultHTTPServer(
-        host=args.host,
-        http_port=args.http_port,
-        ws_port=args.ws_port,
-        server_node_description=server_node_description,
-        token=PairingToken(token=args.pairing_token),
-        instance=args.instance,
-        supported_protocols=[Protocols.WebSocketSecure],
-    )
 
-    # Set up signal handler for graceful shutdown
-    signal.signal(signal.SIGINT, signal_handler)
+    if args.instance == "ws":
+        server_ws = S2DefaultWSServer(
+            host=args.host,
+            port=args.ws_port,
+            role=EnergyManagementRole.CEM,
+        )
+        # Register our custom handshake handler
+        server_ws._handlers.register_handler(Handshake, handle_handshake)
 
-    # Start the server
-    logger.info("Starting S2 server...")
-    if args.instance == "http":
-        logger.info("Server will be available at: http://%s:%s", args.host, args.http_port)
-    elif args.instance == "ws":
-        logger.info("Server will be available at: ws://%s:%s", args.host, args.ws_port)
+        # Create and register signal handlers
+        handler = create_signal_handler(server_ws)
+        signal.signal(signal.SIGINT, handler)
+        signal.signal(signal.SIGTERM, handler)
+
+        try:
+            server_ws.start()
+        except KeyboardInterrupt:
+            server_ws.stop()
     else:
-        raise ValueError("Invalid instance type")
-    logger.info("Pairing token: %s", args.pairing_token)
-    logger.info("--------------------------------")
-    server.start_server()
+        server_http = S2DefaultHTTPServer(
+            host=args.host,
+            http_port=args.http_port,
+            ws_port=args.ws_port,
+            instance=args.instance,
+            server_node_description=server_node_description,
+            token=PairingToken(token=args.pairing_token),
+            supported_protocols=[Protocols.WebSocketSecure],
+        )
+        # Create and register signal handlers
+        handler = create_signal_handler(server_http)
+        signal.signal(signal.SIGINT, handler)
+        signal.signal(signal.SIGTERM, handler)
+
+        try:
+            server_http.start_server()
+        except KeyboardInterrupt:
+            server_http.stop_server()

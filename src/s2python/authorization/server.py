@@ -234,14 +234,6 @@ class S2AbstractServer(abc.ABC):
         """
 
     @abc.abstractmethod
-    def _get_ws_url(self) -> str:
-        """Get the WebSocket URL for the server.
-
-        Returns:
-            str: The WebSocket URL
-        """
-
-    @abc.abstractmethod
     def _get_base_url(self) -> str:
         """Get the base URL for the server.
 

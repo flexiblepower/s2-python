@@ -40,13 +40,9 @@ logger.setLevel(logging.DEBUG)
 
 
 class MyFRBCControlType(FRBCControlType):
-    def handle_instruction(
-        self, conn: S2Connection, msg: S2Message, send_okay: Callable[[], None]
-    ) -> None:
+    def handle_instruction(self, conn: S2Connection, msg: S2Message, send_okay: Callable[[], None]) -> None:
         if not isinstance(msg, FRBCInstruction):
-            raise RuntimeError(
-                f"Expected an FRBCInstruction but received a message of type {type(msg)}."
-            )
+            raise RuntimeError(f"Expected an FRBCInstruction but received a message of type {type(msg)}.")
         print(f"I have received the message {msg} from {conn}")
 
     def activate(self, conn: S2Connection) -> None:
@@ -67,12 +63,8 @@ class MyFRBCControlType(FRBCControlType):
                                 id=operation_mode_id,
                                 elements=[
                                     FRBCOperationModeElement(
-                                        fill_level_range=NumberRange(
-                                            start_of_range=0.0, end_of_range=100.0
-                                        ),
-                                        fill_rate=NumberRange(
-                                            start_of_range=-5.0, end_of_range=5.0
-                                        ),
+                                        fill_level_range=NumberRange(start_of_range=0.0, end_of_range=100.0),
+                                        fill_rate=NumberRange(start_of_range=-5.0, end_of_range=5.0),
                                         power_ranges=[
                                             PowerRange(
                                                 start_of_range=-200.0,
@@ -169,10 +161,19 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
         reconnect=True,
         verify_certificate=False,
     )
-    signal.signal(signal.SIGINT, partial(stop, s2_conn))
-    signal.signal(signal.SIGTERM, partial(stop, s2_conn))
 
-    s2_conn.start_as_rm()
+    # Create signal handlers
+    def sigint_handler(signum, frame):
+        stop(s2_conn, signum, frame)
+
+    def sigterm_handler(signum, frame):
+        stop(s2_conn, signum, frame)
+
+    # Register signal handlers
+    signal.signal(signal.SIGINT, sigint_handler)
+    signal.signal(signal.SIGTERM, sigterm_handler)
+
+    s2_conn.start()
 
 
 if __name__ == "__main__":

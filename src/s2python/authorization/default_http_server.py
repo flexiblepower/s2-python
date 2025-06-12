@@ -15,6 +15,7 @@ from typing import Dict, Any, Tuple, Optional, Union, Awaitable
 from jwskate import Jwk, Jwt
 from jwskate.jwe.compact import JweCompact
 import websockets
+from websockets.server import WebSocketServerProtocol
 
 from s2python.authorization.server import S2AbstractServer
 from s2python.generated.gen_s2_pairing import (
@@ -25,6 +26,7 @@ from s2python.generated.gen_s2_pairing import (
     Protocols,
 )
 from s2python.message import S2Message
+from websockets.server import WebSocketServer
 
 from s2python.common import (
     ReceptionStatusValues,
@@ -146,7 +148,7 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
         logger.info(format % args)  # pylint: disable=W1201
 
 
-class S2DefaultServer(S2AbstractServer):
+class S2DefaultHTTPServer(S2AbstractServer):
     """Default implementation of the S2 protocol server using http.server."""
 
     def __init__(
@@ -169,11 +171,13 @@ class S2DefaultServer(S2AbstractServer):
         self.host = host
         self.http_port = http_port
         self.ws_port = ws_port
+        self._httpd: Optional[socketserver.TCPServer] = None
+        self._ws_server: Optional[WebSocketServer] = None
         self.instance = instance
-        self._connection: Optional[S2Connection] = None
+        self._connections: Dict[str, S2Connection] = {}
+        self._loop: Optional[asyncio.AbstractEventLoop] = None
         self._handlers = MessageHandlers()
         self.s2_parser = S2Parser()
-
 
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair for the server.
@@ -265,18 +269,12 @@ class S2DefaultServer(S2AbstractServer):
         # try to decrypt the JWE
         return str(jwe)
 
-    def start_ws_server(self) -> None:
-        """Start the WebSocket server."""
-        
-
     def start_server(self) -> None:
-        """Start the HTTP server."""
+        """Start the HTTP or WebSocket server."""
         if self.instance == "http":
             logger.info("Starting HTTP server------>")
             self.start_http_server()
-        elif self.instance == "ws":
-            logger.info("Starting WebSocket server------>")
-            self.start_ws_server()
+
         else:
             raise ValueError("Invalid instance type")
 
@@ -294,11 +292,24 @@ class S2DefaultServer(S2AbstractServer):
         self._httpd.serve_forever()
 
     def stop_server(self) -> None:
-        """Stop the HTTP server."""
-        if self._httpd:
-            # self._httpd.shutdown()
+        """Stop the server."""
+        if self.instance == "http" and self._httpd:
             self._httpd.server_close()
             self._httpd = None
+        elif self.instance == "ws" and self._loop:
+            # Set stop event to trigger clean shutdown
+            if hasattr(self, "_stop_event"):
+                self._loop.call_soon_threadsafe(self._stop_event.set)
+
+                # Wait for server to close
+                if self._ws_server:
+                    self._loop.run_until_complete(self._ws_server.wait_closed())
+                self._ws_server = None
+
+    def _get_ws_url(self) -> str:
+        """Get the WebSocket URL for the server.
+        """
+        return f"ws://{self.host}:{self.ws_port}"
 
     def _get_base_url(self) -> str:
         """Get the base URL for the server.
@@ -307,11 +318,3 @@ class S2DefaultServer(S2AbstractServer):
             str: The base URL (e.g., "http://localhost:8000")
         """
         return f"http://{self.host}:{self.http_port}"
-
-    def _get_ws_url(self) -> str:
-        """Get the WebSocket URL for the server.
-
-        Returns:
-            str: The WebSocket URL
-        """
-        return f"ws://{self.host}:{self.ws_port}"
