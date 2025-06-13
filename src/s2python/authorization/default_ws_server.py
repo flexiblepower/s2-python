@@ -213,7 +213,12 @@ class S2DefaultWSServer:
     async def _connect_and_run(self) -> None:
         """Connect to the WebSocket server and run the event loop."""
         if self._server is None:
-            self._server = await ws_serve(self._handle_websocket_connection, self.host, self.port)
+            self._server = await ws_serve(
+                self._handle_websocket_connection,
+                host=self.host,
+                port=self.port,
+                process_request=self._handlers.handle_message,
+            )
             logger.info("S2 WebSocket server running at: ws://%s:%s", self.host, self.port)
         else:
             logger.info("S2 WebSocket server already running at: ws://%s:%s", self.host, self.port)
@@ -222,7 +227,7 @@ class S2DefaultWSServer:
 
             async def wait_till_connection_restart() -> None:
                 await self._restart_connection_event.wait()
-            
+
             background_tasks = [
                 self._eventloop.create_task(self._receive_messages()),
                 self._eventloop.create_task(wait_till_stop()),
