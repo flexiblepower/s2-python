@@ -9,6 +9,7 @@ import sys
 from datetime import datetime, timedelta
 from typing import Any
 import asyncio
+import uuid
 
 from s2python.authorization.default_http_server import S2DefaultHTTPServer
 from s2python.authorization.default_ws_server import S2DefaultWSServer
@@ -19,12 +20,7 @@ from s2python.generated.gen_s2_pairing import (
     S2Role,
     Protocols,
 )
-from s2python.common import (
-    EnergyManagementRole,
-    ControlType,
-    Handshake,
-    ReceptionStatusValues,
-)
+from s2python.common import EnergyManagementRole, ControlType, Handshake, ReceptionStatusValues, SelectControlType
 from s2python.frbc import (
     FRBCSystemDescription,
 )
@@ -68,7 +64,9 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, send_o
         logger.error("Handler for Handshake received a message of the wrong type: %s", type(message))
         return
 
-    logger.info("Received Handshake: %s", message.to_json())
+    logger.info("Received Handshake in example_s2_server: %s", message.to_json())
+
+    # Send reception status for the handshake
     await server.respond_with_reception_status(
         subject_message_id=message.message_id,
         status=ReceptionStatusValues.OK,
@@ -77,8 +75,15 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, send_o
 
     # If client is RM, send control type selection
     if message.role == EnergyManagementRole.RM:
-        # Then send the control type selection
-        await server.send_select_control_type(ControlType.FILL_RATE_BASED_CONTROL, send_okay)
+        # First await the send_okay for the handshake
+        # await send_okay
+        # Then send the control type selection and wait for its reception status
+        select_control_type = SelectControlType(
+            message_id=uuid.uuid4(),
+            control_type=ControlType.FILL_RATE_BASED_CONTROL,
+        )
+        logger.info("Sending select control type: %s", select_control_type.to_json())
+        await server.send_msg_and_await_reception_status_async(select_control_type)
 
 
 if __name__ == "__main__":
@@ -136,7 +141,7 @@ if __name__ == "__main__":
         )
         # Register our custom handshake handler
         server_ws._handlers.register_handler(Handshake, handle_handshake)
-
+        server_ws._handlers.register_handler(FRBCSystemDescription, handle_FRBC_system_description)
         # Create and register signal handlers
         handler = create_signal_handler(server_ws)
         signal.signal(signal.SIGINT, handler)

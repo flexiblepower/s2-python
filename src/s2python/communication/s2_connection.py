@@ -97,7 +97,7 @@ class SendOkay:
 
     async def run_async(self) -> None:
         self.status_is_send.set()
-
+        logger.info("Sending reception status for message (SendOkay) %s", self.subject_message_id)
         await self.connection.respond_with_reception_status(
             subject_message_id=self.subject_message_id,
             status=ReceptionStatusValues.OK,
@@ -420,6 +420,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 raise RuntimeError(f"Failed to start WebSocket server after {max_retries} attempts: {str(e)}")
 
     async def _connect_as_rm(self) -> None:
+
+        logger.debug("Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM.")
+
         await self.send_msg_and_await_reception_status_async(
             Handshake(
                 message_id=uuid.uuid4(),
@@ -427,8 +430,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 supported_protocol_versions=[S2_VERSION],
             )
         )
-        logger.debug("Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM.")
-
+       
         await self._handle_received_messages()
 
     async def _connect_as_cem(self) -> None:
@@ -634,7 +636,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     async def send_msg_and_await_reception_status_async(
         self,
         s2_msg: S2Message,
-        timeout_reception_status: float = 5.0,
+        timeout_reception_status: float = 20.0,
         raise_on_error: bool = True,
     ) -> ReceptionStatus:
         await self._send_and_forget(s2_msg)
@@ -663,7 +665,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     def send_msg_and_await_reception_status_sync(
         self,
         s2_msg: S2Message,
-        timeout_reception_status: float = 5.0,
+        timeout_reception_status: float = 20.0,
         raise_on_error: bool = True,
     ) -> ReceptionStatus:
         return asyncio.run_coroutine_threadsafe(

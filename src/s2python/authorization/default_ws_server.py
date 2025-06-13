@@ -212,8 +212,22 @@ class S2DefaultWSServer:
 
     async def _connect_and_run(self) -> None:
         """Connect to the WebSocket server and run the event loop."""
-        self._server = await ws_serve(self._handle_websocket_connection, self.host, self.port)
-        logger.info("S2 WebSocket server running at: ws://%s:%s", self.host, self.port)
+        if self._server is None:
+            self._server = await ws_serve(self._handle_websocket_connection, self.host, self.port)
+            logger.info("S2 WebSocket server running at: ws://%s:%s", self.host, self.port)
+        else:
+            logger.info("S2 WebSocket server already running at: ws://%s:%s", self.host, self.port)
+            async def wait_till_stop() -> None:
+                await self._stop_event.wait()
+
+            async def wait_till_connection_restart() -> None:
+                await self._restart_connection_event.wait()
+            
+            background_tasks = [
+                self._eventloop.create_task(self._receive_messages()),
+                self._eventloop.create_task(wait_till_stop()),
+                self._eventloop.create_task(wait_till_connection_restart()),
+            ]
         await self._stop_event.wait()
 
     def stop(self) -> None:
@@ -236,7 +250,12 @@ class S2DefaultWSServer:
 
         try:
             async for message in websocket:
+                if isinstance(message, ReceptionStatus):
+                    logger.info("--------------->  Received reception status: %s", message)
+                    await self.reception_status_awaiter.receive_reception_status(message)
+                    continue
                 try:
+                    logger.info("--------------->  Received message: %s", message)
                     # Parse the message
                     s2_msg = self.s2_parser.parse_as_any_message(message)
                     # Handle the message
@@ -291,12 +310,15 @@ class S2DefaultWSServer:
             status=status,
             diagnostic_label=diagnostic_label,
         )
+        logger.info("Sending reception status %s for message %s", status, subject_message_id)
         # Send to all connected clients
         for websocket in self._connections.values():
             try:
                 await websocket.send(response.to_json())
+                logger.info("SENT RECEPTION STATUS-----")
             except websockets.exceptions.ConnectionClosed:
                 continue
+        logger.info("SENT RECEPTION STATUS-----DONE")
 
     def respond_with_reception_status_sync(
         self,
@@ -314,7 +336,7 @@ class S2DefaultWSServer:
     async def send_msg_and_await_reception_status_async(
         self,
         s2_msg: S2Message,
-        timeout_reception_status: float = 5.0,
+        timeout_reception_status: float = 20.0,
         raise_on_error: bool = True,
     ) -> ReceptionStatus:
         await self._send_and_forget(s2_msg)
@@ -357,7 +379,7 @@ class S2DefaultWSServer:
             )
             return
 
-        logger.info("Received Handshake: %s", message.to_json())
+        logger.info("Received Handshak(In WS Server): %s", message.to_json())
         handshake_response = HandshakeResponse(
             message_id=message.message_id,
             selected_protocol_version=message.supported_protocol_versions,
@@ -412,4 +434,10 @@ class S2DefaultWSServer:
             control_type=control_type,
         )
         await self.send_msg_and_await_reception_status_async(select_control_type)
-        await send_okay
+        # await send_okay
+
+    async def recieve_messages(self) -> None:
+        """Recieve messages from the WebSocket server."""
+        while True:
+            message = await self._server.recv()
+            logger.info("Received message: %s", message)
