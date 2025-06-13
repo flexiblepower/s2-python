@@ -588,8 +588,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
                 if isinstance(s2_msg, ReceptionStatus):
                     logger.debug(
-                        "Message is a reception status for %s so registering in cache.",
+                        "Message is a reception status for %s (%s) so registering in cache.",
                         s2_msg.subject_message_id,
+                        s2_msg.diagnostic_label,
                     )
                     await self.reception_status_awaiter.receive_reception_status(s2_msg)
                 else:
@@ -641,7 +642,8 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     ) -> ReceptionStatus:
         await self._send_and_forget(s2_msg)
         logger.debug(
-            "Waiting for ReceptionStatus for %s %s seconds",
+            "Waiting for ReceptionStatus for %s %s for %s seconds",
+            s2_msg.message_type,
             s2_msg.message_id,  # type: ignore[attr-defined, union-attr]
             timeout_reception_status,
         )
@@ -651,7 +653,8 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             )
         except TimeoutError:
             logger.error(
-                "Did not receive a reception status on time for %s",
+                "Did not receive a reception status on time for %s %s",
+                s2_msg.message_type,
                 s2_msg.message_id,  # type: ignore[attr-defined, union-attr]
             )
             self._stop_event.set()
