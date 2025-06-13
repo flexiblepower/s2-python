@@ -315,7 +315,7 @@ class S2DefaultWSServer:
             status=status,
             diagnostic_label=diagnostic_label,
         )
-        logger.info("Sending reception status %s for message %s", status, subject_message_id)
+        logger.info("Sending reception status %s (%s) for message %s", status, diagnostic_label, subject_message_id)
         # Send to all connected clients
         for websocket in self._connections.values():
             try:
@@ -346,12 +346,13 @@ class S2DefaultWSServer:
     ) -> ReceptionStatus:
         await self._send_and_forget(s2_msg)
         logger.debug(
-            "Waiting for ReceptionStatus for %s %s seconds",
+            "Waiting for ReceptionStatus for %s %s for %s seconds",
+            s2_msg.message_type,
             s2_msg.message_id,  # type: ignore[attr-defined, union-attr]
             timeout_reception_status,
         )
         try:
-            logger.info("Waiting for reception status for %s", s2_msg.message_id)
+            logger.info("Waiting for reception status for %s %s", s2_msg.message_type, s2_msg.message_id)
             reception_status = await self.reception_status_awaiter.wait_for_reception_status(
                 s2_msg.message_id, timeout_reception_status  # type: ignore[attr-defined, union-attr]
             )
@@ -359,7 +360,8 @@ class S2DefaultWSServer:
             if raise_on_error:
                 raise
             logger.error(
-                "Did not receive a reception status on time for %s",
+                "Did not receive a reception status on time for %s %s",
+                s2_msg.message_type,
                 s2_msg.message_id,  # type: ignore[attr-defined, union-attr]
             )
             return ReceptionStatus(
