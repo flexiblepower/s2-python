@@ -173,6 +173,7 @@ class S2DefaultWSServer:
         self._stop_event = asyncio.Event()
         self.reception_status_awaiter = ReceptionStatusAwaiter()
         self.reconnect = False
+        self._received_messages = asyncio.Queue()
         # Register default handlers
         self._register_default_handlers()
 
@@ -212,22 +213,25 @@ class S2DefaultWSServer:
 
     async def _connect_and_run(self) -> None:
         """Connect to the WebSocket server and run the event loop."""
+        self._received_messages = asyncio.Queue()
         if self._server is None:
             self._server = await ws_serve(self._handle_websocket_connection, self.host, self.port)
             logger.info("S2 WebSocket server running at: ws://%s:%s", self.host, self.port)
         else:
             logger.info("S2 WebSocket server already running at: ws://%s:%s", self.host, self.port)
+
             async def wait_till_stop() -> None:
                 await self._stop_event.wait()
 
             async def wait_till_connection_restart() -> None:
                 await self._restart_connection_event.wait()
-            
+
             background_tasks = [
-                self._eventloop.create_task(self._receive_messages()),
+                self._eventloop.create_task(self.receive_messages()),
                 self._eventloop.create_task(wait_till_stop()),
                 self._eventloop.create_task(wait_till_connection_restart()),
             ]
+            (done, pending) = await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
         await self._stop_event.wait()
 
     def stop(self) -> None:
@@ -332,7 +336,7 @@ class S2DefaultWSServer:
                 self.respond_with_reception_status(subject_message_id, status, diagnostic_label),
                 self._loop,
             ).result()
-    
+
     async def send_msg_and_await_reception_status_async(
         self,
         s2_msg: S2Message,
@@ -385,7 +389,7 @@ class S2DefaultWSServer:
             selected_protocol_version=message.supported_protocol_versions,
         )
         await self.send_msg_and_await_reception_status_async(handshake_response)
-        
+
         await self.respond_with_reception_status(
             subject_message_id=message.message_id,
             status=ReceptionStatusValues.OK,
@@ -436,8 +440,74 @@ class S2DefaultWSServer:
         await self.send_msg_and_await_reception_status_async(select_control_type)
         # await send_okay
 
-    async def recieve_messages(self) -> None:
-        """Recieve messages from the WebSocket server."""
-        while True:
-            message = await self._server.recv()
-            logger.info("Received message: %s", message)
+    async def receive_messages(self) -> None:
+        """Receive messages from all connected WebSocket clients.
+
+        This method continuously processes messages from all connected clients
+        and handles them according to the registered message handlers.
+        """
+        logger.info("S2 server has started to receive messages.")
+
+        while not self._stop_event.is_set():
+            try:
+                # Process messages from all connected clients
+                for client_id, websocket in list(self._connections.items()):
+                    try:
+                        async for message in websocket:
+                            if isinstance(message, ReceptionStatus):
+                                await self.reception_status_awaiter.receive_reception_status(message)
+                                continue
+
+                            try:
+                                s2_msg: S2Message = self.s2_parser.parse_as_any_message(message)
+                                logger.debug("Received message %s", s2_msg.to_json())
+
+                                if isinstance(s2_msg, ReceptionStatus):
+                                    logger.debug(
+                                        "Message is a reception status for %s so registering in cache.",
+                                        s2_msg.subject_message_id,
+                                    )
+                                    await self.reception_status_awaiter.receive_reception_status(s2_msg)
+                                else:
+                                    await self._received_messages.put(s2_msg)
+                            except json.JSONDecodeError:
+                                await self.respond_with_reception_status(
+                                    subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                                    status=ReceptionStatusValues.INVALID_DATA,
+                                    diagnostic_label="Not valid json.",
+                                )
+                            except S2ValidationError as e:
+                                json_msg = json.loads(message)
+                                message_id = json_msg.get("message_id")
+                                if message_id:
+                                    await self.respond_with_reception_status(
+                                        subject_message_id=message_id,
+                                        status=ReceptionStatusValues.INVALID_MESSAGE,
+                                        diagnostic_label=str(e),
+                                    )
+                                else:
+                                    await self.respond_with_reception_status(
+                                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                                        status=ReceptionStatusValues.INVALID_DATA,
+                                        diagnostic_label="Message appears valid json but could not find a message_id field.",
+                                    )
+                    except websockets.exceptions.ConnectionClosed:
+                        logger.info("Connection with client %s closed", client_id)
+                        if client_id in self._connections:
+                            del self._connections[client_id]
+                        continue
+
+                # Process received messages
+                while not self._received_messages.empty():
+                    msg = await self._received_messages.get()
+                    logger.info("Processing message in receive_messages %s", msg.to_json())
+                    await self._handlers.handle_message(self, msg)
+
+                # Small delay to prevent busy waiting
+                await asyncio.sleep(0.1)
+
+            except Exception as e:
+                logger.error("Error in receive_messages: %s", str(e))
+                logger.error(traceback.format_exc())
+                if not self._stop_event.is_set():
+                    await asyncio.sleep(1)  # Wait before retrying

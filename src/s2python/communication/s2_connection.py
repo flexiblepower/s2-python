@@ -413,7 +413,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 return
 
             except (EOFError, OSError) as e:
-                logger.warning("Could not start WebSocket server due to: %s (attempt %d/%d)", str(e), attempt + 1, max_retries)
+                logger.warning(
+                    "Could not start WebSocket server due to: %s (attempt %d/%d)", str(e), attempt + 1, max_retries
+                )
                 if attempt < max_retries - 1:
                     await asyncio.sleep(retry_delay)
                     continue
@@ -430,7 +432,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 supported_protocol_versions=[S2_VERSION],
             )
         )
-       
+
         await self._handle_received_messages()
 
     async def _connect_as_cem(self) -> None:
