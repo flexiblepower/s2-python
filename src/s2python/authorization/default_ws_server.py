@@ -41,10 +41,11 @@ class SendOkay:
     server: "S2DefaultWSServer"
     subject_message_id: uuid.UUID
 
-    def __init__(self, server: "S2DefaultWSServer", subject_message_id: uuid.UUID):
+    def __init__(self, server: "S2DefaultWSServer", subject_message: S2Message):
         self.status_is_send = threading.Event()
         self.server = server
-        self.subject_message_id = subject_message_id
+        self.subject_message_id = subject_message.message_id
+        self.subject_message_type = subject_message.message_type
 
     async def run_async(self) -> None:
         """Send OK reception status asynchronously."""
@@ -52,7 +53,7 @@ class SendOkay:
         await self.server.respond_with_reception_status(
             subject_message_id=self.subject_message_id,
             status=ReceptionStatusValues.OK,
-            diagnostic_label="Processed okay.",
+            diagnostic_label=f"{self.subject_message_type} processed okay.",
         )
 
     def run_sync(self) -> None:
@@ -104,7 +105,7 @@ class MessageHandlers:
         """
         handler = self.handlers.get(type(msg))
         if handler is not None:
-            send_okay = SendOkay(server, msg.message_id)  # type: ignore[attr-defined, union-attr]
+            send_okay = SendOkay(server, subject_message=msg)  # type: ignore[attr-defined, union-attr]
 
             try:
                 if asyncio.iscoroutinefunction(handler):
