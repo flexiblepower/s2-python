@@ -120,12 +120,12 @@ class MessageHandlers:
                     await eventloop.run_in_executor(executor=None, func=do_message)
             except Exception:
                 if not send_okay.status_is_send.is_set():
-                    logger.error("While processing message %s an unrecoverable error occurred.", msg.message_id)  # type: ignore[attr-defined, union-attr]
+                    logger.error("While processing %s %s an unrecoverable error occurred.", msg.message_type, msg.message_id)  # type: ignore[attr-defined, union-attr]
                     logger.error("Error: %s", traceback.format_exc())
                     await server.respond_with_reception_status(
                         subject_message_id=msg.message_id,  # type: ignore[attr-defined, union-attr]
                         status=ReceptionStatusValues.PERMANENT_ERROR,
-                        diagnostic_label=f"While processing message {msg.message_id} "  # type: ignore[attr-defined, union-attr]
+                        diagnostic_label=f"While processing {msg.message_type} {msg.message_id} "  # type: ignore[attr-defined, union-attr]
                         f"an unrecoverable error occurred.",
                     )
                 raise
