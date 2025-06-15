@@ -207,7 +207,7 @@ class S2DefaultWSServer:
                 try:
                     s2_msg = self.s2_parser.parse_as_any_message(message)
                     if isinstance(s2_msg, ReceptionStatus):
-                        logger.info("--------------->  Received reception status: %s", s2_msg)
+                        logger.info("Received reception status: %s", s2_msg)
                         await self.reception_status_awaiter.receive_reception_status(s2_msg)
                         continue
                 except json.JSONDecodeError:
@@ -219,9 +219,8 @@ class S2DefaultWSServer:
                     )
                     continue
                 try:
-                    logger.info("--------------->  Received message: %s", message)
+                    logger.info("Received message: %s", message)
                     await self._handlers.handle_message(self, s2_msg, websocket)
-                    logger.info("--------------->  Handled message: %s", s2_msg)
                 except json.JSONDecodeError:
                     await self.respond_with_reception_status(
                         subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
@@ -280,10 +279,8 @@ class S2DefaultWSServer:
         logger.info("Sending reception status %s for message %s", status, subject_message_id)
         try:
             await websocket.send(response.to_json())
-            logger.info("SENT RECEPTION STATUS-----")
         except websockets.exceptions.ConnectionClosed:
             logger.warning("Connection closed while sending reception status")
-        logger.info("SENT RECEPTION STATUS-----DONE")
 
     def respond_with_reception_status_sync(
         self,

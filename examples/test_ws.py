@@ -3,8 +3,14 @@
 import asyncio
 import websockets
 import uuid
-from s2python.common import EnergyManagementRole, Handshake, ReceptionStatus, ReceptionStatusValues
+from s2python.common import (
+    EnergyManagementRole,
+    Handshake,
+    ReceptionStatus,
+    ReceptionStatusValues,
+)
 import json
+
 
 async def hello():
     """
@@ -39,7 +45,7 @@ async def hello():
             await websocket.send(reception_status.to_json())
             print(f">>> {reception_status.to_json()}")
             response = await websocket.recv()
-            
+
             print(f"<<< {response}")
 
     except ConnectionRefusedError:

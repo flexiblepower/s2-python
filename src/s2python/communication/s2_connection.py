@@ -641,12 +641,13 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
     async def send_msg_and_await_reception_status_async(
         self,
         s2_msg: S2Message,
-        timeout_reception_status: float = 20.0,
+        timeout_reception_status: float = 5.0,
         raise_on_error: bool = True,
     ) -> ReceptionStatus:
         await self._send_and_forget(s2_msg)
+        timeout_reception_status = 5.0
         logger.debug(
-            "Waiting for ReceptionStatus for %s %s for %s seconds",
+            "!!!Waiting for ReceptionStatus for %s %s for %s seconds",
             s2_msg.message_type,
             s2_msg.message_id,  # type: ignore[attr-defined, union-attr]
             timeout_reception_status,

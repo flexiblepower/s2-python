@@ -37,14 +37,14 @@ HTTP_PORT = 8000
 
 
 class MockS2Handler(S2DefaultHTTPHandler):
-    def do_POST(self) -> None: # pylint: disable=C0103
+    def do_POST(self) -> None:  # pylint: disable=C0103
         content_length = int(self.headers.get("Content-Length", 0))
         post_data = self.rfile.read(content_length).decode("utf-8")
 
         try:
             request_json = json.loads(post_data)
-            logger.info('Received request at %s', self.path)
-            logger.debug('Request body: %s', request_json)
+            logger.info("Received request at %s", self.path)
+            logger.debug("Request body: %s", request_json)
 
             if self.path == "/requestPairing":
                 # Handle pairing request
@@ -57,8 +57,8 @@ class MockS2Handler(S2DefaultHTTPHandler):
                 else:
                     request_token_string = token_obj
 
-                logger.info('Extracted token: %s', request_token_string)
-                logger.info('Expected token: %s', PAIRING_TOKEN)
+                logger.info("Extracted token: %s", request_token_string)
+                logger.info("Expected token: %s", PAIRING_TOKEN)
 
                 if request_token_string == PAIRING_TOKEN:
                     # Create pairing response
@@ -98,22 +98,22 @@ class MockS2Handler(S2DefaultHTTPHandler):
 
             else:
                 self._send_json_response(404, {"error": "Endpoint not found"})
-                logger.error('Unknown endpoint: %s', self.path)
+                logger.error("Unknown endpoint: %s", self.path)
 
         except Exception as e:
             self._send_json_response(500, {"error": str(e)})
-            logger.error('Error handling request: %s', e)
+            logger.error("Error handling request: %s", e)
             raise e
 
-    def log_message(self, format: str, *args: Any) -> None: # pylint: disable=W0622
-        logger.info(format % args) # pylint: disable=W1201
+    def log_message(self, format: str, *args: Any) -> None:  # pylint: disable=W0622
+        logger.info(format % args)  # pylint: disable=W1201
 
 
 def run_server() -> None:
     with socketserver.TCPServer(("localhost", HTTP_PORT), MockS2Handler) as httpd:
-        logger.info('Mock S2 Server running at: http://localhost:%s', HTTP_PORT)
-        logger.info('Use pairing token: %s', PAIRING_TOKEN)
-        logger.info('Pairing endpoint: http://localhost:%s/requestPairing', HTTP_PORT)
+        logger.info("Mock S2 Server running at: http://localhost:%s", HTTP_PORT)
+        logger.info("Use pairing token: %s", PAIRING_TOKEN)
+        logger.info("Pairing endpoint: http://localhost:%s/requestPairing", HTTP_PORT)
         httpd.serve_forever()
 
 

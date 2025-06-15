@@ -18,7 +18,7 @@ async def handle_connection(
     websocket: websockets.WebSocketServerProtocol, path: str
 ) -> None:
     client_id = str(uuid.uuid4())
-    logger.info('Client %s connected on path: %s', client_id, path)
+    logger.info("Client %s connected on path: %s", client_id, path)
 
     try:
         # Send handshake message to client
@@ -29,13 +29,13 @@ async def handle_connection(
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         await websocket.send(json.dumps(handshake))
-        logger.info('Sent handshake to client %s', client_id)
+        logger.info("Sent handshake to client %s", client_id)
 
         # Listen for messages
         async for message in websocket:
             try:
                 data = json.loads(message)
-                logger.info('Received message from client %s: %s', client_id, data)
+                logger.info("Received message from client %s: %s", client_id, data)
 
                 # Extract message type
                 message_type = data.get("type", "")
@@ -50,7 +50,7 @@ async def handle_connection(
                     "status": "OK",
                 }
                 await websocket.send(json.dumps(reception_status))
-                logger.info('Sent reception status for message %s', message_id)
+                logger.info("Sent reception status for message %s", message_id)
 
                 # Handle specific message types
                 if message_type == "HandshakeResponse":
@@ -59,23 +59,25 @@ async def handle_connection(
                 # For FRBC messages, you could add specific handling here
 
             except json.JSONDecodeError:
-                logger.error('Invalid JSON received from client %s', client_id)
+                logger.error("Invalid JSON received from client %s", client_id)
             except Exception as e:
-                logger.error('Error processing message from client %s: %s', client_id, e)
+                logger.error(
+                    "Error processing message from client %s: %s", client_id, e
+                )
                 raise e
 
     except websockets.exceptions.ConnectionClosed:
-        logger.info('Connection with client %s closed', client_id)
+        logger.info("Connection with client %s closed", client_id)
     except Exception as e:
-        logger.error('Error with client %s: %s', client_id, e)
+        logger.error("Error with client %s: %s", client_id, e)
         raise e
     finally:
-        logger.info('Client %s disconnected', client_id)
+        logger.info("Client %s disconnected", client_id)
 
 
 async def start_server() -> None:
     server = await websockets.serve(handle_connection, "localhost", WS_PORT)
-    logger.info('WebSocket server started on ws://localhost:%s', WS_PORT)
+    logger.info("WebSocket server started on ws://localhost:%s", WS_PORT)
 
     # Keep the server running
     await server.wait_closed()

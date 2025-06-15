@@ -21,9 +21,26 @@ from s2python.generated.gen_s2_pairing import (
     S2Role,
     Protocols,
 )
-from s2python.common import EnergyManagementRole, ControlType, Handshake, ReceptionStatusValues, SelectControlType, HandshakeResponse
+from s2python.common import (
+    EnergyManagementRole,
+    ControlType,
+    Handshake,
+    ReceptionStatusValues,
+    SelectControlType,
+    HandshakeResponse,
+    ResourceManagerDetails,
+)
 from s2python.frbc import (
+    FRBCInstruction,
     FRBCSystemDescription,
+    FRBCActuatorDescription,
+    FRBCStorageDescription,
+    FRBCOperationMode,
+    FRBCOperationModeElement,
+    FRBCFillLevelTargetProfile,
+    FRBCFillLevelTargetProfileElement,
+    FRBCStorageStatus,
+    FRBCActuatorStatus,
 )
 from s2python.message import S2Message
 
@@ -48,7 +65,10 @@ async def handle_FRBC_system_description(
 ) -> None:
     """Handle FRBC system description messages."""
     if not isinstance(message, FRBCSystemDescription):
-        logger.error("Handler for FRBCSystemDescription received a message of the wrong type: %s", type(message))
+        logger.error(
+            "Handler for FRBCSystemDescription received a message of the wrong type: %s",
+            type(message),
+        )
         return
 
     logger.info("Received FRBCSystemDescription: %s", message.to_json())
@@ -60,10 +80,94 @@ async def handle_FRBC_system_description(
     )
 
 
+
+async def handle_FRBCActuatorStatus(
+    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
+) -> None:
+    """Handle FRBCActuatorStatus messages."""
+    if not isinstance(message, FRBCActuatorStatus):
+        logger.error(
+            "Handler for FRBCActuatorStatus received a message of the wrong type: %s",
+            type(message),
+        )
+        return
+
+    logger.info("Received FRBCActuatorStatus: %s", message.to_json())
+    await server.respond_with_reception_status(
+        subject_message_id=message.message_id,
+        status=ReceptionStatusValues.OK,
+        diagnostic_label="FRBCActuatorStatus received",
+        websocket=websocket,
+    )
+
+
+async def handle_FillLevelTargetProfile(
+    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
+) -> None:
+    """Handle FillLevelTargetProfile messages."""
+    if not isinstance(message, FRBCFillLevelTargetProfile):
+        logger.error(
+            "Handler for FillLevelTargetProfile received a message of the wrong type: %s",
+            type(message),
+        )
+        return
+
+    logger.info("Received FillLevelTargetProfile: %s", message.to_json())
+    await server.respond_with_reception_status(
+        subject_message_id=message.message_id,
+        status=ReceptionStatusValues.OK,
+        diagnostic_label="FillLevelTargetProfile received",
+        websocket=websocket,
+    )
+
+
+async def handle_FRBCStorageStatus(
+    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
+) -> None:
+    """Handle FRBCStorageStatus messages."""
+    if not isinstance(message, FRBCStorageStatus):
+        logger.error(
+            "Handler for FRBCStorageStatus received a message of the wrong type: %s",
+            type(message),
+        )
+        return
+
+    logger.info("Received FRBCStorageStatus: %s", message.to_json())
+    await server.respond_with_reception_status(
+        subject_message_id=message.message_id,
+        status=ReceptionStatusValues.OK,
+        diagnostic_label="FRBCStorageStatus received",
+        websocket=websocket,
+    )
+
+
+async def handle_ResourceManagerDetails(
+    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
+) -> None:
+    """Handle ResourceManagerDetails messages."""
+    if not isinstance(message, ResourceManagerDetails):
+        logger.error(
+            "Handler for ResourceManagerDetails received a message of the wrong type: %s",
+            type(message),
+        )
+        return
+
+    logger.info("Received ResourceManagerDetails: %s", message.to_json())
+    await server.respond_with_reception_status(
+        subject_message_id=message.message_id,
+        status=ReceptionStatusValues.OK,
+        diagnostic_label="ResourceManagerDetails received",
+        websocket=websocket,
+    )
+
+
 async def handle_handshake(server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol) -> None:
     """Handle handshake messages and send control type selection if client is RM."""
     if not isinstance(message, Handshake):
-        logger.error("Handler for Handshake received a message of the wrong type: %s", type(message))
+        logger.error(
+            "Handler for Handshake received a message of the wrong type: %s",
+            type(message),
+        )
         return
 
     logger.info("Received Handshake in example_s2_server: %s", message.to_json())
@@ -81,7 +185,7 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, websoc
         selected_protocol_version="1.0",
     )
     logger.info("Sent HandshakeResponse: %s", handshake_response.to_json())
-    await server.send_msg_and_await_reception_status_async(handshake_response, websocket)
+    await server._send_and_forget(handshake_response, websocket)
 
     # If client is RM, send control type selection
     if message.role == EnergyManagementRole.RM:
@@ -152,6 +256,11 @@ if __name__ == "__main__":
         # Register our custom handshake handler
         server_ws._handlers.register_handler(Handshake, handle_handshake)
         server_ws._handlers.register_handler(FRBCSystemDescription, handle_FRBC_system_description)
+        server_ws._handlers.register_handler(ResourceManagerDetails, handle_ResourceManagerDetails)
+        server_ws._handlers.register_handler(FRBCActuatorStatus, handle_FRBCActuatorStatus)
+        server_ws._handlers.register_handler(FRBCFillLevelTargetProfile, handle_FillLevelTargetProfile)
+        server_ws._handlers.register_handler(FRBCStorageStatus, handle_FRBCStorageStatus)
+    
         # Create and register signal handlers
         handler = create_signal_handler(server_ws)
         signal.signal(signal.SIGINT, handler)

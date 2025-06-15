@@ -40,9 +40,13 @@ logger.setLevel(logging.DEBUG)
 
 
 class MyFRBCControlType(FRBCControlType):
-    def handle_instruction(self, conn: S2Connection, msg: S2Message, send_okay: Callable[[], None]) -> None:
+    def handle_instruction(
+        self, conn: S2Connection, msg: S2Message, send_okay: Callable[[], None]
+    ) -> None:
         if not isinstance(msg, FRBCInstruction):
-            raise RuntimeError(f"Expected an FRBCInstruction but received a message of type {type(msg)}.")
+            raise RuntimeError(
+                f"Expected an FRBCInstruction but received a message of type {type(msg)}."
+            )
         print(f"I have received the message {msg} from {conn}")
 
     def activate(self, conn: S2Connection) -> None:
@@ -63,8 +67,12 @@ class MyFRBCControlType(FRBCControlType):
                                 id=operation_mode_id,
                                 elements=[
                                     FRBCOperationModeElement(
-                                        fill_level_range=NumberRange(start_of_range=0.0, end_of_range=100.0),
-                                        fill_rate=NumberRange(start_of_range=-5.0, end_of_range=5.0),
+                                        fill_level_range=NumberRange(
+                                            start_of_range=0.0, end_of_range=100.0
+                                        ),
+                                        fill_rate=NumberRange(
+                                            start_of_range=-5.0, end_of_range=5.0
+                                        ),
                                         power_ranges=[
                                             PowerRange(
                                                 start_of_range=-200.0,
@@ -84,7 +92,9 @@ class MyFRBCControlType(FRBCControlType):
                     )
                 ],
                 storage=FRBCStorageDescription(
-                    fill_level_range=NumberRange(start_of_range=0.0, end_of_range=100.0),
+                    fill_level_range=NumberRange(
+                        start_of_range=0.0, end_of_range=100.0
+                    ),
                     fill_level_label="%",
                     diagnostic_label="Imaginary battery",
                     provides_fill_level_target_profile=True,
@@ -102,11 +112,15 @@ class MyFRBCControlType(FRBCControlType):
                 elements=[
                     FRBCFillLevelTargetProfileElement(
                         duration=Duration.from_milliseconds(30_000),
-                        fill_level_range=NumberRange(start_of_range=20.0, end_of_range=30.0),
+                        fill_level_range=NumberRange(
+                            start_of_range=20.0, end_of_range=30.0
+                        ),
                     ),
                     FRBCFillLevelTargetProfileElement(
                         duration=Duration.from_milliseconds(300_000),
-                        fill_level_range=NumberRange(start_of_range=40.0, end_of_range=50.0),
+                        fill_level_range=NumberRange(
+                            start_of_range=40.0, end_of_range=50.0
+                        ),
                     ),
                 ],
             )
@@ -153,7 +167,9 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
             resource_id=client_node_id,
             name="Some asset",
             instruction_processing_delay=Duration.from_milliseconds(20),
-            roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
+            roles=[
+                Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)
+            ],
             currency=Currency.EUR,
             provides_forecast=False,
             provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
@@ -177,7 +193,9 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="A simple S2 reseource manager example.")
+    parser = argparse.ArgumentParser(
+        description="A simple S2 reseource manager example."
+    )
     parser.add_argument(
         "endpoint",
         type=str,
