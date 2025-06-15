@@ -10,6 +10,9 @@ import uuid
 from typing import Dict
 
 from s2python.common import ReceptionStatus
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ReceptionStatusAwaiter:
@@ -23,6 +26,9 @@ class ReceptionStatusAwaiter:
     async def wait_for_reception_status(
         self, message_id: uuid.UUID, timeout_reception_status: float
     ) -> ReceptionStatus:
+        # log all the received messages
+        logger.info(f"Received messages: {self.received}")
+        logger.info(f"Awaiting messages: {self.awaiting}")
         if message_id in self.received:
             reception_status = self.received[message_id]
         else:
@@ -42,9 +48,7 @@ class ReceptionStatusAwaiter:
 
     async def receive_reception_status(self, reception_status: ReceptionStatus) -> None:
         if not isinstance(reception_status, ReceptionStatus):
-            raise RuntimeError(
-                f"Expected a ReceptionStatus but received message {reception_status}"
-            )
+            raise RuntimeError(f"Expected a ReceptionStatus but received message {reception_status}")
 
         if reception_status.subject_message_id in self.received:
             raise RuntimeError(
@@ -58,3 +62,4 @@ class ReceptionStatusAwaiter:
         if awaiting:
             awaiting.set()
             del self.awaiting[reception_status.subject_message_id]
+

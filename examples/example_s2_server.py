@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from typing import Any
 import asyncio
 import uuid
+from websockets import WebSocketServerProtocol
 
 from s2python.authorization.default_http_server import S2DefaultHTTPServer
 from s2python.authorization.default_ws_server import S2DefaultWSServer
@@ -20,7 +21,7 @@ from s2python.generated.gen_s2_pairing import (
     S2Role,
     Protocols,
 )
-from s2python.common import EnergyManagementRole, ControlType, Handshake, ReceptionStatusValues, SelectControlType
+from s2python.common import EnergyManagementRole, ControlType, Handshake, ReceptionStatusValues, SelectControlType, HandshakeResponse
 from s2python.frbc import (
     FRBCSystemDescription,
 )
@@ -43,7 +44,7 @@ def create_signal_handler(server):
 
 
 async def handle_FRBC_system_description(
-    server: S2DefaultWSServer, message: S2Message, send_okay: asyncio.Future
+    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
 ) -> None:
     """Handle FRBC system description messages."""
     if not isinstance(message, FRBCSystemDescription):
@@ -55,10 +56,11 @@ async def handle_FRBC_system_description(
         subject_message_id=message.message_id,
         status=ReceptionStatusValues.OK,
         diagnostic_label="FRBCSystemDescription received",
+        websocket=websocket,
     )
 
 
-async def handle_handshake(server: S2DefaultWSServer, message: S2Message, send_okay: asyncio.Future) -> None:
+async def handle_handshake(server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol) -> None:
     """Handle handshake messages and send control type selection if client is RM."""
     if not isinstance(message, Handshake):
         logger.error("Handler for Handshake received a message of the wrong type: %s", type(message))
@@ -71,7 +73,15 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, send_o
         subject_message_id=message.message_id,
         status=ReceptionStatusValues.OK,
         diagnostic_label="Handshake received",
+        websocket=websocket,
     )
+
+    handshake_response = HandshakeResponse(
+        message_id=message.message_id,
+        selected_protocol_version="1.0",
+    )
+    logger.info("Sent HandshakeResponse: %s", handshake_response.to_json())
+    await server.send_msg_and_await_reception_status_async(handshake_response, websocket)
 
     # If client is RM, send control type selection
     if message.role == EnergyManagementRole.RM:
@@ -83,7 +93,7 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, send_o
             control_type=ControlType.FILL_RATE_BASED_CONTROL,
         )
         logger.info("Sending select control type: %s", select_control_type.to_json())
-        await server.send_msg_and_await_reception_status_async(select_control_type)
+        await server.send_msg_and_await_reception_status_async(select_control_type, websocket)
 
 
 if __name__ == "__main__":
