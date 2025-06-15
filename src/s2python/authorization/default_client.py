@@ -32,6 +32,7 @@ from s2python.authorization.client import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("S2DefaultClient")
 
+
 class S2DefaultClient(S2AbstractClient):
     """Default implementation of the S2AbstractClient using the requests library for HTTP
     and jwskate for cryptographic operations.
@@ -156,7 +157,7 @@ class S2DefaultClient(S2AbstractClient):
                 rsa_key_pair = Jwk.from_pem(self._public_key)
             else:
                 raise ValueError("No public key available")
-            #check that the challenge is a JweCompact
+            # check that the challenge is a JweCompact
             if not isinstance(challenge, str):
                 raise ValueError("Challenge is not a string")
             # Log the challenge
@@ -192,7 +193,7 @@ class S2DefaultClient(S2AbstractClient):
                     decrypted_challenge_str=decrypted_challenge_str,
                 )
 
-            logger.info('Decrypted challenge: %s', decrypted_challenge_str)
+            logger.info("Decrypted challenge: %s", decrypted_challenge_str)
             return decrypted_challenge_str
 
         except (ValueError, TypeError, KeyError, json.JSONDecodeError) as e:
@@ -229,8 +230,13 @@ class S2DefaultClient(S2AbstractClient):
                 "Challenge solution not available. Call solve_challenge first."
             )
 
-        logger.info('Establishing WebSocket connection to %s,', self._connection_details.connectionUri)
-        logger.info('Using solved challenge: %s', self._pairing_details.decrypted_challenge_str)
+        logger.info(
+            "Establishing WebSocket connection to %s,",
+            self._connection_details.connectionUri,
+        )
+        logger.info(
+            "Using solved challenge: %s", self._pairing_details.decrypted_challenge_str
+        )
 
         # Placeholder for the connection object
         self._ws_connection = {
@@ -241,9 +247,7 @@ class S2DefaultClient(S2AbstractClient):
         return self._ws_connection
 
     def close_connection(self) -> None:
-        """Close the WebSocket connection.
-
-        """
+        """Close the WebSocket connection."""
         if self._ws_connection:
 
             logger.info("Would close WebSocket connection")

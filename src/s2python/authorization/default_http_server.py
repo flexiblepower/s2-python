@@ -2,41 +2,25 @@
 Default implementation of the S2 protocol server.
 """
 
-import base64
 import http.server
 import json
 import logging
 import socketserver
 import asyncio
-import uuid
-from datetime import datetime, timezone
-from typing import Dict, Any, Tuple, Optional, Union, Awaitable
+from datetime import datetime
+from typing import Dict, Any, Tuple, Optional, Union
 
 from jwskate import Jwk, Jwt
 from jwskate.jwe.compact import JweCompact
 import websockets
-from websockets.server import WebSocketServerProtocol
 
 from s2python.authorization.server import S2AbstractServer
 from s2python.generated.gen_s2_pairing import (
-    ConnectionDetails,
     ConnectionRequest,
     PairingRequest,
-    PairingResponse,
-    Protocols,
 )
-from s2python.message import S2Message
 from websockets.server import WebSocketServer
 
-from s2python.common import (
-    ReceptionStatusValues,
-    ReceptionStatus,
-    Handshake,
-    HandshakeResponse,
-    EnergyManagementRole,
-    SelectControlType,
-)
-from s2python.version import S2_VERSION
 from s2python.communication.s2_connection import MessageHandlers, S2Connection
 
 from s2python.s2_parser import S2Parser
@@ -86,7 +70,9 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             logger.error("Error handling request: %s", e)
             raise e
 
-    def _send_json_response(self, status_code: int, response_body: Union[dict, str]) -> None:
+    def _send_json_response(
+        self, status_code: int, response_body: Union[dict, str]
+    ) -> None:
         """
         Helper function to send a JSON response.
         :param handler: The HTTP handler instance (self).
@@ -133,7 +119,9 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             connection_request = ConnectionRequest.model_validate(request_json)
 
             # Process request using server instance
-            response = self.server_instance.handle_connection_request(connection_request)
+            response = self.server_instance.handle_connection_request(
+                connection_request
+            )
 
             # Send response
             self._send_json_response(200, response.model_dump_json())
@@ -205,7 +193,9 @@ class S2DefaultHTTPServer(S2AbstractServer):
         # Convert to JWK for JWT operations
         self._private_jwk = Jwk.from_pem(private_key)
 
-    def _create_signed_token(self, claims: Dict[str, Any], expiry_date: datetime) -> str:
+    def _create_signed_token(
+        self, claims: Dict[str, Any], expiry_date: datetime
+    ) -> str:
         """Create a signed JWT token.
 
         Args:
@@ -230,7 +220,11 @@ class S2DefaultHTTPServer(S2AbstractServer):
         return str(token)
 
     def _create_encrypted_challenge(
-        self, client_public_key: str, client_node_id: str, nested_signed_token: str, expiry_date: datetime
+        self,
+        client_public_key: str,
+        client_node_id: str,
+        nested_signed_token: str,
+        expiry_date: datetime,
     ) -> str:
         """Create an encrypted challenge for the client.
 
@@ -286,7 +280,9 @@ class S2DefaultHTTPServer(S2AbstractServer):
             return S2DefaultHTTPHandler(*args, server_instance=self, **kwargs)
 
         # Create and start server
-        self._httpd = socketserver.TCPServer((self.host, self.http_port), handler_factory)
+        self._httpd = socketserver.TCPServer(
+            (self.host, self.http_port), handler_factory
+        )
         logger.info("S2 Server running at: http://%s:%s", self.host, self.http_port)
         # Start the WebSocket server
         self._httpd.serve_forever()
@@ -307,8 +303,7 @@ class S2DefaultHTTPServer(S2AbstractServer):
                 self._ws_server = None
 
     def _get_ws_url(self) -> str:
-        """Get the WebSocket URL for the server.
-        """
+        """Get the WebSocket URL for the server."""
         return f"ws://{self.host}:{self.ws_port}"
 
     def _get_base_url(self) -> str:

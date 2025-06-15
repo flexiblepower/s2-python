@@ -115,7 +115,9 @@ class S2AbstractServer(abc.ABC):
         """
         return self._client_keys.get(client_node_id)
 
-    def handle_pairing_request(self, pairing_request: PairingRequest) -> PairingResponse:
+    def handle_pairing_request(
+        self, pairing_request: PairingRequest
+    ) -> PairingResponse:
         """Handle a pairing request from a client.
 
         Args:
@@ -130,8 +132,14 @@ class S2AbstractServer(abc.ABC):
         logger.info(f"Pairing request for Client Node: {pairing_request}")
 
         # Validate required fields
-        if not pairing_request.publicKey or not pairing_request.s2ClientNodeId or not pairing_request.token:
-            raise ValueError("Missing fields, public key, s2ClientNodeId and token are required")
+        if (
+            not pairing_request.publicKey
+            or not pairing_request.s2ClientNodeId
+            or not pairing_request.token
+        ):
+            raise ValueError(
+                "Missing fields, public key, s2ClientNodeId and token are required"
+            )
 
         # Validate token
         # TODO: Get token from server FM
@@ -140,7 +148,9 @@ class S2AbstractServer(abc.ABC):
 
         # Store client's public key
         # TODO: Store client's public key. sqlLite?
-        self.store_client_public_key(str(pairing_request.s2ClientNodeId), pairing_request.publicKey)
+        self.store_client_public_key(
+            str(pairing_request.s2ClientNodeId), pairing_request.publicKey
+        )
 
         # Create full URLs for endpoints
         base_url = self._get_base_url()
@@ -156,7 +166,9 @@ class S2AbstractServer(abc.ABC):
         logger.info(f"Pairing response: {pairing_response}")
         return pairing_response
 
-    def handle_connection_request(self, connection_request: ConnectionRequest) -> ConnectionDetails:
+    def handle_connection_request(
+        self, connection_request: ConnectionRequest
+    ) -> ConnectionDetails:
         """Handle a connection request from a client.
 
         Args:
@@ -175,10 +187,14 @@ class S2AbstractServer(abc.ABC):
             not connection_request.supportedProtocols
             or Protocols.WebSocketSecure not in connection_request.supportedProtocols
         ):
-            raise ValueError("S2 Server does not support any of the protocols supported by the client")
+            raise ValueError(
+                "S2 Server does not support any of the protocols supported by the client"
+            )
 
         # Get client's public key
-        client_public_key = self.get_client_public_key(connection_request.s2ClientNodeId)
+        client_public_key = self.get_client_public_key(
+            connection_request.s2ClientNodeId
+        )
         if not client_public_key:
             raise ValueError("Cannot retrieve client's public key")
 
@@ -187,12 +203,16 @@ class S2AbstractServer(abc.ABC):
 
         # Create nested signed token
         nested_signed_token = self._create_signed_token(
-            claims={"S2ClientNodeId": connection_request.s2ClientNodeId}, expiry_date=expiry_date
+            claims={"S2ClientNodeId": connection_request.s2ClientNodeId},
+            expiry_date=expiry_date,
         )
 
         # Create encrypted challenge
         challenge = self._create_encrypted_challenge(
-            client_public_key, connection_request.s2ClientNodeId, nested_signed_token, expiry_date
+            client_public_key,
+            connection_request.s2ClientNodeId,
+            nested_signed_token,
+            expiry_date,
         )
         ws_url = self._get_ws_url()
         # Create connection details
@@ -206,7 +226,9 @@ class S2AbstractServer(abc.ABC):
         return connection_details
 
     @abc.abstractmethod
-    def _create_signed_token(self, claims: Dict[str, Any], expiry_date: datetime) -> str:
+    def _create_signed_token(
+        self, claims: Dict[str, Any], expiry_date: datetime
+    ) -> str:
         """Create a signed JWT token.
 
         Args:
@@ -219,7 +241,11 @@ class S2AbstractServer(abc.ABC):
 
     @abc.abstractmethod
     def _create_encrypted_challenge(
-        self, client_public_key: str, client_node_id: str, nested_signed_token: str, expiry_date: datetime
+        self,
+        client_public_key: str,
+        client_node_id: str,
+        nested_signed_token: str,
+        expiry_date: datetime,
     ) -> Any:
         """Create an encrypted challenge for the client.
             TODO: using Any to avoid stringification of the JWE. Pros/Cons?
@@ -242,6 +268,11 @@ class S2AbstractServer(abc.ABC):
         """
         # This should be overridden by concrete implementations
         return "http://localhost:8000"
+
+    @abc.abstractmethod
+    def _get_ws_url(self) -> str:
+        """Get the WebSocket URL for the server."""
+        return "ws://localhost:8080"
 
     @abc.abstractmethod
     def start_server(self) -> None:

@@ -1,5 +1,16 @@
 """
-Example S2 server implementation.
+Example S2 server implementation using Flask.
+
+This example demonstrates how to set up both an HTTP and a WebSocket server
+using the Flask-based implementations.
+
+Note: You need to install Flask and Flask-Sock:
+  `pip install flask flask-sock`
+
+For running the WebSocket server with true async capabilities, an ASGI server
+like Hypercorn is recommended:
+  `pip install hypercorn`
+  `hypercorn examples.example_flask_server:server_ws.app`
 """
 
 import argparse
@@ -7,53 +18,63 @@ import logging
 import signal
 import sys
 import uuid
-from websockets import WebSocketServerProtocol
 
-from s2python.authorization.default_http_server import S2DefaultHTTPServer
-from s2python.authorization.default_ws_server import S2DefaultWSServer
-from s2python.generated.gen_s2_pairing import (
-    S2NodeDescription,
-    Deployment,
-    PairingToken,
-    S2Role,
-    Protocols,
-)
+from flask_sock import Sock
+
+from s2python.authorization.flask_http_server import S2FlaskHTTPServer
+from s2python.authorization.flask_ws_server import S2FlaskWSServer
 from s2python.common import (
-    EnergyManagementRole,
     ControlType,
+    EnergyManagementRole,
     Handshake,
-    ReceptionStatusValues,
-    SelectControlType,
     HandshakeResponse,
+    ReceptionStatusValues,
     ResourceManagerDetails,
+    SelectControlType,
 )
 from s2python.frbc import (
-    FRBCSystemDescription,
+    FRBCActuatorStatus,
     FRBCFillLevelTargetProfile,
     FRBCStorageStatus,
-    FRBCActuatorStatus,
+    FRBCSystemDescription,
+)
+from s2python.generated.gen_s2_pairing import (
+    Deployment,
+    PairingToken,
+    Protocols,
+    S2NodeDescription,
+    S2Role,
 )
 from s2python.message import S2Message
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("example_s2_server")
+logger = logging.getLogger("example_flask_server")
+
+# Create the server instance at the module level so Hypercorn can find it.
+# We assume 'ws' mode for ASGI server execution.
+server_instance = S2FlaskWSServer(
+    host="localhost",  # These values can be configured via env vars or other means
+    port=8080,
+    role=EnergyManagementRole.CEM,
+)
 
 
-def create_signal_handler(server):
-    """Create a signal handler function for the given server."""
+def create_signal_handler():
+    """Create a signal handler function."""
 
     def handler(signum, frame):
         logger.info("Received signal %d. Shutting down...", signum)
-        server.stop()
+        if server_instance:
+            server_instance.stop()
+        # For Flask's dev server, this will be interrupted by the signal.
+        # For production servers (gunicorn, hypercorn), they handle signals for shutdown.
         sys.exit(0)
 
     return handler
 
 
-async def handle_FRBC_system_description(
-    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
-) -> None:
+async def handle_FRBC_system_description(server: S2FlaskWSServer, message: S2Message, websocket: Sock) -> None:
     """Handle FRBC system description messages."""
     if not isinstance(message, FRBCSystemDescription):
         logger.error(
@@ -71,10 +92,7 @@ async def handle_FRBC_system_description(
     )
 
 
-
-async def handle_FRBCActuatorStatus(
-    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
-) -> None:
+async def handle_FRBCActuatorStatus(server: S2FlaskWSServer, message: S2Message, websocket: Sock) -> None:
     """Handle FRBCActuatorStatus messages."""
     if not isinstance(message, FRBCActuatorStatus):
         logger.error(
@@ -92,9 +110,7 @@ async def handle_FRBCActuatorStatus(
     )
 
 
-async def handle_FillLevelTargetProfile(
-    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
-) -> None:
+async def handle_FillLevelTargetProfile(server: S2FlaskWSServer, message: S2Message, websocket: Sock) -> None:
     """Handle FillLevelTargetProfile messages."""
     if not isinstance(message, FRBCFillLevelTargetProfile):
         logger.error(
@@ -112,9 +128,7 @@ async def handle_FillLevelTargetProfile(
     )
 
 
-async def handle_FRBCStorageStatus(
-    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
-) -> None:
+async def handle_FRBCStorageStatus(server: S2FlaskWSServer, message: S2Message, websocket: Sock) -> None:
     """Handle FRBCStorageStatus messages."""
     if not isinstance(message, FRBCStorageStatus):
         logger.error(
@@ -132,9 +146,7 @@ async def handle_FRBCStorageStatus(
     )
 
 
-async def handle_ResourceManagerDetails(
-    server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol
-) -> None:
+async def handle_ResourceManagerDetails(server: S2FlaskWSServer, message: S2Message, websocket: Sock) -> None:
     """Handle ResourceManagerDetails messages."""
     if not isinstance(message, ResourceManagerDetails):
         logger.error(
@@ -152,7 +164,7 @@ async def handle_ResourceManagerDetails(
     )
 
 
-async def handle_handshake(server: S2DefaultWSServer, message: S2Message, websocket: WebSocketServerProtocol) -> None:
+async def handle_handshake(server: S2FlaskWSServer, message: S2Message, websocket: Sock) -> None:
     """Handle handshake messages and send control type selection if client is RM."""
     if not isinstance(message, Handshake):
         logger.error(
@@ -161,7 +173,7 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, websoc
         )
         return
 
-    logger.info("Received Handshake in example_s2_server: %s", message.to_json())
+    logger.info("Received Handshake in example_flask_server: %s", message.to_json())
 
     # Send reception status for the handshake
     await server.respond_with_reception_status(
@@ -180,9 +192,6 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, websoc
 
     # If client is RM, send control type selection
     if message.role == EnergyManagementRole.RM:
-        # First await the send_okay for the handshake
-        # await send_okay
-        # Then send the control type selection and wait for its reception status
         select_control_type = SelectControlType(
             message_id=uuid.uuid4(),
             control_type=ControlType.FILL_RATE_BASED_CONTROL,
@@ -190,9 +199,17 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, websoc
         logger.info("Sending select control type: %s", select_control_type.to_json())
         await server.send_msg_and_await_reception_status_async(select_control_type, websocket)
 
+# Register handlers on the globally defined instance
+server_instance._handlers.register_handler(Handshake, handle_handshake)
+server_instance._handlers.register_handler(FRBCSystemDescription, handle_FRBC_system_description)
+server_instance._handlers.register_handler(ResourceManagerDetails, handle_ResourceManagerDetails)
+server_instance._handlers.register_handler(FRBCActuatorStatus, handle_FRBCActuatorStatus)
+server_instance._handlers.register_handler(FRBCFillLevelTargetProfile, handle_FillLevelTargetProfile)
+server_instance._handlers.register_handler(FRBCStorageStatus, handle_FRBCStorageStatus)
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Example S2 server implementation.")
+    parser = argparse.ArgumentParser(description="Example S2 server implementation using Flask.")
     parser.add_argument(
         "--host",
         type=str,
@@ -215,7 +232,8 @@ if __name__ == "__main__":
         "--instance",
         type=str,
         default="http",
-        help="Instance to use (default: http)",
+        choices=["http", "ws"],
+        help="Instance to use (http or ws, default: http)",
     )
     parser.add_argument(
         "--pairing-token",
@@ -230,39 +248,29 @@ if __name__ == "__main__":
         brand="TNO",
         logoUri="https://www.tno.nl/publish/pages/5604/tno-logo-1484x835_003_.jpg",
         type="demo frbc example",
-        modelName="S2 server example",
-        userDefinedName="TNO S2 server example for frbc",
+        modelName="S2 server example (Flask)",
+        userDefinedName="TNO S2 server example for frbc using Flask",
         role=S2Role.RM,
         deployment=Deployment.LAN,
     )
     logger.info("http_port: %s", args.http_port)
     logger.info("ws_port: %s", args.ws_port)
 
+    # Setup signal handling
+    handler = create_signal_handler()
+    signal.signal(signal.SIGINT, handler)
+    signal.signal(signal.SIGTERM, handler)
+
     if args.instance == "ws":
-        server_ws = S2DefaultWSServer(
-            host=args.host,
-            port=args.ws_port,
-            role=EnergyManagementRole.CEM,
+        logger.info(
+            "Starting Flask WebSocket server. For async, run with 'hypercorn examples.example_flask_server:server_ws.app'"
         )
-        # Register our custom handshake handler
-        server_ws._handlers.register_handler(Handshake, handle_handshake)
-        server_ws._handlers.register_handler(FRBCSystemDescription, handle_FRBC_system_description)
-        server_ws._handlers.register_handler(ResourceManagerDetails, handle_ResourceManagerDetails)
-        server_ws._handlers.register_handler(FRBCActuatorStatus, handle_FRBCActuatorStatus)
-        server_ws._handlers.register_handler(FRBCFillLevelTargetProfile, handle_FillLevelTargetProfile)
-        server_ws._handlers.register_handler(FRBCStorageStatus, handle_FRBCStorageStatus)
-
-        # Create and register signal handlers
-        handler = create_signal_handler(server_ws)
-        signal.signal(signal.SIGINT, handler)
-        signal.signal(signal.SIGTERM, handler)
-
         try:
-            server_ws.start()
+            server_instance.start()
         except KeyboardInterrupt:
-            server_ws.stop()
+            handler(signal.SIGINT, None)
     else:
-        server_http = S2DefaultHTTPServer(
+        server_http = S2FlaskHTTPServer(
             host=args.host,
             http_port=args.http_port,
             ws_port=args.ws_port,
@@ -271,12 +279,11 @@ if __name__ == "__main__":
             token=PairingToken(token=args.pairing_token),
             supported_protocols=[Protocols.WebSocketSecure],
         )
-        # Create and register signal handlers
-        handler = create_signal_handler(server_http)
-        signal.signal(signal.SIGINT, handler)
-        signal.signal(signal.SIGTERM, handler)
+        server_instance = server_http  # type: ignore[assignment]
 
+        logger.info("Starting Flask HTTP server.")
         try:
+            # Note: server_http.start_server() uses Flask's development server.
             server_http.start_server()
         except KeyboardInterrupt:
-            server_http.stop_server()
+            handler(signal.SIGINT, None)

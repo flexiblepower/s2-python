@@ -43,7 +43,10 @@ class MessageHandlers:
         self.handlers = {}
 
     async def handle_message(
-        self, server: "S2DefaultWSServer", msg: S2Message, websocket: WebSocketServerProtocol
+        self,
+        server: "S2DefaultWSServer",
+        msg: S2Message,
+        websocket: WebSocketServerProtocol,
     ) -> None:
         """Handle the S2 message using the registered handler.
 
@@ -125,7 +128,9 @@ class S2DefaultWSServer:
     def _register_default_handlers(self) -> None:
         """Register default message handlers."""
         self._handlers.register_handler(Handshake, self.handle_handshake)
-        self._handlers.register_handler(HandshakeResponse, self.handle_handshake_response)
+        self._handlers.register_handler(
+            HandshakeResponse, self.handle_handshake_response
+        )
         self._handlers.register_handler(ReceptionStatus, self.handle_reception_status)
 
     def start(self) -> None:
@@ -166,9 +171,15 @@ class S2DefaultWSServer:
                 host=self.host,
                 port=self.port,
             )
-            logger.info("S2 WebSocket server running at: ws://%s:%s", self.host, self.port)
+            logger.info(
+                "S2 WebSocket server running at: ws://%s:%s", self.host, self.port
+            )
         else:
-            logger.info("S2 WebSocket server already running at: ws://%s:%s", self.host, self.port)
+            logger.info(
+                "S2 WebSocket server already running at: ws://%s:%s",
+                self.host,
+                self.port,
+            )
 
             async def wait_till_stop() -> None:
                 await self._stop_event.wait()
@@ -180,7 +191,9 @@ class S2DefaultWSServer:
                 self._eventloop.create_task(wait_till_stop()),
                 self._eventloop.create_task(wait_till_connection_restart()),
             ]
-            (done, pending) = await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
+            (done, pending) = await asyncio.wait(
+                background_tasks, return_when=asyncio.FIRST_COMPLETED
+            )
         await self._stop_event.wait()
 
     def stop(self) -> None:
@@ -190,7 +203,9 @@ class S2DefaultWSServer:
         if self._server:
             self._server.close()
 
-    async def _handle_websocket_connection(self, websocket: WebSocketServerProtocol, path: str) -> None:
+    async def _handle_websocket_connection(
+        self, websocket: WebSocketServerProtocol, path: str
+    ) -> None:
         """Handle incoming WebSocket connections.
 
         Args:
@@ -208,11 +223,15 @@ class S2DefaultWSServer:
                     s2_msg = self.s2_parser.parse_as_any_message(message)
                     if isinstance(s2_msg, ReceptionStatus):
                         logger.info("Received reception status: %s", s2_msg)
-                        await self.reception_status_awaiter.receive_reception_status(s2_msg)
+                        await self.reception_status_awaiter.receive_reception_status(
+                            s2_msg
+                        )
                         continue
                 except json.JSONDecodeError:
                     await self.respond_with_reception_status(
-                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                        subject_message_id=uuid.UUID(
+                            "00000000-0000-0000-0000-000000000000"
+                        ),
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Not valid json.",
                         websocket=websocket,
@@ -223,7 +242,9 @@ class S2DefaultWSServer:
                     await self._handlers.handle_message(self, s2_msg, websocket)
                 except json.JSONDecodeError:
                     await self.respond_with_reception_status(
-                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                        subject_message_id=uuid.UUID(
+                            "00000000-0000-0000-0000-000000000000"
+                        ),
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Not valid json.",
                         websocket=websocket,
@@ -240,7 +261,9 @@ class S2DefaultWSServer:
                         )
                     else:
                         await self.respond_with_reception_status(
-                            subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                            subject_message_id=uuid.UUID(
+                                "00000000-0000-0000-0000-000000000000"
+                            ),
                             status=ReceptionStatusValues.INVALID_DATA,
                             diagnostic_label="Message appears valid json but could not find a message_id field.",
                             websocket=websocket,
@@ -276,7 +299,9 @@ class S2DefaultWSServer:
             status=status,
             diagnostic_label=diagnostic_label,
         )
-        logger.info("Sending reception status %s for message %s", status, subject_message_id)
+        logger.info(
+            "Sending reception status %s for message %s", status, subject_message_id
+        )
         try:
             await websocket.send(response.to_json())
         except websockets.exceptions.ConnectionClosed:
@@ -292,7 +317,9 @@ class S2DefaultWSServer:
         """Synchronous version of respond_with_reception_status."""
         if self._loop:
             asyncio.run_coroutine_threadsafe(
-                self.respond_with_reception_status(subject_message_id, status, diagnostic_label, websocket),
+                self.respond_with_reception_status(
+                    subject_message_id, status, diagnostic_label, websocket
+                ),
                 self._loop,
             ).result()
 
@@ -351,7 +378,10 @@ class S2DefaultWSServer:
             )
 
     async def handle_handshake(
-        self, _: "S2DefaultWSServer", message: S2Message, websocket: WebSocketServerProtocol
+        self,
+        _: "S2DefaultWSServer",
+        message: S2Message,
+        websocket: WebSocketServerProtocol,
     ) -> None:
         """Handle handshake messages.
 
@@ -372,7 +402,9 @@ class S2DefaultWSServer:
             message_id=message.message_id,
             selected_protocol_version=message.supported_protocol_versions,
         )
-        await self.send_msg_and_await_reception_status_async(handshake_response, websocket)
+        await self.send_msg_and_await_reception_status_async(
+            handshake_response, websocket
+        )
 
         await self.respond_with_reception_status(
             subject_message_id=message.message_id,
@@ -387,7 +419,10 @@ class S2DefaultWSServer:
         )
 
     async def handle_reception_status(
-        self, _: "S2DefaultWSServer", message: S2Message, websocket: WebSocketServerProtocol
+        self,
+        _: "S2DefaultWSServer",
+        message: S2Message,
+        websocket: WebSocketServerProtocol,
     ) -> None:
         """Handle reception status messages."""
         if not isinstance(message, ReceptionStatus):
@@ -396,10 +431,15 @@ class S2DefaultWSServer:
                 type(message),
             )
             return
-        logger.info("Received ReceptionStatus in handle_reception_status: %s", message.to_json())
+        logger.info(
+            "Received ReceptionStatus in handle_reception_status: %s", message.to_json()
+        )
 
     async def handle_handshake_response(
-        self, _: "S2DefaultWSServer", message: S2Message, websocket: WebSocketServerProtocol
+        self,
+        _: "S2DefaultWSServer",
+        message: S2Message,
+        websocket: WebSocketServerProtocol,
     ) -> None:
         """Handle handshake response messages.
 
@@ -417,7 +457,9 @@ class S2DefaultWSServer:
 
         logger.debug("Received HandshakeResponse: %s", message.to_json())
 
-    async def _send_and_forget(self, s2_msg: S2Message, websocket: WebSocketServerProtocol) -> None:
+    async def _send_and_forget(
+        self, s2_msg: S2Message, websocket: WebSocketServerProtocol
+    ) -> None:
         """Send a message and forget about it.
 
         Args:
@@ -430,7 +472,10 @@ class S2DefaultWSServer:
             logger.warning("Connection closed while sending message")
 
     async def send_select_control_type(
-        self, control_type: ControlType, websocket: WebSocketServerProtocol, send_okay: Awaitable[None]
+        self,
+        control_type: ControlType,
+        websocket: WebSocketServerProtocol,
+        send_okay: Awaitable[None],
     ) -> None:
         """Select the control type.
 
