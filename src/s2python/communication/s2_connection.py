@@ -618,7 +618,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         status: ReceptionStatusValues,
         diagnostic_label: str,
     ) -> None:
-        logger.debug("Responding to message %s with status %s", subject_message_id, status)
+        logger.info("Sending reception status %s (%s) for message %s", status, diagnostic_label, subject_message_id)
         await self._send_and_forget(
             ReceptionStatus(
                 subject_message_id=subject_message_id,
