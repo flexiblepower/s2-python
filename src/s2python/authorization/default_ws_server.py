@@ -316,7 +316,8 @@ class S2DefaultWSServer:
         """
         await self._send_and_forget(s2_msg, websocket)
         logger.debug(
-            "Waiting for ReceptionStatus for %s %s seconds",
+            "Waiting for ReceptionStatus for %s %s for %s seconds",
+            s2_msg.message_type,
             s2_msg.message_id,  # type: ignore[attr-defined, union-attr]
             timeout_reception_status,
         )
@@ -342,7 +343,8 @@ class S2DefaultWSServer:
             if raise_on_error:
                 raise
             logger.error(
-                "Did not receive a reception status on time for %s",
+                "Did not receive a reception status on time for %s %s",
+                s2_msg.message_type,
                 s2_msg.message_id,  # type: ignore[attr-defined, union-attr]
             )
             return ReceptionStatus(

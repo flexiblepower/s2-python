@@ -89,11 +89,13 @@ class SendOkay:
     status_is_send: threading.Event
     connection: "S2Connection"
     subject_message_id: uuid.UUID
+    subject_message_type: str
 
-    def __init__(self, connection: "S2Connection", subject_message_id: uuid.UUID):
+    def __init__(self, connection: "S2Connection", subject_message: S2Message):
         self.status_is_send = threading.Event()
         self.connection = connection
-        self.subject_message_id = subject_message_id
+        self.subject_message_id = subject_message.message_id
+        self.subject_message_type = subject_message.message_type
 
     async def run_async(self) -> None:
         self.status_is_send.set()
@@ -101,7 +103,7 @@ class SendOkay:
         await self.connection.respond_with_reception_status(
             subject_message_id=self.subject_message_id,
             status=ReceptionStatusValues.OK,
-            diagnostic_label="Processed okay.",
+            diagnostic_label=f"{self.subject_message_type} processed okay.",
         )
 
     def run_sync(self) -> None:
@@ -143,12 +145,12 @@ class MessageHandlers:
     async def handle_message(self, connection: "S2Connection", msg: S2Message) -> None:
         """Handle the S2 message using the registered handler.
 
-        :param connection: The S2 conncetion the `msg` is received from.
+        :param connection: The S2 connection the `msg` is received from.
         :param msg: The S2 message
         """
         handler = self.handlers.get(type(msg))
         if handler is not None:
-            send_okay = SendOkay(connection, msg.message_id)  # type: ignore[attr-defined, union-attr]
+            send_okay = SendOkay(connection, subject_message=msg)  # type: ignore[attr-defined, union-attr]
 
             try:
                 if asyncio.iscoroutinefunction(handler):
