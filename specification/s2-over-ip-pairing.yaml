@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  version: "0.1"
+  version: "0.2"
   title: s2-over-ip pairing and connection initiation
   description: "Description of the pairing process over IP for S2"
 paths:
@@ -20,6 +20,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PairingResponse'
+        '400':
+          description: TODO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PairingResponseErrorMessage'
   /requestConnection:
     post:
       description: TODO
@@ -35,7 +41,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectionDetails'      
+                $ref: '#/components/schemas/ConnectionDetails'
+        '400':
+          description: TODO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionDetailsErrorMessage'
 components:
   schemas:
     PairingInfo:
@@ -57,15 +69,15 @@ components:
         publicKey:
           type: string
           format: byte
+        encryptionAlgorithm:
+          type: string
+          enum:
+            - "RSA-OAEP-256"
         s2ClientNodeId:
           type: string
           format: uuid
         s2ClientNodeDescription:
           $ref: "#/components/schemas/S2NodeDescription"
-        supportedProtocols:
-          type: array
-          items:
-            $ref: "#/components/schemas/Protocols"
     PairingResponse:
       type: object
       properties:
@@ -74,33 +86,54 @@ components:
           format: uuid
         serverNodeDescription:
           $ref: "#/components/schemas/S2NodeDescription"
-        requestConnectionUri:
+    PairingResponseErrorMessage:
+      type: object
+      properties:
+        errorMessage:
           type: string
-          format: uri
+          enum:
+            - "Invalid token"
+            - "Invalid public key"
+            - "Unknown encryption algorithm"
+            - "Invalid combination of roles"
+            - "Already paired"
+            - "Parsing error"
+            - "Other"
+        additionalInfo:
+          type: string
     ConnectionRequest:
       type: object
       properties:
         s2ClientNodeId:
           type: string
           format: uuid
-        supportedProtocols:
-          type: array
-          items:
-            $ref: "#/components/schemas/Protocols"
     ConnectionDetails:
       type: object
       properties:
-        selectedProtocol:
-          $ref: "#/components/schemas/Protocols"  
         challenge:
           type: string
           format: byte
         connectionUri:
           type: string
           format: uri
-    S2NodeDescription:
+    ConnectionDetailsErrorMessage:
       type: object
-      description: TODO nog even over nadenken
+      properties:
+        errorMessage:
+          type: string
+          enum:
+            - "Unknown node ID"
+            - "Parsing error"
+            - "Other"
+        additionalInfo:
+          type: string
+    S2NodeDescription:
+      required:
+        - "brand"
+        - "type"
+        - "modelName"
+      type: object
+      description: To be done
       properties:
         brand:
           type: string
@@ -117,10 +150,6 @@ components:
           $ref: "#/components/schemas/S2Role"
         deployment:
           $ref: "#/components/schemas/Deployment"
-    Protocols:
-      type: string
-      enum:
-        - WebSocketSecure
     S2Role:
       type: string
       enum:
