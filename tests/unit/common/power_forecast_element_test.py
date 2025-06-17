@@ -1,6 +1,10 @@
+import datetime
 import json
 from datetime import timedelta
 from unittest import TestCase
+import uuid
+
+from s2python.s2_validation_error import S2ValidationError
 
 from s2python.common import (
     PowerForecastElement,
@@ -59,3 +63,22 @@ class PowerForecastElementTest(TestCase):
             ],
         }
         self.assertEqual(json.loads(json_str), expected_json)
+
+    def test__init__multiple_power_forecast_values_for_commodity_quantity(self):
+
+        # Arrange / Act / Assert
+        with self.assertRaises(S2ValidationError):
+            PowerForecastElement(
+                power_values=[
+                    PowerForecastValue(  # pyright: ignore[reportCallIssue]
+                        commodity_quantity=CommodityQuantity.NATURAL_GAS_FLOW_RATE,
+                        value_expected=500.2,
+                    ),
+
+                    PowerForecastValue(  # pyright: ignore[reportCallIssue]
+                        commodity_quantity=CommodityQuantity.NATURAL_GAS_FLOW_RATE,
+                        value_expected=500.2,
+                    )
+                ],
+                duration=Duration.from_timedelta(timedelta(seconds=4)),
+            )

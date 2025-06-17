@@ -3,6 +3,8 @@ import json
 import uuid
 from unittest import TestCase
 
+from s2python.s2_validation_error import S2ValidationError
+
 from s2python.common import PowerMeasurement, PowerValue, CommodityQuantity
 
 
@@ -62,3 +64,34 @@ class PowerMeasurementTest(TestCase):
             "measurement_timestamp": "2023-08-03T12:48:42+01:00",
         }
         self.assertEqual(json.loads(json_str), expected_json)
+
+    def test__init__no_power_measurement_values(self):
+
+        # Arrange / Act / Assert
+        with self.assertRaises(S2ValidationError):
+            PowerMeasurement(
+                values=[],
+                message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced8"),
+                measurement_timestamp=datetime(
+                    2023, 8, 3, 12, 48, 42, tzinfo=offset(timedelta(hours=1))
+                ),
+            )
+
+    def test__init__multiple_power_measurement_values_for_commodity_quantity(self):
+
+        # Arrange / Act / Assert
+        with self.assertRaises(S2ValidationError):
+            PowerMeasurement(
+                values=[
+                    PowerValue(
+                        commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42
+                    ),
+                    PowerValue(
+                        commodity_quantity=CommodityQuantity.OIL_FLOW_RATE, value=42.42
+                    ),
+                ],
+                message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced8"),
+                measurement_timestamp=datetime(
+                    2023, 8, 3, 12, 48, 42, tzinfo=offset(timedelta(hours=1))
+                ),
+            )
