@@ -2,42 +2,28 @@
 Default implementation of the S2 protocol server.
 """
 
-import base64
 import http.server
 import json
 import logging
 import socketserver
 import asyncio
-import uuid
-from datetime import datetime, timezone
-from typing import Dict, Any, Tuple, Optional, Union, Awaitable
+import base64
+from datetime import datetime
+from typing import Dict, Any, Tuple, Optional, Union
 
 from jwskate import Jwk, Jwt
 from jwskate.jwe.compact import JweCompact
 import websockets
-from websockets.server import WebSocketServerProtocol
 
 from s2python.authorization.server import S2AbstractServer
 from s2python.generated.gen_s2_pairing import (
-    ConnectionDetails,
     ConnectionRequest,
     PairingRequest,
-    PairingResponse,
-    Protocols,
 )
-from s2python.message import S2Message
 from websockets.server import WebSocketServer
 
-from s2python.common import (
-    ReceptionStatusValues,
-    ReceptionStatus,
-    Handshake,
-    HandshakeResponse,
-    EnergyManagementRole,
-    SelectControlType,
-)
-from s2python.version import S2_VERSION
 from s2python.communication.s2_connection import MessageHandlers, S2Connection
+from s2python.authorization.database import S2Database
 
 from s2python.s2_parser import S2Parser
 
@@ -157,6 +143,8 @@ class S2DefaultHTTPServer(S2AbstractServer):
         http_port: int = 8000,
         ws_port: int = 8080,
         instance: str = "http",
+        db_path: Optional[str] = None,
+        encryption_algorithm: str = "RSA-OAEP-256",
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -166,6 +154,8 @@ class S2DefaultHTTPServer(S2AbstractServer):
             host: The host to bind to
             http_port: The HTTP port to use
             ws_port: The WebSocket port to use
+            db_path: Path to the SQLite database for challenges.
+            encryption_algorithm: The algorithm for JWE encryption.
         """
         super().__init__(*args, **kwargs)
         self.host = host
@@ -178,6 +168,8 @@ class S2DefaultHTTPServer(S2AbstractServer):
         self._loop: Optional[asyncio.AbstractEventLoop] = None
         self._handlers = MessageHandlers()
         self.s2_parser = S2Parser()
+        self.s2_db = S2Database(db_path) if db_path else None
+        self.encryption_algorithm = encryption_algorithm
 
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair for the server.
@@ -202,8 +194,13 @@ class S2DefaultHTTPServer(S2AbstractServer):
             private_key: Base64 encoded private key
         """
         self._private_key = private_key
+        self._public_key = public_key
         # Convert to JWK for JWT operations
         self._private_jwk = Jwk.from_pem(private_key)
+        self._public_jwk = Jwk.from_pem(public_key)
+        # Store the key pair in the database
+        if self.s2_db:
+            self.s2_db.store_key_pair(public_key, private_key)
 
     def _create_signed_token(self, claims: Dict[str, Any], expiry_date: datetime) -> str:
         """Create a signed JWT token.
@@ -230,7 +227,11 @@ class S2DefaultHTTPServer(S2AbstractServer):
         return str(token)
 
     def _create_encrypted_challenge(
-        self, client_public_key: str, client_node_id: str, nested_signed_token: str, expiry_date: datetime
+        self,
+        client_public_key: str,
+        client_node_id: str,
+        nested_signed_token: str,
+        expiry_date: datetime,
     ) -> str:
         """Create an encrypted challenge for the client.
 
@@ -253,12 +254,20 @@ class S2DefaultHTTPServer(S2AbstractServer):
             "exp": int(expiry_date.timestamp()),
         }
 
+        if self.s2_db:
+            # This is what the client will produce after decrypting the challenge.
+            # We store it, so the WS server can verify it.
+            jwt_token = Jwt.unprotected(payload)
+            jwt_token_str = str(jwt_token)
+            decrypted_challenge_str: str = base64.b64encode(jwt_token_str.encode("utf-8")).decode("utf-8")
+            self.s2_db.store_challenge(decrypted_challenge_str)
+
         # Create JWE with all required components
         jwe = JweCompact.encrypt(
             plaintext=json.dumps(payload).encode(),
             key=client_jwk,  # Using client's public key for encryption
-            alg="RSA-OAEP-256",
-            enc="A256GCM",
+            alg=self.encryption_algorithm,
+            enc="A256GCM",  # TODO: Remove hardcode
         )
         # test the decryption of the JWE
         # decrypted_payload = jwe.decrypt(client_jwk)
@@ -307,8 +316,7 @@ class S2DefaultHTTPServer(S2AbstractServer):
                 self._ws_server = None
 
     def _get_ws_url(self) -> str:
-        """Get the WebSocket URL for the server.
-        """
+        """Get the WebSocket URL for the server."""
         return f"ws://{self.host}:{self.ws_port}"
 
     def _get_base_url(self) -> str:
