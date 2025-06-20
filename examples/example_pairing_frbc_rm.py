@@ -1,8 +1,13 @@
 import argparse
 import logging
+import threading
+import time
+import os
+import uuid
 
-from .example_frbc_rm import start_s2_session
 from s2python.authorization.default_client import S2DefaultClient
+from s2python.authorization.default_http_server import S2DefaultHTTPServer
+from s2python.authorization.default_ws_server import S2DefaultWSServer
 from s2python.generated.gen_s2_pairing import (
     S2NodeDescription,
     Deployment,
@@ -14,31 +19,26 @@ from s2python.generated.gen_s2_pairing import (
 logger = logging.getLogger("s2python")
 
 
+def run_http_server(server):
+    server.start_server()
+
+
+def run_ws_server(server):
+    server.start()
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="A simple S2 resource manager example."
-    )
-    parser.add_argument(
-        "--endpoint",
-        type=str,
-        help="Rest endpoint to start S2 pairing. E.g. https://localhost/requestPairing",
-    )
-    parser.add_argument(
-        "--pairing_token",
-        type=str,
-        help="The pairing token for the endpoint. You should get this from the S2 server e.g. ca14fda4",
-    )
-    parser.add_argument(
-        "--verify-ssl",
-        action="store_true",
-        help="Verify SSL certificates (default: False)",
-        default=False,
-    )
+    # Configuration
+    parser = argparse.ArgumentParser(description="S2 pairing example for FRBC RM")
+    parser.add_argument("--pairing_endpoint", type=str, required=True)
+    parser.add_argument("--pairing_token", type=str, required=True)
+
     args = parser.parse_args()
 
-    # Configure logging
-    logging.basicConfig(level=logging.INFO)
+    pairing_endpoint = args.pairing_endpoint
+    pairing_token = args.pairing_token
 
+    # --- Client Setup ---
     # Create node description
     node_description = S2NodeDescription(
         brand="TNO",
@@ -52,18 +52,16 @@ if __name__ == "__main__":
 
     # Create a client to perform the pairing
     client = S2DefaultClient(
-        pairing_uri=args.endpoint,
-        token=PairingToken(
-            token=args.pairing_token,
-        ),
+        pairing_uri=pairing_endpoint,
+        token=PairingToken(token=pairing_token),
         node_description=node_description,
-        verify_certificate=args.verify_ssl,
+        verify_certificate=False,
         supported_protocols=[Protocols.WebSocketSecure],
     )
 
     try:
         # Request pairing
-        logger.info("Initiating pairing with endpoint: %s", args.endpoint)
+        logger.info("Initiating pairing with endpoint: %s", pairing_endpoint)
         pairing_response = client.request_pairing()
         logger.info("Pairing request successful, requesting connection...")
 
@@ -73,17 +71,26 @@ if __name__ == "__main__":
 
         # Solve challenge
         challenge_result = client.solve_challenge()
-        logger.info("Challenge decrypted successfully")
+        logger.info("Challenge solved successfully")
 
-        # Log connection details
-        logger.info("Connection URI: %s", connection_details.connectionUri)
+        # Establish secure connection
+        s2_connection = client.establish_secure_connection()
+        logger.info("Secure WebSocket connection established.")
 
         # Start S2 session with the connection details
         logger.info("Starting S2 session...")
-        start_s2_session(
-            str(connection_details.connectionUri),
-        )
+        s2_connection.start()
+        logger.info("S2 session is running. Press Ctrl+C to exit.")
 
+        # Keep the main thread alive to allow the WebSocket connection to run.
+        event = threading.Event()
+        event.wait()
+
+    except KeyboardInterrupt:
+        logger.info("Program interrupted by user.")
     except Exception as e:
-        logger.error("Error during pairing process: %s", e)
+        logger.error("Error during pairing process: %s", e, exc_info=True)
         raise e
+    finally:
+        client.close_connection()
+        logger.info("Connection closed.")

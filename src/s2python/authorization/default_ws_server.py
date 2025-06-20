@@ -8,11 +8,12 @@ import logging
 import threading
 import time
 import uuid
-from typing import Any, Optional, List, Type, Dict, Callable, Awaitable, Union
+from typing import Any, Optional, List, Type, Dict, Callable, Awaitable, Union, Tuple
 import traceback
 
 import websockets
 from websockets.server import WebSocketServerProtocol, serve as ws_serve
+from websockets.datastructures import Headers
 
 from s2python.common import (
     ReceptionStatusValues,
@@ -28,6 +29,7 @@ from s2python.s2_parser import S2Parser
 from s2python.s2_validation_error import S2ValidationError
 from s2python.communication.reception_status_awaiter import ReceptionStatusAwaiter
 from s2python.version import S2_VERSION
+from s2python.authorization.database import S2Database
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -99,6 +101,7 @@ class S2DefaultWSServer:
         host: str = "localhost",
         port: int = 8080,
         role: EnergyManagementRole = EnergyManagementRole.CEM,
+        db_path: Optional[str] = None,
     ) -> None:
         """Initialize the WebSocket server.
 
@@ -106,6 +109,7 @@ class S2DefaultWSServer:
             host: The host to bind to
             port: The port to listen on
             role: The role of this server (CEM or RM)
+            db_path: Path to the SQLite database for challenges.
         """
         self.host = host
         self.port = port
@@ -119,6 +123,7 @@ class S2DefaultWSServer:
         self._stop_event = asyncio.Event()
         self.reception_status_awaiter = ReceptionStatusAwaiter()
         self.reconnect = False
+        self.s2_db = S2Database(db_path) if db_path else None
         # Register default handlers
         self._register_default_handlers()
 
@@ -157,14 +162,41 @@ class S2DefaultWSServer:
 
         logger.debug("Finished S2 connection eventloop.")
 
+    async def _process_request(
+        self, path: str, request_headers: Headers
+    ) -> Optional[Tuple[int, List[Tuple[str, str]], bytes]]:
+        """
+        Process incoming connection requests and validate the challenge.
+        """
+        if self.s2_db:
+            auth_header = request_headers.get("Authorization")
+            if not auth_header:
+                logger.warning("Connection attempt without Authorization header. Rejecting.")
+                return (401, [], b"Unauthorized")
+
+            if not auth_header.startswith("Bearer "):
+                logger.warning("Invalid Authorization header format. Rejecting.")
+                return (401, [], b"Unauthorized")
+
+            token = auth_header.split(" ", 1)[1]
+
+            if not self.s2_db.verify_and_remove_challenge(token):
+                logger.warning("Invalid token provided. Rejecting connection.")
+                return (403, [], b"Forbidden")
+
+            logger.info("Token validated. Accepting connection.")
+
+        return None  # Accept connection
+
     async def _connect_and_run(self) -> None:
         """Connect to the WebSocket server and run the event loop."""
-        self._received_messages = asyncio.Queue()
+        self._received_messages: asyncio.Queue[S2Message] = asyncio.Queue()
         if self._server is None:
             self._server = await ws_serve(
                 self._handle_websocket_connection,
                 host=self.host,
                 port=self.port,
+                process_request=self._process_request,
             )
             logger.info("S2 WebSocket server running at: ws://%s:%s", self.host, self.port)
         else:
@@ -319,7 +351,6 @@ class S2DefaultWSServer:
             timeout_reception_status,
         )
         try:
-            logger.info("Waiting for reception status for -------> %s", s2_msg.message_id)  # type: ignore[attr-defined, union-attr]
             try:
                 response = await websocket.recv()
                 logger.info("Received reception status: %s", response)

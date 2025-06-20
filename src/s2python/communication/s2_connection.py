@@ -331,47 +331,46 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self._received_messages = asyncio.Queue()
         if self.ws is None:
             await self._connect_ws()
-        else:
-            self.ws = self.ws
+        self.ws = self.ws
 
-            async def wait_till_stop() -> None:
-                await self._stop_event.wait()
+        async def wait_till_stop() -> None:
+            await self._stop_event.wait()
 
-            async def wait_till_connection_restart() -> None:
-                await self._restart_connection_event.wait()
+        async def wait_till_connection_restart() -> None:
+            await self._restart_connection_event.wait()
 
-            background_tasks = [
-                self._eventloop.create_task(self._receive_messages()),
-                self._eventloop.create_task(wait_till_stop()),
-                self._eventloop.create_task(
-                    self._connect_as_rm() if self.role == EnergyManagementRole.RM else self._connect_as_cem()
-                ),
-                self._eventloop.create_task(wait_till_connection_restart()),
-            ]
+        background_tasks = [
+            self._eventloop.create_task(self._receive_messages()),
+            self._eventloop.create_task(wait_till_stop()),
+            self._eventloop.create_task(
+                self._connect_as_rm() if self.role == EnergyManagementRole.RM else self._connect_as_cem()
+            ),
+            self._eventloop.create_task(wait_till_connection_restart()),
+        ]
 
-            (done, pending) = await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
+        (done, pending) = await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
 
-            if self._current_control_type:
-                self._current_control_type.deactivate(self)
-                self._current_control_type = None
+        if self._current_control_type:
+            self._current_control_type.deactivate(self)
+            self._current_control_type = None
 
-            for task in done:
-                try:
-                    await task
-                except asyncio.CancelledError:
-                    pass
-                except (websockets.ConnectionClosedError, websockets.ConnectionClosedOK):
-                    logger.info("The other party closed the websocket connection.")
+        for task in done:
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+            except (websockets.ConnectionClosedError, websockets.ConnectionClosedOK):
+                logger.info("The other party closed the websocket connection.")
 
-            for task in pending:
-                try:
-                    task.cancel()
-                    await task
-                except asyncio.CancelledError:
-                    pass
+        for task in pending:
+            try:
+                task.cancel()
+                await task
+            except asyncio.CancelledError:
+                pass
 
-            await self.ws.close()
-            await self.ws.wait_closed()
+        await self.ws.close()
+        await self.ws.wait_closed()
 
     async def _connect_ws(self) -> None:
         max_retries = 3
@@ -402,26 +401,6 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                     continue
                 raise RuntimeError(f"Failed to connect after {max_retries} attempts: {str(e)}")
 
-    async def _start_server(self) -> None:
-        max_retries = 3
-        retry_delay = 1  # seconds
-
-        for attempt in range(max_retries):
-            try:
-                logger.info("Starting WebSocket server (attempt %d/%d)", attempt + 1, max_retries)
-
-                self.ws = await ws_serve(self._handle_websocket_connection, self.url)
-                logger.info("Successfully started WebSocket server")
-                return
-
-            except (EOFError, OSError) as e:
-                logger.warning(
-                    "Could not start WebSocket server due to: %s (attempt %d/%d)", str(e), attempt + 1, max_retries
-                )
-                if attempt < max_retries - 1:
-                    await asyncio.sleep(retry_delay)
-                    continue
-                raise RuntimeError(f"Failed to start WebSocket server after {max_retries} attempts: {str(e)}")
 
     async def _connect_as_rm(self) -> None:
 
