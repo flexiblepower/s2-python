@@ -72,6 +72,7 @@ class S2AbstractServer(abc.ABC):
         self._private_key: Optional[str] = None
         self._private_jwk: Optional[Jwk] = None
 
+        self.encryption_algorithm = None
     @abc.abstractmethod
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair for the server.
@@ -136,9 +137,10 @@ class S2AbstractServer(abc.ABC):
             not pairing_request.publicKey
             or not pairing_request.s2ClientNodeId
             or not pairing_request.token
+            or not pairing_request.encryptionAlgorithm
         ):
             raise ValueError(
-                "Missing fields, public key, s2ClientNodeId and token are required"
+                "Missing fields, public key, s2ClientNodeId, token and encryptionAlgorithm are required"
             )
 
         # Validate token
@@ -151,7 +153,7 @@ class S2AbstractServer(abc.ABC):
         self.store_client_public_key(
             str(pairing_request.s2ClientNodeId), pairing_request.publicKey
         )
-
+        self.encryption_algorithm = pairing_request.encryptionAlgorithm #type: ignore
         # Create full URLs for endpoints
         base_url = self._get_base_url()
         request_connection_uri = f"{base_url}/requestConnection"

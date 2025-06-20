@@ -27,6 +27,8 @@ from s2python.authorization.client import (
     KEY_ALGORITHM,
     PairingDetails,
 )
+from s2python.communication.s2_connection import S2Connection
+from s2python.common import EnergyManagementRole
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -60,7 +62,7 @@ class S2DefaultClient(S2AbstractClient):
             supported_protocols,
         )
         # Additional state for this implementation
-        self._ws_connection: Optional[Dict[str, Any]] = None
+        self._ws_connection: Optional[S2Connection] = None
 
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair using jwskate library.
@@ -138,15 +140,11 @@ class S2DefaultClient(S2AbstractClient):
         """
         if challenge is None:
             if not self._connection_details or not self._connection_details.challenge:
-                raise ValueError(
-                    "Challenge not provided and not available in connection details"
-                )
+                raise ValueError("Challenge not provided and not available in connection details")
             challenge = self._connection_details.challenge
 
         if not self._key_pair and not self._public_key:
-            raise ValueError(
-                "Public key is not available. Generate or load a key pair first."
-            )
+            raise ValueError("Public key is not available. Generate or load a key pair first.")
 
         try:
             # If we have a jwskate Jwk object, use it directly
@@ -181,9 +179,7 @@ class S2DefaultClient(S2AbstractClient):
             jwt_token_str = str(jwt_token)
 
             # Encode the token as base64
-            decrypted_challenge_str: str = base64.b64encode(
-                jwt_token_str.encode("utf-8")
-            ).decode("utf-8")
+            decrypted_challenge_str: str = base64.b64encode(jwt_token_str.encode("utf-8")).decode("utf-8")
 
             # Store the pairing details if we have all required components
             if self._pairing_response and self._connection_details:
@@ -201,7 +197,7 @@ class S2DefaultClient(S2AbstractClient):
             logger.info(error_msg)
             raise RuntimeError(error_msg) from e
 
-    def establish_secure_connection(self) -> Dict[str, Any]:
+    def establish_secure_connection(self) -> S2Connection:
         """Establish a secure WebSocket connection.
 
         This implementation establishes a WebSocket connection
@@ -211,38 +207,30 @@ class S2DefaultClient(S2AbstractClient):
         this would use a WebSocket library like websocket-client or websockets.
 
         Returns:
-            Dict[str, Any]: A WebSocket connection object
+            S2Connection: A S2Connection object
 
         Raises:
             ValueError: If connection details or solved challenge are not available
             RuntimeError: If connection establishment fails
         """
         if not self._connection_details:
-            raise ValueError(
-                "Connection details not available. Call request_connection first."
-            )
+            raise ValueError("Connection details not available. Call request_connection first.")
 
-        if (
-            not self._pairing_details
-            or not self._pairing_details.decrypted_challenge_str
-        ):
-            raise ValueError(
-                "Challenge solution not available. Call solve_challenge first."
-            )
+        if not self._pairing_details or not self._pairing_details.decrypted_challenge_str:
+            raise ValueError("Challenge solution not available. Call solve_challenge first.")
 
         logger.info(
             "Establishing WebSocket connection to %s,",
             self._connection_details.connectionUri,
         )
-        logger.info(
-            "Using solved challenge: %s", self._pairing_details.decrypted_challenge_str
-        )
+        logger.info("Using solved challenge: %s", self._pairing_details.decrypted_challenge_str)
 
         # Placeholder for the connection object
-        self._ws_connection = {
-            "status": "connected",
-            "uri": str(self._connection_details.connectionUri),
-        }
+        self._ws_connection = S2Connection(
+            url=str(self._connection_details.connectionUri),
+            role=EnergyManagementRole.CEM,
+            bearer_token=self._pairing_details.decrypted_challenge_str,
+        )
 
         return self._ws_connection
 

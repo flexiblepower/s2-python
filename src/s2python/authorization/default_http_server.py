@@ -7,6 +7,7 @@ import json
 import logging
 import socketserver
 import asyncio
+import base64
 from datetime import datetime
 from typing import Dict, Any, Tuple, Optional, Union
 
@@ -22,6 +23,7 @@ from s2python.generated.gen_s2_pairing import (
 from websockets.server import WebSocketServer
 
 from s2python.communication.s2_connection import MessageHandlers, S2Connection
+from s2python.authorization.database import S2Database
 
 from s2python.s2_parser import S2Parser
 
@@ -70,9 +72,7 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             logger.error("Error handling request: %s", e)
             raise e
 
-    def _send_json_response(
-        self, status_code: int, response_body: Union[dict, str]
-    ) -> None:
+    def _send_json_response(self, status_code: int, response_body: Union[dict, str]) -> None:
         """
         Helper function to send a JSON response.
         :param handler: The HTTP handler instance (self).
@@ -119,9 +119,7 @@ class S2DefaultHTTPHandler(http.server.BaseHTTPRequestHandler):
             connection_request = ConnectionRequest.model_validate(request_json)
 
             # Process request using server instance
-            response = self.server_instance.handle_connection_request(
-                connection_request
-            )
+            response = self.server_instance.handle_connection_request(connection_request)
 
             # Send response
             self._send_json_response(200, response.model_dump_json())
@@ -145,6 +143,8 @@ class S2DefaultHTTPServer(S2AbstractServer):
         http_port: int = 8000,
         ws_port: int = 8080,
         instance: str = "http",
+        db_path: Optional[str] = None,
+        encryption_algorithm: str = "RSA-OAEP-256",
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -154,6 +154,8 @@ class S2DefaultHTTPServer(S2AbstractServer):
             host: The host to bind to
             http_port: The HTTP port to use
             ws_port: The WebSocket port to use
+            db_path: Path to the SQLite database for challenges.
+            encryption_algorithm: The algorithm for JWE encryption.
         """
         super().__init__(*args, **kwargs)
         self.host = host
@@ -166,6 +168,8 @@ class S2DefaultHTTPServer(S2AbstractServer):
         self._loop: Optional[asyncio.AbstractEventLoop] = None
         self._handlers = MessageHandlers()
         self.s2_parser = S2Parser()
+        self.s2_db = S2Database(db_path) if db_path else None
+        self.encryption_algorithm = encryption_algorithm
 
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair for the server.
@@ -190,12 +194,15 @@ class S2DefaultHTTPServer(S2AbstractServer):
             private_key: Base64 encoded private key
         """
         self._private_key = private_key
+        self._public_key = public_key
         # Convert to JWK for JWT operations
         self._private_jwk = Jwk.from_pem(private_key)
+        self._public_jwk = Jwk.from_pem(public_key)
+        # Store the key pair in the database
+        if self.s2_db:
+            self.s2_db.store_key_pair(public_key, private_key)
 
-    def _create_signed_token(
-        self, claims: Dict[str, Any], expiry_date: datetime
-    ) -> str:
+    def _create_signed_token(self, claims: Dict[str, Any], expiry_date: datetime) -> str:
         """Create a signed JWT token.
 
         Args:
@@ -247,12 +254,20 @@ class S2DefaultHTTPServer(S2AbstractServer):
             "exp": int(expiry_date.timestamp()),
         }
 
+        if self.s2_db:
+            # This is what the client will produce after decrypting the challenge.
+            # We store it, so the WS server can verify it.
+            jwt_token = Jwt.unprotected(payload)
+            jwt_token_str = str(jwt_token)
+            decrypted_challenge_str: str = base64.b64encode(jwt_token_str.encode("utf-8")).decode("utf-8")
+            self.s2_db.store_challenge(decrypted_challenge_str)
+
         # Create JWE with all required components
         jwe = JweCompact.encrypt(
             plaintext=json.dumps(payload).encode(),
             key=client_jwk,  # Using client's public key for encryption
-            alg="RSA-OAEP-256",
-            enc="A256GCM",
+            alg=self.encryption_algorithm,
+            enc="A256GCM",  # TODO: Remove hardcode
         )
         # test the decryption of the JWE
         # decrypted_payload = jwe.decrypt(client_jwk)
@@ -280,9 +295,7 @@ class S2DefaultHTTPServer(S2AbstractServer):
             return S2DefaultHTTPHandler(*args, server_instance=self, **kwargs)
 
         # Create and start server
-        self._httpd = socketserver.TCPServer(
-            (self.host, self.http_port), handler_factory
-        )
+        self._httpd = socketserver.TCPServer((self.host, self.http_port), handler_factory)
         logger.info("S2 Server running at: http://%s:%s", self.host, self.http_port)
         # Start the WebSocket server
         self._httpd.serve_forever()

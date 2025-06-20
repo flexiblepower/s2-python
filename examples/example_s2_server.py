@@ -6,6 +6,8 @@ import argparse
 import logging
 import signal
 import sys
+import os
+import threading
 import uuid
 from websockets import WebSocketServerProtocol
 
@@ -69,7 +71,6 @@ async def handle_FRBC_system_description(
         diagnostic_label="FRBCSystemDescription received",
         websocket=websocket,
     )
-
 
 
 async def handle_FRBCActuatorStatus(
@@ -211,20 +212,25 @@ if __name__ == "__main__":
         default=8080,
         help="WebSocket port to use (default: 8080)",
     )
-    parser.add_argument(
-        "--instance",
-        type=str,
-        default="http",
-        help="Instance to use (default: http)",
-    )
+
     parser.add_argument(
         "--pairing-token",
         type=str,
         default="ca14fda4",
         help="Pairing token to use (default: ca14fda4)",
     )
+    parser.add_argument(
+        "--db-path",
+        type=str,
+        default="s2.db",
+        help="Path to the SQLite database (default: s2.db)",
+    )
+
     args = parser.parse_args()
 
+    # Clean up previous database file
+    if os.path.exists(args.db_path):
+        os.remove(args.db_path)
     # Create node description for the server
     server_node_description = S2NodeDescription(
         brand="TNO",
@@ -238,45 +244,46 @@ if __name__ == "__main__":
     logger.info("http_port: %s", args.http_port)
     logger.info("ws_port: %s", args.ws_port)
 
-    if args.instance == "ws":
-        server_ws = S2DefaultWSServer(
-            host=args.host,
-            port=args.ws_port,
-            role=EnergyManagementRole.CEM,
-        )
-        # Register our custom handshake handler
-        server_ws._handlers.register_handler(Handshake, handle_handshake)
-        server_ws._handlers.register_handler(FRBCSystemDescription, handle_FRBC_system_description)
-        server_ws._handlers.register_handler(ResourceManagerDetails, handle_ResourceManagerDetails)
-        server_ws._handlers.register_handler(FRBCActuatorStatus, handle_FRBCActuatorStatus)
-        server_ws._handlers.register_handler(FRBCFillLevelTargetProfile, handle_FillLevelTargetProfile)
-        server_ws._handlers.register_handler(FRBCStorageStatus, handle_FRBCStorageStatus)
+    server_ws = S2DefaultWSServer(
+        host=args.host,
+        port=args.ws_port,
+        db_path=args.db_path,
+        role=EnergyManagementRole.CEM,
+    )
+    # Register our custom handshake handler
+    server_ws._handlers.register_handler(Handshake, handle_handshake)
+    server_ws._handlers.register_handler(FRBCSystemDescription, handle_FRBC_system_description)
+    server_ws._handlers.register_handler(ResourceManagerDetails, handle_ResourceManagerDetails)
+    server_ws._handlers.register_handler(FRBCActuatorStatus, handle_FRBCActuatorStatus)
+    server_ws._handlers.register_handler(FRBCFillLevelTargetProfile, handle_FillLevelTargetProfile)
+    server_ws._handlers.register_handler(FRBCStorageStatus, handle_FRBCStorageStatus)
 
-        # Create and register signal handlers
-        handler = create_signal_handler(server_ws)
-        signal.signal(signal.SIGINT, handler)
-        signal.signal(signal.SIGTERM, handler)
+    # Create and register signal handlers
+    handler = create_signal_handler(server_ws)
+    signal.signal(signal.SIGINT, handler)
+    signal.signal(signal.SIGTERM, handler)
+    server_ws_thread = threading.Thread(target=server_ws.start, daemon=True)
+    server_ws_thread.start()
+    logger.info("WebSocket Server started in background thread.")
 
-        try:
-            server_ws.start()
-        except KeyboardInterrupt:
-            server_ws.stop()
-    else:
-        server_http = S2DefaultHTTPServer(
-            host=args.host,
-            http_port=args.http_port,
-            ws_port=args.ws_port,
-            instance=args.instance,
-            server_node_description=server_node_description,
-            token=PairingToken(token=args.pairing_token),
-            supported_protocols=[Protocols.WebSocketSecure],
-        )
-        # Create and register signal handlers
-        handler = create_signal_handler(server_http)
-        signal.signal(signal.SIGINT, handler)
-        signal.signal(signal.SIGTERM, handler)
+    server_http = S2DefaultHTTPServer(
+        host=args.host,
+        http_port=args.http_port,
+        ws_port=args.ws_port,
+        db_path=args.db_path,
+        server_node_description=server_node_description,
+        token=PairingToken(token=args.pairing_token),
+        supported_protocols=[Protocols.WebSocketSecure],
+    )
+    # Create and register signal handlers
+    handler = create_signal_handler(server_http)
+    signal.signal(signal.SIGINT, handler)
+    signal.signal(signal.SIGTERM, handler)
+    server_http_thread = threading.Thread(target=server_http.start_server, daemon=True)
+    server_http_thread.start()
+    logger.info("HTTP Server started in background thread.")
 
-        try:
-            server_http.start_server()
-        except KeyboardInterrupt:
-            server_http.stop_server()
+    # Wait for both threads to finish
+    server_ws_thread.join()
+    server_http_thread.join()
+    logger.info("Both servers have stopped.")
