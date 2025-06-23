@@ -94,7 +94,7 @@ class SendOkay:
     def __init__(self, connection: "S2Connection", subject_message: S2Message):
         self.status_is_send = threading.Event()
         self.connection = connection
-        self.subject_message_id = subject_message.message_id
+        self.subject_message_id = subject_message.message_id  # type: ignore[attr-defined, union-attr]
         self.subject_message_type = subject_message.message_type
 
     async def run_async(self) -> None:
@@ -369,9 +369,12 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 await task
             except asyncio.CancelledError:
                 pass
-
-        await self.ws.close()
-        await self.ws.wait_closed()
+        if self.ws:
+            try:
+                await self.ws.close()
+                await self.ws.wait_closed()
+            except Exception:
+                logger.warning("Could not close WebSocket connection")
 
     async def _connect_ws(self) -> None:
         max_retries = 3

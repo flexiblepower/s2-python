@@ -3,8 +3,6 @@ S2 protocol server for handling pairing and secure connections.
 """
 
 import abc
-import base64
-import json
 import logging
 import uuid
 from datetime import datetime, timedelta
@@ -72,7 +70,8 @@ class S2AbstractServer(abc.ABC):
         self._private_key: Optional[str] = None
         self._private_jwk: Optional[Jwk] = None
 
-        self.encryption_algorithm = None
+        self.encryption_algorithm = "RSA-OAEP-256"
+
     @abc.abstractmethod
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair for the server.
@@ -116,9 +115,7 @@ class S2AbstractServer(abc.ABC):
         """
         return self._client_keys.get(client_node_id)
 
-    def handle_pairing_request(
-        self, pairing_request: PairingRequest
-    ) -> PairingResponse:
+    def handle_pairing_request(self, pairing_request: PairingRequest) -> PairingResponse:
         """Handle a pairing request from a client.
 
         Args:
@@ -139,9 +136,7 @@ class S2AbstractServer(abc.ABC):
             or not pairing_request.token
             or not pairing_request.encryptionAlgorithm
         ):
-            raise ValueError(
-                "Missing fields, public key, s2ClientNodeId, token and encryptionAlgorithm are required"
-            )
+            raise ValueError("Missing fields, public key, s2ClientNodeId, token and encryptionAlgorithm are required")
 
         # Validate token
         # TODO: Get token from server FM
@@ -150,10 +145,8 @@ class S2AbstractServer(abc.ABC):
 
         # Store client's public key
         # TODO: Store client's public key. sqlLite?
-        self.store_client_public_key(
-            str(pairing_request.s2ClientNodeId), pairing_request.publicKey
-        )
-        self.encryption_algorithm = pairing_request.encryptionAlgorithm #type: ignore
+        self.store_client_public_key(str(pairing_request.s2ClientNodeId), pairing_request.publicKey)
+        self.encryption_algorithm = pairing_request.encryptionAlgorithm  # type: ignore
         # Create full URLs for endpoints
         base_url = self._get_base_url()
         request_connection_uri = f"{base_url}/requestConnection"
@@ -168,9 +161,7 @@ class S2AbstractServer(abc.ABC):
         logger.info(f"Pairing response: {pairing_response}")
         return pairing_response
 
-    def handle_connection_request(
-        self, connection_request: ConnectionRequest
-    ) -> ConnectionDetails:
+    def handle_connection_request(self, connection_request: ConnectionRequest) -> ConnectionDetails:
         """Handle a connection request from a client.
 
         Args:
@@ -189,14 +180,10 @@ class S2AbstractServer(abc.ABC):
             not connection_request.supportedProtocols
             or Protocols.WebSocketSecure not in connection_request.supportedProtocols
         ):
-            raise ValueError(
-                "S2 Server does not support any of the protocols supported by the client"
-            )
+            raise ValueError("S2 Server does not support any of the protocols supported by the client")
 
         # Get client's public key
-        client_public_key = self.get_client_public_key(
-            connection_request.s2ClientNodeId
-        )
+        client_public_key = self.get_client_public_key(connection_request.s2ClientNodeId)
         if not client_public_key:
             raise ValueError("Cannot retrieve client's public key")
 
@@ -228,9 +215,7 @@ class S2AbstractServer(abc.ABC):
         return connection_details
 
     @abc.abstractmethod
-    def _create_signed_token(
-        self, claims: Dict[str, Any], expiry_date: datetime
-    ) -> str:
+    def _create_signed_token(self, claims: Dict[str, Any], expiry_date: datetime) -> str:
         """Create a signed JWT token.
 
         Args:

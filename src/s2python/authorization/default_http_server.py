@@ -144,7 +144,7 @@ class S2DefaultHTTPServer(S2AbstractServer):
         ws_port: int = 8080,
         instance: str = "http",
         db_path: Optional[str] = None,
-        encryption_algorithm: str = "RSA-OAEP-256",
+        encryption_algorithm: Optional[str] = "RSA-OAEP-256",
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -169,7 +169,7 @@ class S2DefaultHTTPServer(S2AbstractServer):
         self._handlers = MessageHandlers()
         self.s2_parser = S2Parser()
         self.s2_db = S2Database(db_path) if db_path else None
-        self.encryption_algorithm = encryption_algorithm
+        self.encryption_algorithm = encryption_algorithm if encryption_algorithm else "RSA-OAEP-256"
 
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair for the server.
