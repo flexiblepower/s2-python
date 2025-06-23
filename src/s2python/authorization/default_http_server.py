@@ -178,7 +178,7 @@ class S2DefaultHTTPServer(S2AbstractServer):
             Tuple[str, str]: (public_key, private_key) pair as base64 encoded strings
         """
         logger.info("Generating key pair")
-        self._key_pair = Jwk.generate_for_alg("RSA-OAEP-256").with_kid_thumbprint()
+        self._key_pair = Jwk.generate_for_alg(self.encryption_algorithm).with_kid_thumbprint()
         self._public_jwk = self._key_pair
         self._private_jwk = self._key_pair
         return (
@@ -214,15 +214,15 @@ class S2DefaultHTTPServer(S2AbstractServer):
         """
         if not self._private_jwk:
             # Generate key pair with correct algorithm
-            self._key_pair = Jwk.generate_for_alg("RS256").with_kid_thumbprint()
+            self._key_pair = Jwk.generate_for_alg(self.encryption_algorithm).with_kid_thumbprint()
             self._private_jwk = self._key_pair
             self._public_jwk = self._key_pair
 
         # Add expiration to claims
         claims["exp"] = int(expiry_date.timestamp())
 
-        # Create JWT with claims using RS256 for signing
-        token = Jwt.sign(claims=claims, key=self._private_jwk, alg="RS256")
+        # Create JWT with claims using the encryption algorithm for signing
+        token = Jwt.sign(claims=claims, key=self._private_jwk, alg=self.encryption_algorithm)
 
         return str(token)
 
@@ -281,7 +281,7 @@ class S2DefaultHTTPServer(S2AbstractServer):
     def start_server(self) -> None:
         """Start the HTTP or WebSocket server."""
         if self.instance == "http":
-            logger.info("Starting HTTP server------>")
+            logger.info("Starting HTTP server")
             self.start_http_server()
 
         else:
