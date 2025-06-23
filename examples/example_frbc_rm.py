@@ -30,7 +30,7 @@ from s2python.frbc import (
     FRBCStorageStatus,
     FRBCActuatorStatus,
 )
-from s2python.s2_connection import S2Connection, AssetDetails
+from s2python.communication.s2_connection import S2Connection, AssetDetails
 from s2python.s2_control_type import FRBCControlType, NoControlControlType
 from s2python.message import S2Message
 
@@ -92,7 +92,9 @@ class MyFRBCControlType(FRBCControlType):
                     )
                 ],
                 storage=FRBCStorageDescription(
-                    fill_level_range=NumberRange(start_of_range=0.0, end_of_range=100.0),
+                    fill_level_range=NumberRange(
+                        start_of_range=0.0, end_of_range=100.0
+                    ),
                     fill_level_label="%",
                     diagnostic_label="Imaginary battery",
                     provides_fill_level_target_profile=True,
@@ -110,11 +112,15 @@ class MyFRBCControlType(FRBCControlType):
                 elements=[
                     FRBCFillLevelTargetProfileElement(
                         duration=Duration.from_milliseconds(30_000),
-                        fill_level_range=NumberRange(start_of_range=20.0, end_of_range=30.0),
+                        fill_level_range=NumberRange(
+                            start_of_range=20.0, end_of_range=30.0
+                        ),
                     ),
                     FRBCFillLevelTargetProfileElement(
                         duration=Duration.from_milliseconds(300_000),
-                        fill_level_range=NumberRange(start_of_range=40.0, end_of_range=50.0),
+                        fill_level_range=NumberRange(
+                            start_of_range=40.0, end_of_range=50.0
+                        ),
                     ),
                 ],
             )
@@ -161,7 +167,9 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
             resource_id=client_node_id,
             name="Some asset",
             instruction_processing_delay=Duration.from_milliseconds(20),
-            roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
+            roles=[
+                Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)
+            ],
             currency=Currency.EUR,
             provides_forecast=False,
             provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
@@ -169,19 +177,30 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
         reconnect=True,
         verify_certificate=False,
     )
-    signal.signal(signal.SIGINT, partial(stop, s2_conn))
-    signal.signal(signal.SIGTERM, partial(stop, s2_conn))
 
-    s2_conn.start_as_rm()
+    # Create signal handlers
+    def sigint_handler(signum, frame):
+        stop(s2_conn, signum, frame)
+
+    def sigterm_handler(signum, frame):
+        stop(s2_conn, signum, frame)
+
+    # Register signal handlers
+    signal.signal(signal.SIGINT, sigint_handler)
+    signal.signal(signal.SIGTERM, sigterm_handler)
+
+    s2_conn.start()
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="A simple S2 reseource manager example.")
+    parser = argparse.ArgumentParser(
+        description="A simple S2 reseource manager example."
+    )
     parser.add_argument(
-        "endpoint",
+        "--endpoint",
         type=str,
         help="WebSocket endpoint uri for the server (CEM) e.g. "
-        "ws://localhost:8080/backend/rm/s2python-frbc/cem/dummy_model/ws",
+        "ws://localhost:8080/",
     )
     args = parser.parse_args()
 

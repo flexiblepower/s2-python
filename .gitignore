@@ -13,3 +13,4 @@ venv
 dist/
 build/
 %LOCALAPPDATA%
+temp_java/

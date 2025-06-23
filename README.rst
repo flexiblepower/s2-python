@@ -35,8 +35,10 @@ Add to your pyproject.toml:
     [tool.mypy]
     plugins = ['pydantic.mypy']
 
-Example
+Examples
 ---------
+
+Use S2 classes in your code:
 
 .. code-block:: python
 
@@ -53,6 +55,28 @@ Example
     # deserialize s2 messages
     json_str = '{"start_of_range": 4.0, "end_of_range": 5.0, "commodity_quantity": "ELECTRIC.POWER.L1"}'
     PowerRange.from_json(json_str)
+
+Run an example CEM server with websocket and http server:
+
+.. code-block:: bash
+
+    python -m examples.example_s2_server --host localhost --http-port 8000 --ws-port 8080 --pairing-token ca14fda4
+
+
+This will start both a http and a websocket server instances. It also allows to set a hardcoded pairing token.
+
+Run an example RM client that pairs with the CEM server, authenticates and starts sending S2 messages that describe an FRBC device:
+
+.. code-block:: bash
+
+    python -m examples.example_pairing_frbc_rm --pairing_endpoint http://localhost:8000/requestPairing --pairing_token ca14fda4
+
+In case you want to run the example of a client that does not need to pair with the CEM server, you can add the --dev-mode flag. This will disable the pairing/authentication check and allows you to send messages to the CEM server without pairing. The CEM server still needs to be running.
+
+.. code-block:: bash
+
+    python -m examples.example_frbc_rm --endpoint ws://localhost:8080
+
 
 Development
 -------------
