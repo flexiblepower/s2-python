@@ -99,7 +99,7 @@ class SendOkay:
 
     async def run_async(self) -> None:
         self.status_is_send.set()
-        logger.info("Sending reception status for message (SendOkay) %s", self.subject_message_id)
+        logger.info("SendOkay")
         await self.connection.respond_with_reception_status(
             subject_message_id=self.subject_message_id,
             status=ReceptionStatusValues.OK,
@@ -234,6 +234,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
         # Register default handlers based on role
         if role == EnergyManagementRole.RM:
+            logger.info("Registering RM handlers")
             self._register_rm_handlers()
         else:
             logger.info("Registering CEM handlers")
@@ -496,9 +497,9 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             )
             return
 
-        await send_okay
         logger.debug("CEM selected control type %s. Activating control type.", message.control_type)
-
+        await send_okay
+        
         control_types_by_protocol_name = {c.get_protocol_control_type(): c for c in self.control_types}
         selected_control_type = control_types_by_protocol_name.get(message.control_type)
 

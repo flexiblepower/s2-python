@@ -30,7 +30,7 @@ from s2python.frbc import (
     FRBCStorageStatus,
     FRBCActuatorStatus,
 )
-from s2python.s2_connection import S2Connection, AssetDetails
+from s2python.communication.s2_connection import S2Connection, AssetDetails
 from s2python.s2_control_type import FRBCControlType, NoControlControlType
 from s2python.message import S2Message
 
@@ -197,10 +197,10 @@ if __name__ == "__main__":
         description="A simple S2 reseource manager example."
     )
     parser.add_argument(
-        "endpoint",
+        "--endpoint",
         type=str,
         help="WebSocket endpoint uri for the server (CEM) e.g. "
-        "ws://localhost:8080/backend/rm/s2python-frbc/cem/dummy_model/ws",
+        "ws://localhost:8080/",
     )
     args = parser.parse_args()
 
