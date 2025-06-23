@@ -9,7 +9,8 @@ import base64
 import json
 import uuid
 import logging
-from typing import Dict, Optional, Tuple, Union, List, Any, Mapping
+import datetime
+from typing import Dict, Optional, Tuple, Union, List, Any, Mapping, Callable
 
 import requests
 from requests import Response
@@ -27,8 +28,8 @@ from s2python.authorization.client import (
     KEY_ALGORITHM,
     PairingDetails,
 )
-from s2python.communication.s2_connection import S2Connection
 from s2python.common import EnergyManagementRole
+from s2python.communication.s2_connection import S2Connection
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -51,6 +52,7 @@ class S2DefaultClient(S2AbstractClient):
         verify_certificate: Union[bool, str] = False,
         client_node_id: Optional[uuid.UUID] = None,
         supported_protocols: Optional[List[Protocols]] = None,
+        role: EnergyManagementRole = EnergyManagementRole.RM,
     ) -> None:
         """Initialize the default client with configuration parameters."""
         super().__init__(
@@ -63,6 +65,7 @@ class S2DefaultClient(S2AbstractClient):
         )
         # Additional state for this implementation
         self._ws_connection: Optional[S2Connection] = None
+        self._role = role
 
     def generate_key_pair(self) -> Tuple[str, str]:
         """Generate a public/private key pair using jwskate library.
@@ -228,15 +231,15 @@ class S2DefaultClient(S2AbstractClient):
         # Placeholder for the connection object
         self._ws_connection = S2Connection(
             url=str(self._connection_details.connectionUri),
-            role=EnergyManagementRole.CEM,
+            role=self._role,
             bearer_token=self._pairing_details.decrypted_challenge_str,
         )
-
+        
         return self._ws_connection
 
     def close_connection(self) -> None:
         """Close the WebSocket connection."""
         if self._ws_connection:
-
-            logger.info("Would close WebSocket connection")
+            logger.info("Closing WebSocket connection")
+            self._ws_connection.stop()
             self._ws_connection = None

@@ -27,8 +27,8 @@ class ReceptionStatusAwaiter:
         self, message_id: uuid.UUID, timeout_reception_status: float
     ) -> ReceptionStatus:
         # log all the received messages
-        logger.info(f"Received messages: {self.received}")
-        logger.info(f"Awaiting messages: {self.awaiting}")
+        # logger.info(f"Received messages: {self.received}")
+        # logger.info(f"Awaiting messages: {self.awaiting}")
         if message_id in self.received:
             reception_status = self.received[message_id]
         else:

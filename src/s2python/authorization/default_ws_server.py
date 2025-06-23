@@ -102,6 +102,7 @@ class S2DefaultWSServer:
         port: int = 8080,
         role: EnergyManagementRole = EnergyManagementRole.CEM,
         db_path: Optional[str] = None,
+        dev_mode: bool = False,
     ) -> None:
         """Initialize the WebSocket server.
 
@@ -126,6 +127,7 @@ class S2DefaultWSServer:
         self.s2_db = S2Database(db_path) if db_path else None
         # Register default handlers
         self._register_default_handlers()
+        self.dev_mode = dev_mode
 
     def _register_default_handlers(self) -> None:
         """Register default message handlers."""
@@ -168,6 +170,9 @@ class S2DefaultWSServer:
         """
         Process incoming connection requests and validate the challenge.
         """
+        if self.dev_mode:
+            return None
+
         if self.s2_db:
             auth_header = request_headers.get("Authorization")
             if not auth_header:
@@ -398,7 +403,7 @@ class S2DefaultWSServer:
             )
             return
 
-        logger.info("Received Handshak(In WS Server): %s", message.to_json())
+        logger.info("Received Handshake(In WS Server): %s", message.to_json())
         handshake_response = HandshakeResponse(
             message_id=message.message_id,
             selected_protocol_version=message.supported_protocol_versions,

@@ -180,7 +180,9 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, websoc
     await server._send_and_forget(handshake_response, websocket)
 
     # If client is RM, send control type selection
+    logger.info("Role: %s", message.role)
     if message.role == EnergyManagementRole.RM:
+        logger.info("Sending control type selection")
         # First await the send_okay for the handshake
         # await send_okay
         # Then send the control type selection and wait for its reception status
@@ -190,6 +192,7 @@ async def handle_handshake(server: S2DefaultWSServer, message: S2Message, websoc
         )
         logger.info("Sending select control type: %s", select_control_type.to_json())
         await server.send_msg_and_await_reception_status_async(select_control_type, websocket)
+        logger.info("Activated control type. Routine finished")
 
 
 if __name__ == "__main__":
@@ -225,6 +228,12 @@ if __name__ == "__main__":
         default="s2.db",
         help="Path to the SQLite database (default: s2.db)",
     )
+    
+    parser.add_argument(
+        "--dev-mode",
+        action="store_true",
+        help="Enable dev mode (default: False)",
+    )
 
     args = parser.parse_args()
 
@@ -249,6 +258,7 @@ if __name__ == "__main__":
         port=args.ws_port,
         db_path=args.db_path,
         role=EnergyManagementRole.CEM,
+        dev_mode=args.dev_mode,
     )
     # Register our custom handshake handler
     server_ws._handlers.register_handler(Handshake, handle_handshake)
