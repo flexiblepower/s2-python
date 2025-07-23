@@ -8,7 +8,7 @@ authors = [
     {name = "Flexiblepower", email = "info@info.nl"}
 ]
 description = "S2 Protocol Python Wrapper"
-version = "0.5.0"
+version = "0.6.0"
 readme = "README.rst"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
