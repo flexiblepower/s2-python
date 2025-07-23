@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=42", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,7 @@ authors = [
     {name = "Flexiblepower", email = "info@info.nl"}
 ]
 description = "S2 Protocol Python Wrapper"
-version = "0.6.0"
+dynamic = ["version"]
 readme = "README.rst"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -26,6 +26,11 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",    
 ]
+
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
+
 [project.urls]
     "Source code" = "https://github.com/flexiblepower/s2-ws-json-python"
 
