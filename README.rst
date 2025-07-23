@@ -10,8 +10,6 @@ Python Wrapper for S2 Flexibility Protocol
 This Python package implements the message validation for the EN50491-12-2 "S2" standard for home and building energy management. This implementation
 is based on the asyncapi description of the protocol provided in the `s2-ws-json <https://github.com/flexiblepower/s2-ws-json/>`_ repository. 
 
-Currently, the package supports the *common* and *FILL RATE BASED CONTROL* types and messages.
-
 To Install
 -----------
 You can install this package using pip or any Python dependency manager that collects the packages from PyPI:
