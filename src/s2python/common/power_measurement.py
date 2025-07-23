@@ -1,6 +1,6 @@
+import uuid
 from typing import List
 from typing_extensions import Self
-import uuid
 
 from pydantic import model_validator
 from s2python.common.power_value import PowerValue
@@ -32,7 +32,7 @@ class PowerMeasurement(GenPowerMeasurement, S2MessageComponent):
             if has_value.get(value.commodity_quantity, False):
                 raise ValueError(
                     self,
-                    f"The measured PowerValues must contain at most one item per CommodityQuantity.",
+                    "The measured PowerValues must contain at most one item per CommodityQuantity.",
                 )
 
             has_value[value.commodity_quantity] = True

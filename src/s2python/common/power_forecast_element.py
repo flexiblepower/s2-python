@@ -35,7 +35,7 @@ class PowerForecastElement(GenPowerForecastElement, S2MessageComponent):
             if has_value.get(value.commodity_quantity, False):
                 raise ValueError(
                     self,
-                    f"There must be at most 1 PowerForecastValue per CommodityQuantity",
+                    "There must be at most 1 PowerForecastValue per CommodityQuantity",
                 )
             has_value[value.commodity_quantity] = True
 

@@ -1,8 +1,6 @@
-import datetime
 import json
 from datetime import timedelta
 from unittest import TestCase
-import uuid
 
 from s2python.s2_validation_error import S2ValidationError
 
