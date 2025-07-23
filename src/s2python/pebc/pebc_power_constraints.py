@@ -4,7 +4,7 @@ from typing_extensions import Self
 
 from pydantic import model_validator
 
-from s2python.common import CommodityQuantity, NumberRange
+from s2python.common import CommodityQuantity
 from s2python.generated.gen_s2 import (
     PEBCPowerConstraints as GenPEBCPowerConstraints,
     PEBCPowerEnvelopeConsequenceType as GenPEBCPowerEnvelopeConsequenceType,
@@ -60,10 +60,10 @@ class PEBCPowerConstraints(GenPEBCPowerConstraints, S2MessageComponent):
         for upper, lower in commodity_type_ranges.values():
             valid = valid and upper and lower
 
-        if not (valid):
+        if not valid:
             raise ValueError(
                 self,
-                f"There shall be at least one PEBC.AllowedLimitRange for the UPPER_LIMIT and at least one AllowedLimitRange for the LOWER_LIMIT.",
+                "There shall be at least one PEBC.AllowedLimitRange for the UPPER_LIMIT and at least one AllowedLimitRange for the LOWER_LIMIT.",
             )
 
         return self
@@ -72,6 +72,6 @@ class PEBCPowerConstraints(GenPEBCPowerConstraints, S2MessageComponent):
     def validate_valid_until_after_valid_from(self) -> Self:
         if self.valid_until is not None and self.valid_until < self.valid_from:
             raise ValueError(
-                self, f"valid_until cannot be set to a value that is before valid_from."
+                self, "valid_until cannot be set to a value that is before valid_from."
             )
         return self
