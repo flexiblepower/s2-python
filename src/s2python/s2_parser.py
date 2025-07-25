@@ -88,10 +88,9 @@ class S2Parser:
                 None,
                 message_json,
                 f"Unable to parse {message_type} as an S2 message. Type unknown.",
-                None,
             )
 
-        return TYPE_TO_MESSAGE_CLASS[message_type].model_validate(message_json)
+        return TYPE_TO_MESSAGE_CLASS[message_type].from_dict(message_json)
 
     @staticmethod
     def parse_as_message(
