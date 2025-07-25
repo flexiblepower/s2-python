@@ -18,7 +18,7 @@ class OMBCSystemDescription(GenOMBCSystemDescription, S2MessageComponent):
     model_config["validate_assignment"] = True
 
     message_id: uuid.UUID = GenOMBCSystemDescription.model_fields["message_id"]  # type: ignore[assignment]
-    operation_modes: List[OMBCOperationMode] = GenOMBCSystemDescription.model_fields[
+    operation_modes: List[OMBCOperationMode] = GenOMBCSystemDescription.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "operation_modes"
     ]  # type: ignore[assignment]
     transitions: List[Transition] = GenOMBCSystemDescription.model_fields["transitions"]  # type: ignore[assignment]

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 from typing_extensions import Self
 
 from pydantic import model_validator
@@ -29,7 +29,7 @@ class PowerForecastElement(GenPowerForecastElement, S2MessageComponent):
     def validate_values_at_most_one_per_commodity_quantity(self) -> Self:
         """Validates the power measurement values to check that there is at most 1 PowerValue per CommodityQuantity."""
 
-        has_value: dict[CommodityQuantity, bool] = {}
+        has_value: Dict[CommodityQuantity, bool] = {}
 
         for value in self.power_values:
             if has_value.get(value.commodity_quantity, False):
