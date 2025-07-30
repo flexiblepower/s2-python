@@ -64,3 +64,6 @@ docs = [
 
 [project.scripts]
 s2python = "s2python.tools.cli:s2python_cmd"
+
+[tool.black]
+line-length=100
