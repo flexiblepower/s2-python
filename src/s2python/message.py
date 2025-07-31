@@ -76,7 +76,7 @@ from s2python.common import (
     Transition,
 )
 
-S2Message = Union[
+S2MessageWithID = Union[
     DDBCAverageDemandRateForecast,
     DDBCInstruction,
     DDBCSystemDescription,
@@ -111,6 +111,10 @@ S2Message = Union[
     InstructionStatusUpdate,
     PowerForecast,
     PowerMeasurement,
+]
+
+S2Message = [
+    S2MessageWithID,
     ReceptionStatus,
 ]
 

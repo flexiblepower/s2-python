@@ -16,6 +16,7 @@ class PPBCEndInterruptionInstruction(GenPPBCEndInterruptionInstruction, S2Messag
     model_config["validate_assignment"] = True
 
     id: uuid.UUID = GenPPBCEndInterruptionInstruction.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    message_id: uuid.UUID = GenPPBCEndInterruptionInstruction.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     power_profile_id: uuid.UUID = GenPPBCEndInterruptionInstruction.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "power_profile_id"
     ]  # type: ignore[assignment]

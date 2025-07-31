@@ -43,7 +43,7 @@ class S2MessageComponent(BaseModel):
             ) from e
 
     def to_dict(self) -> Dict[str, Any]:
-        return self.model_dump()
+        return self.model_dump(mode='json')
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
