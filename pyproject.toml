@@ -17,6 +17,7 @@ dependencies = [
     "pydantic>=2.8.2",
     "pytz",
     "click",
+    "typing-extensions",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -52,6 +53,7 @@ development = [
     "datamodel-code-generator",
     "pre-commit",
     "tox",
+    "setuptools_scm",
 ]
 docs = [
     "sphinx",
