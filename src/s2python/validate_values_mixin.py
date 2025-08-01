@@ -7,7 +7,7 @@ from typing import (
     AbstractSet,
     Mapping,
     List,
-    Dict,
+    Dict, Literal,
 )
 
 from typing_extensions import Self
@@ -35,6 +35,10 @@ class S2MessageComponent(BaseModel):
             ) from e
 
     def to_json(self) -> str:
+        """Convert the S2 message or message component to a json string.
+
+        :return: The json string.
+        """
         try:
             return self.model_dump_json(by_alias=True, exclude_none=True)
         except (ValidationError, TypeError) as e:
@@ -42,8 +46,18 @@ class S2MessageComponent(BaseModel):
                 type(self), self, "Pydantic raised a validation error.",
             ) from e
 
-    def to_dict(self) -> Dict[str, Any]:
-        return self.model_dump(mode='json')
+    def to_dict(self, mode: Literal['python', 'json']='python') -> Dict[str, Any]:
+        """Convert the S2 message or message component to a Python dictionary.
+
+        Conversion happens according to https://docs.pydantic.dev/latest/concepts/conversion_table/#__tabbed_1_4
+        in non-strict 'python' mode which is the default. Conversion happens according to
+        https://docs.pydantic.dev/latest/concepts/conversion_table/#__tabbed_1_2 in non-strict 'json' mode.
+
+        :param mode: To convert to a dict with python datastructures or json-serializable datastructures.
+        :return: A dictionary with python datastructures when mode is set to 'python' and a json-serializable dict
+        when mode is set to 'json'.
+        """
+        return self.model_dump(mode=mode)
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

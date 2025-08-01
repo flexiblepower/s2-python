@@ -3,9 +3,12 @@ import unittest
 import importlib
 import inspect
 import pkgutil
+import uuid
 from typing import get_args
 
 from s2python import message
+from s2python.common import ReceptionStatus, ReceptionStatusValues
+from s2python.frbc import FRBCStorageStatus
 from s2python.validate_values_mixin import S2MessageComponent
 
 
@@ -61,5 +64,24 @@ class S2MessageTest(unittest.TestCase):
 
     def test_import_s2_messages__ppbc(self):
         self._test_import_s2_messages("s2python.ppbc")
+
     def test_import_s2_messages__ombc(self):
         self._test_import_s2_messages("s2python.ombc")
+
+
+    def test__s2messagewithid__type_has_message_id_field(self):
+        # Arrange
+        message_with_id: message.S2MessageWithID = FRBCStorageStatus(message_id=uuid.uuid4(),
+                                                                     present_fill_level=4.0)
+
+        # Act / Assert
+        self.assertIsInstance(message_with_id.message_id, uuid.UUID)
+
+    def test__s2message__type_has_no_message_id_field(self):
+        # Arrange
+        message_without_id: message.S2Message = ReceptionStatus(subject_message_id=uuid.uuid4(),
+                                                             status=ReceptionStatusValues.OK,
+                                                             diagnostic_label='Hello!')
+
+        # Act / Assert
+        self.assertFalse(hasattr(message_without_id, 'message_id'))
