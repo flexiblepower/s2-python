@@ -60,6 +60,7 @@ class TestS2MessageComponent(unittest.TestCase):
         message_dict = message.to_dict(mode='json')
 
         # Assert
+        json.dumps(message_dict)
         self.assertEqual(message_dict['some_uuid'], str(message.some_uuid))
         self.assertEqual(message_dict['some_str'], message.some_str)
         self.assertEqual(message_dict['some_float'], message.some_float)
