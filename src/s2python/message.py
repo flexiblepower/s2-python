@@ -1,5 +1,7 @@
 from typing import Union
 
+from typing_extensions import TypeAlias
+
 from s2python.frbc import (
     FRBCActuatorDescription,
     FRBCActuatorStatus,
@@ -76,7 +78,7 @@ from s2python.common import (
     Transition,
 )
 
-S2Message = Union[
+S2MessageWithID: TypeAlias = Union[
     DDBCAverageDemandRateForecast,
     DDBCInstruction,
     DDBCSystemDescription,
@@ -111,6 +113,10 @@ S2Message = Union[
     InstructionStatusUpdate,
     PowerForecast,
     PowerMeasurement,
+]
+
+S2Message: TypeAlias = Union[
+    S2MessageWithID,
     ReceptionStatus,
 ]
 
