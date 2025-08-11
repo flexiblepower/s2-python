@@ -35,6 +35,10 @@ class S2MessageComponent(BaseModel):
             ) from e
 
     def to_json(self) -> str:
+        """Convert the S2 message or message component to a json string.
+
+        :return: The json string.
+        """
         try:
             return self.model_dump_json(by_alias=True, exclude_none=True)
         except (ValidationError, TypeError) as e:
@@ -43,7 +47,24 @@ class S2MessageComponent(BaseModel):
             ) from e
 
     def to_dict(self) -> Dict[str, Any]:
-        return self.model_dump()
+        """Convert the S2 message or message component to a Python dictionary that contains Python-native structures..
+
+        Conversion happens according to https://docs.pydantic.dev/latest/concepts/conversion_table/#__tabbed_1_4
+        in non-strict 'python' mode.
+
+        :return: A dictionary with python datastructures.
+        """
+        return self.model_dump(mode='python')
+
+    def to_json_dict(self) -> Dict[str, Any]:
+        """Convert the S2 message or message component to a Python dictionary which is json serializable.
+
+        Conversion happens according to https://docs.pydantic.dev/latest/concepts/conversion_table/#__tabbed_1_2 in
+        non-strict 'json' mode.
+
+        :return: A dictionary with json-serializable values.
+        """
+        return self.model_dump(mode='json')
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

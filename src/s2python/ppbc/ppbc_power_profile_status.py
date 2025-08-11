@@ -1,4 +1,5 @@
 from typing import List
+import uuid
 
 from s2python.generated.gen_s2 import (
     PPBCPowerProfileStatus as GenPPBCPowerProfileStatus,
@@ -19,6 +20,7 @@ class PPBCPowerProfileStatus(GenPPBCPowerProfileStatus, S2MessageComponent):
     model_config = GenPPBCPowerProfileStatus.model_config
     model_config["validate_assignment"] = True
 
+    message_id: uuid.UUID = GenPPBCPowerProfileStatus.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
     sequence_container_status: List[PPBCPowerSequenceContainerStatus] = (  # type: ignore[reportIncompatibleVariableOverride]
         GenPPBCPowerProfileStatus.model_fields["sequence_container_status"]  # type: ignore[assignment]
     )
