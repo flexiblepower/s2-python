@@ -38,12 +38,12 @@ class TestS2MessageComponent(unittest.TestCase):
         self.assertEqual(message_json['some_datetime'], message.some_datetime.isoformat())
         self.assertEqual(message_json['some_timedelta'], 'PT1H1M')
 
-    def test__to_dict__okay_python(self):
+    def test__to_dict__okay(self):
         # Arrange
         message = example_message()
 
         # Act
-        message_dict = message.to_dict(mode='python')
+        message_dict = message.to_dict()
 
         # Assert
         self.assertEqual(message_dict['some_uuid'], message.some_uuid)
@@ -52,12 +52,12 @@ class TestS2MessageComponent(unittest.TestCase):
         self.assertEqual(message_dict['some_datetime'], message.some_datetime)
         self.assertEqual(message_dict['some_timedelta'], message.some_timedelta)
 
-    def test__to_dict__okay_json(self):
+    def test__to_json_dict__okay(self):
         # Arrange
         message = example_message()
 
         # Act
-        message_dict = message.to_dict(mode='json')
+        message_dict = message.to_json_dict()
 
         # Assert
         json.dumps(message_dict)
