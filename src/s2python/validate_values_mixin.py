@@ -50,7 +50,7 @@ class S2MessageComponent(BaseModel):
         """Convert the S2 message or message component to a Python dictionary that contains Python-native structures..
 
         Conversion happens according to https://docs.pydantic.dev/latest/concepts/conversion_table/#__tabbed_1_4
-        in non-strict 'python' mode..
+        in non-strict 'python' mode.
 
         :return: A dictionary with python datastructures.
         """
