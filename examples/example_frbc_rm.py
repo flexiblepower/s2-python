@@ -158,7 +158,7 @@ def stop(s2_connection, signal_num, _current_stack_frame):
     s2_connection.stop()
 
 
-def start_s2_session(url, client_node_id=str(uuid.uuid4())):
+def start_s2_session(url, client_node_id=str(uuid.uuid4()), bearer_token=None):
     s2_conn = S2Connection(
         url=url,
         role=EnergyManagementRole.RM,
@@ -176,6 +176,7 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
         ),
         reconnect=True,
         verify_certificate=False,
+        bearer_token=bearer_token,
     )
 
     # Create signal handlers
@@ -194,7 +195,7 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="A simple S2 reseource manager example."
+        description="A simple S2 resource manager example."
     )
     parser.add_argument(
         "--endpoint",
@@ -202,6 +203,19 @@ if __name__ == "__main__":
         help="WebSocket endpoint uri for the server (CEM) e.g. "
         "ws://localhost:8080/",
     )
+    parser.add_argument(
+        "--resource-id",
+        type=str,
+        required=False,
+        help="Resource that we want to manage. "
+             "Some UUID",
+    )
+    parser.add_argument(
+        "--bearer-token",
+        type=str,
+        required=False,
+        help="Bearer token for testing."
+    )
     args = parser.parse_args()
 
-    start_s2_session(args.endpoint)
+    start_s2_session(args.endpoint, args.resource_id, args.bearer_token)
