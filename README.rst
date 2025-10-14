@@ -67,6 +67,14 @@ The tests can be run using tox:
 To build the package, you can use tox as well:
 
     tox -e build,clean
-    
+
+
+Funding Acknowledgements
+--------------------------
+This project is co-financed by `TKI-Energie`_ from the Top Consortia for Knowledge and Innovation (TKI) surcharge of
+the Ministry of Economic Affairs and Climate Policy.
+
+.. _TKI-Energie: https://topsectorenergie.nl/nl/maak-kennis-met-tse/tki-energie-en-industrie/
+
 
 
