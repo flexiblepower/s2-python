@@ -102,7 +102,7 @@ class SendOkay:
     async def run_async(self) -> None:
         self.status_is_send.set()
 
-        await self.connection.respond_with_reception_status(
+        await self.connection._respond_with_reception_status(  # pylint: disable=protected-access
             subject_message_id=self.subject_message_id,
             status=ReceptionStatusValues.OK,
             diagnostic_label="Processed okay.",
@@ -168,7 +168,7 @@ class MessageHandlers:
                     await eventloop.run_in_executor(executor=None, func=do_message)
             except Exception:
                 if not send_okay.status_is_send.is_set():
-                    await connection.respond_with_reception_status(
+                    await connection._respond_with_reception_status(  # pylint: disable=protected-access
                         subject_message_id=msg.message_id,  # type: ignore[attr-defined, union-attr]
                         status=ReceptionStatusValues.PERMANENT_ERROR,
                         diagnostic_label=f"While processing message {msg.message_id} "  # type: ignore[attr-defined, union-attr]  # pylint: disable=line-too-long
@@ -241,10 +241,10 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self._verify_certificate = verify_certificate
 
         self._handlers.register_handler(
-            SelectControlType, self.handle_select_control_type_as_rm
+            SelectControlType, self._handle_select_control_type_as_rm
         )
-        self._handlers.register_handler(Handshake, self.handle_handshake)
-        self._handlers.register_handler(HandshakeResponse, self.handle_handshake_response_as_rm)
+        self._handlers.register_handler(Handshake, self._handle_handshake)
+        self._handlers.register_handler(HandshakeResponse, self._handle_handshake_response_as_rm)
         self._bearer_token = bearer_token
 
     def start_as_rm(self) -> None:
@@ -359,7 +359,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             logger.info("Could not connect due to: %s", str(e))
 
     async def _connect_as_rm(self) -> None:
-        await self.send_msg_and_await_reception_status_async(
+        await self._send_msg_and_await_reception_status_async(
             Handshake(
                 message_id=uuid.uuid4(),
                 role=self.role,
@@ -372,7 +372,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
 
         await self._handle_received_messages()
 
-    async def handle_handshake(
+    async def _handle_handshake(
         self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
     ) -> None:
         if not isinstance(message, Handshake):
@@ -389,7 +389,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         )
         await send_okay
 
-    async def handle_handshake_response_as_rm(
+    async def _handle_handshake_response_as_rm(
         self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
     ) -> None:
         if not isinstance(message, HandshakeResponse):
@@ -407,11 +407,11 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         await send_okay
         logger.debug("Handshake complete. Sending first ResourceManagerDetails.")
 
-        await self.send_msg_and_await_reception_status_async(
+        await self._send_msg_and_await_reception_status_async(
             self.asset_details.to_resource_manager_details(self.control_types)
         )
 
-    async def handle_select_control_type_as_rm(
+    async def _handle_select_control_type_as_rm(
         self, _: "S2Connection", message: S2Message, send_okay: Awaitable[None]
     ) -> None:
         if not isinstance(message, SelectControlType):
@@ -476,13 +476,13 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
                 json_msg = json.loads(message)
                 message_id = json_msg.get("message_id")
                 if message_id:
-                    await self.respond_with_reception_status(
+                    await self._respond_with_reception_status(
                         subject_message_id=message_id,
                         status=ReceptionStatusValues.INVALID_MESSAGE,
                         diagnostic_label=str(e),
                     )
                 else:
-                    await self.respond_with_reception_status(
+                    await self._respond_with_reception_status(
                         subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Message appears valid json but could not find a message_id field.",
@@ -513,7 +513,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
             logger.error("Unable to send message %s due to %s", s2_msg, str(e))
             self._restart_connection_event.set()
 
-    async def respond_with_reception_status(
+    async def _respond_with_reception_status(
         self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
     ) -> None:
         logger.debug(
@@ -531,13 +531,13 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
     ) -> None:
         asyncio.run_coroutine_threadsafe(
-            self.respond_with_reception_status(
+            self._respond_with_reception_status(
                 subject_message_id, status, diagnostic_label
             ),
             self._eventloop,
         ).result()
 
-    async def send_msg_and_await_reception_status_async(
+    async def _send_msg_and_await_reception_status_async(
         self,
         s2_msg: S2Message,
         timeout_reception_status: float = 5.0,
@@ -575,7 +575,7 @@ class S2Connection:  # pylint: disable=too-many-instance-attributes
         raise_on_error: bool = True,
     ) -> ReceptionStatus:
         return asyncio.run_coroutine_threadsafe(
-            self.send_msg_and_await_reception_status_async(
+            self._send_msg_and_await_reception_status_async(
                 s2_msg, timeout_reception_status, raise_on_error
             ),
             self._eventloop,
