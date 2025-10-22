@@ -5,6 +5,8 @@
     <div>
         <a href="https://pypi.org/project/s2-python/"><img src="https://img.shields.io/pypi/v/s2-python" /></a>
         <a href="https://pypi.org/project/s2-python/"><img src="https://img.shields.io/pypi/pyversions/s2-python" /></a>
+    </div>
+    <div>
         <a href="./LICENSE"><img src="https://img.shields.io/pypi/l/s2-python" /></a>
         <a href="https://discord.com/invite/NyFMEPmuDw"><img src="https://img.shields.io/discord/1351281839913832510"></a>
     </div>
