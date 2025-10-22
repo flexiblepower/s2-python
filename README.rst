@@ -1,11 +1,16 @@
 Python Wrapper for S2 Flexibility Protocol
 ===========================================
-.. image:: https://img.shields.io/pypi/v/s2-python
-   :alt: PyPI - Version
-.. image:: https://img.shields.io/pypi/pyversions/s2-python
-   :alt: PyPI - Python Version
-.. image:: https://img.shields.io/pypi/l/s2-python
-   :alt: PyPI - License
+.. raw:: html
+    <div align="center">
+        <a href="https://s2standard.org"><img src="./Logo-S2.svg" width="200" height="200" /></a>
+        <div>
+            <a href="https://pypi.org/project/s2-python/"><img src="https://img.shields.io/pypi/v/s2-python" /></a>
+            <a href="https://pypi.org/project/s2-python/"><img src="https://img.shields.io/pypi/pyversions/s2-python" /></a>
+            <a href="./LICENSE"><img src="https://img.shields.io/pypi/l/s2-python" /></a>
+            <a href="https://discord.com/invite/NyFMEPmuDw"><img src="https://img.shields.io/discord/1351281839913832510"></a>
+        </div>
+    </div>
+    <br />
 
 This Python package implements the message validation for the EN50491-12-2 "S2" standard for home and building energy management. This implementation
 is based on the asyncapi description of the protocol provided in the `s2-ws-json <https://github.com/flexiblepower/s2-ws-json/>`_ repository. 
