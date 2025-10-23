@@ -154,7 +154,7 @@ if __name__ == "__main__":
 
     pairing_endpoint = args.pairing_endpoint
     pairing_token = args.pairing_token
-
+    res_man = RM(S2Connection)
     # --- Client Setup ---
     # Create node description
     node_description = S2NodeDescription(

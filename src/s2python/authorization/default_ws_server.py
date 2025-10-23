@@ -45,7 +45,10 @@ class MessageHandlers:
         self.handlers = {}
 
     async def handle_message(
-        self, server: "S2DefaultWSServer", msg: S2Message, websocket: WebSocketServerProtocol
+        self,
+        server: "S2DefaultWSServer",
+        msg: S2Message,
+        websocket: WebSocketServerProtocol,
     ) -> None:
         """Handle the S2 message using the registered handler.
 
@@ -205,7 +208,11 @@ class S2DefaultWSServer:
             )
             logger.info("S2 WebSocket server running at: ws://%s:%s", self.host, self.port)
         else:
-            logger.info("S2 WebSocket server already running at: ws://%s:%s", self.host, self.port)
+            logger.info(
+                "S2 WebSocket server already running at: ws://%s:%s",
+                self.host,
+                self.port,
+            )
 
             async def wait_till_stop() -> None:
                 await self._stop_event.wait()
@@ -387,7 +394,10 @@ class S2DefaultWSServer:
             )
 
     async def handle_handshake(
-        self, _: "S2DefaultWSServer", message: S2Message, websocket: WebSocketServerProtocol
+        self,
+        _: "S2DefaultWSServer",
+        message: S2Message,
+        websocket: WebSocketServerProtocol,
     ) -> None:
         """Handle handshake messages.
 
@@ -423,7 +433,10 @@ class S2DefaultWSServer:
         )
 
     async def handle_reception_status(
-        self, _: "S2DefaultWSServer", message: S2Message, websocket: WebSocketServerProtocol
+        self,
+        _: "S2DefaultWSServer",
+        message: S2Message,
+        websocket: WebSocketServerProtocol,
     ) -> None:
         """Handle reception status messages."""
         if not isinstance(message, ReceptionStatus):
@@ -435,7 +448,10 @@ class S2DefaultWSServer:
         logger.info("Received ReceptionStatus in handle_reception_status: %s", message.to_json())
 
     async def handle_handshake_response(
-        self, _: "S2DefaultWSServer", message: S2Message, websocket: WebSocketServerProtocol
+        self,
+        _: "S2DefaultWSServer",
+        message: S2Message,
+        websocket: WebSocketServerProtocol,
     ) -> None:
         """Handle handshake response messages.
 
@@ -466,7 +482,10 @@ class S2DefaultWSServer:
             logger.warning("Connection closed while sending message")
 
     async def send_select_control_type(
-        self, control_type: ControlType, websocket: WebSocketServerProtocol, send_okay: Awaitable[None]
+        self,
+        control_type: ControlType,
+        websocket: WebSocketServerProtocol,
+        send_okay: Awaitable[None],
     ) -> None:
         """Select the control type.
 

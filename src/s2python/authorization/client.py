@@ -116,7 +116,9 @@ class S2AbstractClient(abc.ABC):
             self._connection_request_uri = uri
         elif self.pairing_uri is not None and "requestPairing" in self.pairing_uri:
             # Fall back to constructing the URI from the pairing URI
-            self._connection_request_uri = self.pairing_uri.replace("requestPairing", "requestConnection")
+            self._connection_request_uri = self.pairing_uri.replace(
+                "requestPairing", "requestConnection"
+            )
         else:
             # No valid URI could be determined
             self._connection_request_uri = None
@@ -177,10 +179,14 @@ class S2AbstractClient(abc.ABC):
             ValueError: If pairing_uri or token is not set, or if the request fails
         """
         if not self.pairing_uri:
-            raise ValueError("Pairing URI not set. Set pairing_uri before calling request_pairing.")
+            raise ValueError(
+                "Pairing URI not set. Set pairing_uri before calling request_pairing."
+            )
 
         if not self.token:
-            raise ValueError("Pairing token not set. Set token before calling request_pairing.")
+            raise ValueError(
+                "Pairing token not set. Set token before calling request_pairing."
+            )
 
         # Ensure we have keys
         if not self._public_key:
@@ -211,7 +217,9 @@ class S2AbstractClient(abc.ABC):
 
         # Parse response
         if status_code != 200:
-            raise ValueError(f"Pairing request failed with status {status_code}: {response_text}")
+            raise ValueError(
+                f"Pairing request failed with status {status_code}: {response_text}"
+            )
 
         pairing_response = PairingResponse.model_validate(json.loads(response_text))
 
@@ -231,7 +239,9 @@ class S2AbstractClient(abc.ABC):
             ValueError: If connection request URI is not set or if the request fails
         """
         if not self._connection_request_uri:
-            raise ValueError("Connection request URI not set. Call request_pairing first.")
+            raise ValueError(
+                "Connection request URI not set. Call request_pairing first."
+            )
 
         # Create connection request
         connection_request = ConnectionRequest(
@@ -249,7 +259,9 @@ class S2AbstractClient(abc.ABC):
 
         # Parse response
         if status_code != 200:
-            raise ValueError(f"Connection request failed with status {status_code}: {response_text}")
+            raise ValueError(
+                f"Connection request failed with status {status_code}: {response_text}"
+            )
 
         connection_details = ConnectionDetails.model_validate(json.loads(response_text))
 
@@ -283,13 +295,19 @@ class S2AbstractClient(abc.ABC):
                     # Replace the URI with the full WebSocket URL
                     connection_data["connectionUri"] = full_ws_url
                     # Recreate the ConnectionDetails object
-                    connection_details = ConnectionDetails.model_validate(connection_data)
-                    logger.info("Updated relative WebSocket URI to absolute: %s", full_ws_url)
+                    connection_details = ConnectionDetails.model_validate(
+                        connection_data
+                    )
+                    logger.info(
+                        "Updated relative WebSocket URI to absolute: %s", full_ws_url
+                    )
                 except (ValueError, TypeError, KeyError) as e:
                     logger.info("Failed to update WebSocket URI: %s", e)
             else:
                 # Log a warning but don't modify the URI if we can't create a proper absolute URI
-                logger.info("Received relative WebSocket URI but pairing_uri is not available to create absolute URL")
+                logger.info(
+                    "Received relative WebSocket URI but pairing_uri is not available to create absolute URL"
+                )
 
         # Store for later use
         self._connection_details = connection_details
