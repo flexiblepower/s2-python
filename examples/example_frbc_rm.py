@@ -329,7 +329,7 @@ if __name__ == "__main__":
         help="Bearer token for testing."
     )
     args = parser.parse_args()
-    args.bearer_token = 'cvp6XXTsgonYda9IB52ltqS+StG7xFrt+ApqVIwUVhg='
+    args.bearer_token = ''
     # Use provided resource_id or generate a new UUID if None
     resource_id = args.resource_id if args.resource_id is not None else str(uuid.uuid4())
     start_s2_session(args.endpoint, resource_id, args.bearer_token)
