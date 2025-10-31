@@ -1,6 +1,7 @@
 import logging
 import ssl
-from typing import Generator, AsyncGenerator, Optional, Dict, Any
+from typing import AsyncGenerator, Optional, Dict, Any
+from typing_extensions import override
 
 from s2python.s2_parser import UnparsedS2Message
 
@@ -15,12 +16,12 @@ except ImportError as exc:
         "The 'websockets' package is required. Run 'pip install s2-python[ws]' to use this feature."
     ) from exc
 
-from s2python.connection.medium.s2_medium import S2Medium, MediumClosedConnectionError, MediumCouldNotConnectError
+from s2python.connection.async_.medium.s2_medium import MediumClosedConnectionError, MediumCouldNotConnectError, S2MediumConnection
 
 logger = logging.getLogger("s2python")
 
 
-class WebsocketMedium(S2Medium):
+class WebsocketClientMedium(S2MediumConnection):
     url: str
 
     _ws: Optional[WSConnection]
@@ -57,9 +58,11 @@ class WebsocketMedium(S2Medium):
             logger.error(message)
             raise MediumCouldNotConnectError(message)
 
+    @override
     async def is_connected(self) -> bool:
         return self.ws is not None and not self._closed
 
+    @override
     async def messages(self) -> AsyncGenerator[UnparsedS2Message, None]:
         try:
             async for message in self.ws:
@@ -68,13 +71,10 @@ class WebsocketMedium(S2Medium):
             self._closed = True
             raise MediumClosedConnectionError(f'Could not receive more messages on websocket connection {self.url}') from e
 
+    @override
     async def send(self, message: str) -> None:
         try:
             await self.ws.send(message)
         except websockets.WebSocketException as e:
             self._closed = True
             raise MediumClosedConnectionError(f'Could not send message {message}') from e
-
-    async def close(self) -> None:
-        await self.ws.close()
-        await self.ws.wait_closed()
