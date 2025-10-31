@@ -1,12 +1,11 @@
-from websockets import ConnectionClosed
-from s2python.connection.connection_events import ConnectionStarted, ConnectionStopped
-from s2python.connection.medium.s2_medium import S2MediumConnectionAsync, MediumClosedConnectionError
+from s2python.connection.connection_events import ConnectionStopped
+from s2python.connection.async_.medium.s2_medium import S2MediumConnection, MediumClosedConnectionError
 
 import asyncio
 import json
 import logging
 import uuid
-from typing import Coroutine, Optional, List, Type, Any, Callable
+from typing import Optional, Type
 
 from s2python.common import (
     ReceptionStatusValues,
@@ -15,7 +14,6 @@ from s2python.common import (
 from s2python.connection.async_.message_handlers import MessageHandlers, S2EventHandlerAsync
 from s2python.connection.types import S2ConnectionEventsAndMessages
 from s2python.reception_status_awaiter import ReceptionStatusAwaiter
-from s2python.s2_control_type import S2ControlType
 from s2python.s2_parser import S2Parser
 from s2python.s2_validation_error import S2ValidationError
 from s2python.message import S2Message, S2MessageWithID
@@ -37,13 +35,13 @@ class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
     _received_messages: asyncio.Queue
 
     _reception_status_awaiter: ReceptionStatusAwaiter
-    _medium: S2MediumConnectionAsync
+    _medium: S2MediumConnection
     _s2_parser: S2Parser
     _handlers: MessageHandlers
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        medium: S2MediumConnectionAsync,
+        medium: S2MediumConnection,
         eventloop: Optional[asyncio.AbstractEventLoop] = None,
     ) -> None:
         self._eventloop = eventloop if eventloop is not None else asyncio.get_event_loop()
@@ -78,7 +76,7 @@ class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
     async def _run(self) -> None:
         self._received_messages = asyncio.Queue()
 
-        if not self._medium.is_connected():
+        if not await self._medium.is_connected():
             raise MediumClosedConnectionError("Cannot start the S2 connection if the underlying medium is closed.")
 
         background_tasks = [
@@ -115,6 +113,7 @@ class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
     async def _handle_received_messages(self) -> None:
         while not self._stop_event.is_set():
             msg = await self._received_messages.get()
+            logger.debug('Handling received message %s', msg.to_json())
             await self._handlers.handle_event(self, msg)
 
     async def _receive_messages(self) -> None:
@@ -125,7 +124,7 @@ class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
         """
         logger.info("S2 connection has started to receive messages.")
 
-        async for message in await self._medium.messages():
+        async for message in self._medium.messages():
             try:
                 s2_msg: S2Message = self._s2_parser.parse_as_any_message(message)
             except json.JSONDecodeError:
@@ -161,6 +160,7 @@ class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
                     )
                     await self._reception_status_awaiter.receive_reception_status(s2_msg)
                 else:
+                    logger.debug('Message is not a reception status, putting it in the received messages queue.')
                     await self._received_messages.put(s2_msg)
 
     def register_handler(self, event_type: Type[S2ConnectionEventsAndMessages], handler: S2EventHandlerAsync) -> None:

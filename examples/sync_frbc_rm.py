@@ -1,14 +1,13 @@
 import argparse
 import asyncio
-from functools import partial
+import threading
 import logging
 import sys
 import uuid
 import signal
 import datetime
-from typing import Callable, Optional, Coroutine, Any
+from typing import Callable, Optional
 
-from s2python.connection.types import S2ConnectionEventsAndMessages
 from s2python.common import (
     Duration,
     Role,
@@ -19,6 +18,7 @@ from s2python.common import (
     PowerRange,
     CommodityQuantity,
 )
+from s2python.connection.types import S2ConnectionEventsAndMessages
 from s2python.frbc import (
     FRBCInstruction,
     FRBCSystemDescription,
@@ -32,9 +32,9 @@ from s2python.frbc import (
     FRBCActuatorStatus,
 )
 from s2python.connection import AssetDetails
-from s2python.connection.async_ import S2AsyncConnection
+from s2python.connection.sync import S2SyncConnection
 from s2python.connection.async_.medium.websocket import WebsocketClientMedium
-from s2python.connection.async_.control_type.class_based import FRBCControlType, NoControlControlType, ResourceManagerHandler
+from s2python.connection.sync.control_type.class_based import FRBCControlType, NoControlControlType, ResourceManagerHandler
 
 logger = logging.getLogger("s2python")
 logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -42,8 +42,8 @@ logger.setLevel(logging.DEBUG)
 
 
 class MyFRBCControlType(FRBCControlType):
-    async def handle_instruction(
-        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Coroutine[Any, Any, None]]
+    def handle_instruction(
+        self, connection: S2SyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Callable[[], None]]
     ) -> None:
         if not isinstance(msg, FRBCInstruction):
             raise RuntimeError(
@@ -51,13 +51,13 @@ class MyFRBCControlType(FRBCControlType):
             )
         print(f"I have received the message {msg} from {connection}")
 
-    async def activate(self, connection: S2AsyncConnection) -> None:
+    def activate(self, connection: S2SyncConnection) -> None:
         print("The control type FRBC is now activated.")
 
         print("Time to send a FRBC SystemDescription")
         actuator_id = uuid.uuid4()
         operation_mode_id = uuid.uuid4()
-        await connection.send_msg_and_await_reception_status(
+        connection.send_msg_and_await_reception_status(
             FRBCSystemDescription(
                 message_id=uuid.uuid4(),
                 valid_from=datetime.datetime.now(tz=datetime.timezone.utc),
@@ -105,7 +105,7 @@ class MyFRBCControlType(FRBCControlType):
         )
         print("Also send the target profile")
 
-        await connection.send_msg_and_await_reception_status(
+        connection.send_msg_and_await_reception_status(
             FRBCFillLevelTargetProfile(
                 message_id=uuid.uuid4(),
                 start_time=datetime.datetime.now(tz=datetime.timezone.utc),
@@ -123,12 +123,12 @@ class MyFRBCControlType(FRBCControlType):
         )
 
         print("Also send the storage status.")
-        await connection.send_msg_and_await_reception_status(
+        connection.send_msg_and_await_reception_status(
             FRBCStorageStatus(message_id=uuid.uuid4(), present_fill_level=10.0)
         )
 
         print("Also send the actuator status.")
-        await connection.send_msg_and_await_reception_status(
+        connection.send_msg_and_await_reception_status(
             FRBCActuatorStatus(
                 message_id=uuid.uuid4(),
                 actuator_id=actuator_id,
@@ -137,15 +137,15 @@ class MyFRBCControlType(FRBCControlType):
             )
         )
 
-    async def deactivate(self, connection: S2AsyncConnection) -> None:
+    def deactivate(self, connection: S2SyncConnection) -> None:
         print("The control type FRBC is now deactivated.")
 
 
 class MyNoControlControlType(NoControlControlType):
-    async def activate(self, connection: S2AsyncConnection) -> None:
+    def activate(self, connection: S2SyncConnection) -> None:
         print("The control type NoControl is now activated.")
 
-    async def deactivate(self, connection: S2AsyncConnection) -> None:
+    def deactivate(self, connection: S2SyncConnection) -> None:
         print("The control type NoControl is now deactivated.")
 
 
@@ -154,7 +154,7 @@ def stop(s2_connection, signal_num, _current_stack_frame):
     s2_connection.stop()
 
 
-async def start_s2_session(url, client_node_id: uuid.UUID):
+def start_s2_session(url, client_node_id: uuid.UUID):
     # Configure a resource manager
     rm_handler = ResourceManagerHandler(
         asset_details=AssetDetails(
@@ -171,25 +171,26 @@ async def start_s2_session(url, client_node_id: uuid.UUID):
 
     # Setup the underlying websocket connection
     ws_medium = WebsocketClientMedium(url=url, verify_certificate=False)
-    await ws_medium.connect()
+
+    eventloop = asyncio.get_event_loop()
+    eventloop.run_until_complete(ws_medium.connect())
 
     # Configure the S2 connection on top of the websocket connection
-    s2_conn = S2AsyncConnection(medium=ws_medium)
+    s2_conn = S2SyncConnection(medium=ws_medium)
     rm_handler.register_handlers(s2_conn)
-    await s2_conn.start()
+    s2_conn.start()
 
-    stop_event = asyncio.Event()
-    eventloop = asyncio.get_running_loop()
+    stop_event = threading.Event()
 
-    async def stop():
-        print(f"Received signal. Will stop S2 connection.")
+    def stop(signal_num, _current_stack_frame):
+        print(f"Received signal {signal_num}. Will stop S2 connection.")
         stop_event.set()
 
-    eventloop.add_signal_handler(signal.SIGINT, lambda: eventloop.create_task(stop()))
-    eventloop.add_signal_handler(signal.SIGTERM, lambda: eventloop.create_task(stop()))
-    await stop_event.wait()
+    signal.signal(signal.SIGINT, stop)
+    signal.signal(signal.SIGTERM, stop)
+    stop_event.wait()
 
-    await s2_conn.stop()
+    s2_conn.stop()
 
 
 if __name__ == "__main__":
@@ -204,4 +205,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    asyncio.run(start_s2_session(args.endpoint, client_node_id))
+    start_s2_session(args.endpoint, client_node_id)

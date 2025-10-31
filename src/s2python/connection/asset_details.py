@@ -1,3 +1,4 @@
+import typing
 import uuid
 from dataclasses import dataclass
 from typing import Optional, List
@@ -9,8 +10,15 @@ from s2python.common import (
     Duration,
     Currency,
 )
-from s2python.generated.gen_s2 import CommodityQuantity
-from s2python.s2_control_type import S2ControlType
+from s2python.common import CommodityQuantity, ControlType
+
+if typing.TYPE_CHECKING:
+    from s2python.connection.async_.control_type.class_based import S2ControlType
+
+
+class HasProtocolControlType(typing.Protocol):
+    def get_protocol_control_type(self) -> ControlType:
+        ...
 
 @dataclass
 class AssetDetails:  # pylint: disable=too-many-instance-attributes
@@ -30,7 +38,7 @@ class AssetDetails:  # pylint: disable=too-many-instance-attributes
     serial_number: Optional[str] = None
 
     def to_resource_manager_details(
-        self, control_types: List[S2ControlType]
+        self, control_types: typing.Sequence[HasProtocolControlType]
     ) -> ResourceManagerDetails:
         return ResourceManagerDetails(
             available_control_types=[

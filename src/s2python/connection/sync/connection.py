@@ -2,26 +2,22 @@ import asyncio
 import logging
 import threading
 import uuid
-from typing import Any, Coroutine, Optional, List, Type, Callable
+from typing import Any, Coroutine, Optional, Type, Callable
 
 from s2python.common import (
     ReceptionStatusValues,
-    EnergyManagementRole,
 )
-from s2python.connection.asset_details import AssetDetails
-from s2python.connection.types import S2MessageHandlerSync, S2ConnectionEvent
-from s2python.s2_control_type import S2ControlType
+from s2python.connection.types import S2ConnectionEvent, S2ConnectionEventsAndMessages
 from s2python.message import S2Message
 
 from s2python.common import ReceptionStatus
-from s2python.connection.medium.s2_medium import S2MediumConnectionAsync
-from s2python.connection.s2_async_connection import S2AsyncConnection
+from s2python.connection.async_.medium.s2_medium import S2MediumConnection
+from s2python.connection.async_ import S2AsyncConnection
 from s2python.message import S2MessageWithID
 
 logger = logging.getLogger("s2python")
 
 S2EventHandlerSync = Callable[["S2SyncConnection", S2ConnectionEvent, Optional[Callable[[], None]]], None]
-
 
 
 class S2SyncConnection:
@@ -31,20 +27,17 @@ class S2SyncConnection:
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        role: EnergyManagementRole,
-        control_types: List[S2ControlType],
-        asset_details: AssetDetails,
-        medium: S2MediumConnectionAsync,
+        medium: S2MediumConnection,
         eventloop: Optional[asyncio.AbstractEventLoop] = None,
     ) -> None:
         self._thread = threading.Thread(target=self._run_eventloop)
         self._eventloop = asyncio.new_event_loop() if eventloop is None else eventloop
-        self._async_s2_connection = S2AsyncConnection(role, control_types, asset_details, medium, self._eventloop)
+        self._async_s2_connection = S2AsyncConnection(medium, self._eventloop)
 
-    def start_as_rm(self) -> None:
+    def start(self) -> None:
         self._thread.start()
         asyncio.run_coroutine_threadsafe(
-            self._async_s2_connection.start_as_rm(),
+            self._async_s2_connection.start(),
             self._eventloop,
         ).result()
 
@@ -70,7 +63,7 @@ class S2SyncConnection:
         self._thread.join()
         logger.info("Stopped the S2 connection.")
 
-    def register_handler(self, s2_message_type: Type[S2MessageWithID], handler: S2MessageHandlerSync) -> None:
+    def register_handler(self, s2_message_type: Type[S2ConnectionEventsAndMessages], handler: S2EventHandlerSync) -> None:
         """Register a handler for a specific S2 message type.
 
         :param s2_message_type: The S2 message type to register the handler for.
@@ -80,14 +73,14 @@ class S2SyncConnection:
         async def handle_s2_message_async_wrapper(
             _: S2AsyncConnection,
             s2_msg: S2ConnectionEvent,
-            send_okay: Coroutine[Any, Any, None],
+            send_okay: Optional[Coroutine[Any, Any, None]],
         ) -> None:
             await self._eventloop.run_in_executor(
                 None,
                 handler,
                 self,
                 s2_msg,
-                lambda: asyncio.run_coroutine_threadsafe(send_okay, self._eventloop).result(),
+                lambda: asyncio.run_coroutine_threadsafe(send_okay, self._eventloop).result() if send_okay else None,
             )
 
         self._async_s2_connection.register_handler(s2_message_type, handle_s2_message_async_wrapper)
