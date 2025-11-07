@@ -16,9 +16,9 @@ TYPE_TO_MESSAGE_CLASS = {"""
 for name, member in all_members:
     if (
         inspect.isclass(member)
-        and hasattr(member, "__fields__")
-        and ("message_type" in member.__fields__)
+        and hasattr(member, "model_fields")
+        and ("message_type" in member.model_fields)
     ):
-        print(f"    '{member.__fields__['message_type'].default}': {name},")
+        print(f"    '{member.model_fields['message_type'].default}': {name},")
 
 print("}")
