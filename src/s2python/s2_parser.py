@@ -24,8 +24,31 @@ from s2python.frbc import (
     FRBCTimerStatus,
     FRBCUsageForecast,
 )
-from s2python.pebc import PEBCPowerConstraints, PEBCEnergyConstraint, PEBCInstruction
-from s2python.ppbc import PPBCScheduleInstruction
+from s2python.pebc import (
+    PEBCPowerConstraints,
+    PEBCEnergyConstraint,
+    PEBCInstruction,
+)
+from s2python.ppbc import (
+    PPBCScheduleInstruction,
+    PPBCEndInterruptionInstruction,
+    PPBCPowerProfileDefinition,
+    PPBCPowerProfileStatus,
+    PPBCStartInterruptionInstruction
+)
+from s2python.ombc import (
+    OMBCInstruction,
+    OMBCStatus,
+    OMBCSystemDescription,
+    OMBCTimerStatus
+)
+from s2python.ddbc import (
+    DDBCActuatorStatus,
+    DDBCAverageDemandRateForecast,
+    DDBCInstruction,
+    DDBCSystemDescription,
+    DDBCTimerStatus,
+)
 
 from s2python.message import S2Message
 from s2python.validate_values_mixin import S2MessageComponent
@@ -40,28 +63,41 @@ M = TypeVar("M", bound=S2MessageComponent)
 
 # May be generated with development_utilities/generate_s2_message_type_to_class.py
 TYPE_TO_MESSAGE_CLASS: Dict[str, Type[S2Message]] = {
-    "FRBC.ActuatorStatus": FRBCActuatorStatus,
-    "FRBC.FillLevelTargetProfile": FRBCFillLevelTargetProfile,
-    "FRBC.Instruction": FRBCInstruction,
-    "FRBC.LeakageBehaviour": FRBCLeakageBehaviour,
-    "FRBC.StorageStatus": FRBCStorageStatus,
-    "FRBC.SystemDescription": FRBCSystemDescription,
-    "FRBC.TimerStatus": FRBCTimerStatus,
-    "FRBC.UsageForecast": FRBCUsageForecast,
-    "PPBC.ScheduleInstruction": PPBCScheduleInstruction,
-    "PEBC.PowerConstraints": PEBCPowerConstraints,
-    "PEBC.Instruction": PEBCInstruction,
-    "PEBC.EnergyConstraint": PEBCEnergyConstraint,
-    "Handshake": Handshake,
-    "HandshakeResponse": HandshakeResponse,
-    "InstructionStatusUpdate": InstructionStatusUpdate,
-    "PowerForecast": PowerForecast,
-    "PowerMeasurement": PowerMeasurement,
-    "ReceptionStatus": ReceptionStatus,
-    "ResourceManagerDetails": ResourceManagerDetails,
-    "RevokeObject": RevokeObject,
-    "SelectControlType": SelectControlType,
-    "SessionRequest": SessionRequest,
+    'DDBC.ActuatorStatus': DDBCActuatorStatus,
+    'DDBC.AverageDemandRateForecast': DDBCAverageDemandRateForecast,
+    'DDBC.Instruction': DDBCInstruction,
+    'DDBC.SystemDescription': DDBCSystemDescription,
+    'DDBC.TimerStatus': DDBCTimerStatus,
+    'FRBC.ActuatorStatus': FRBCActuatorStatus,
+    'FRBC.FillLevelTargetProfile': FRBCFillLevelTargetProfile,
+    'FRBC.Instruction': FRBCInstruction,
+    'FRBC.LeakageBehaviour': FRBCLeakageBehaviour,
+    'FRBC.StorageStatus': FRBCStorageStatus,
+    'FRBC.SystemDescription': FRBCSystemDescription,
+    'FRBC.TimerStatus': FRBCTimerStatus,
+    'FRBC.UsageForecast': FRBCUsageForecast,
+    'Handshake': Handshake,
+    'HandshakeResponse': HandshakeResponse,
+    'InstructionStatusUpdate': InstructionStatusUpdate,
+    'OMBC.Instruction': OMBCInstruction,
+    'OMBC.Status': OMBCStatus,
+    'OMBC.SystemDescription': OMBCSystemDescription,
+    'OMBC.TimerStatus': OMBCTimerStatus,
+    'PEBC.EnergyConstraint': PEBCEnergyConstraint,
+    'PEBC.Instruction': PEBCInstruction,
+    'PEBC.PowerConstraints': PEBCPowerConstraints,
+    'PPBC.EndInterruptionInstruction': PPBCEndInterruptionInstruction,
+    'PPBC.PowerProfileDefinition': PPBCPowerProfileDefinition,
+    'PPBC.PowerProfileStatus': PPBCPowerProfileStatus,
+    'PPBC.ScheduleInstruction': PPBCScheduleInstruction,
+    'PPBC.StartInterruptionInstruction': PPBCStartInterruptionInstruction,
+    'PowerForecast': PowerForecast,
+    'PowerMeasurement': PowerMeasurement,
+    'ReceptionStatus': ReceptionStatus,
+    'ResourceManagerDetails': ResourceManagerDetails,
+    'RevokeObject': RevokeObject,
+    'SelectControlType': SelectControlType,
+    'SessionRequest': SessionRequest,
 }
 
 
