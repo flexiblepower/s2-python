@@ -1,14 +1,14 @@
 import argparse
-from functools import partial
+import asyncio
+import threading
 import logging
 import sys
 import uuid
 import signal
 import datetime
-from typing import Callable
+from typing import Callable, Optional
 
 from s2python.common import (
-    EnergyManagementRole,
     Duration,
     Role,
     RoleType,
@@ -18,6 +18,7 @@ from s2python.common import (
     PowerRange,
     CommodityQuantity,
 )
+from s2python.connection.types import S2ConnectionEventsAndMessages
 from s2python.frbc import (
     FRBCInstruction,
     FRBCSystemDescription,
@@ -30,9 +31,10 @@ from s2python.frbc import (
     FRBCStorageStatus,
     FRBCActuatorStatus,
 )
-from s2python.s2_connection import S2Connection, AssetDetails
-from s2python.s2_control_type import FRBCControlType, NoControlControlType
-from s2python.message import S2Message
+from s2python.connection import AssetDetails
+from s2python.connection.sync import S2SyncConnection
+from s2python.connection.async_.medium.websocket import WebsocketClientMedium
+from s2python.connection.sync.control_type.class_based import FRBCControlType, NoControlControlType, ResourceManagerHandler
 
 logger = logging.getLogger("s2python")
 logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -41,21 +43,21 @@ logger.setLevel(logging.DEBUG)
 
 class MyFRBCControlType(FRBCControlType):
     def handle_instruction(
-        self, conn: S2Connection, msg: S2Message, send_okay: Callable[[], None]
+        self, connection: S2SyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Callable[[], None]]
     ) -> None:
         if not isinstance(msg, FRBCInstruction):
             raise RuntimeError(
                 f"Expected an FRBCInstruction but received a message of type {type(msg)}."
             )
-        print(f"I have received the message {msg} from {conn}")
+        print(f"I have received the message {msg} from {connection}")
 
-    def activate(self, conn: S2Connection) -> None:
+    def activate(self, connection: S2SyncConnection) -> None:
         print("The control type FRBC is now activated.")
 
         print("Time to send a FRBC SystemDescription")
         actuator_id = uuid.uuid4()
         operation_mode_id = uuid.uuid4()
-        conn.send_msg_and_await_reception_status_sync(
+        connection.send_msg_and_await_reception_status(
             FRBCSystemDescription(
                 message_id=uuid.uuid4(),
                 valid_from=datetime.datetime.now(tz=datetime.timezone.utc),
@@ -103,7 +105,7 @@ class MyFRBCControlType(FRBCControlType):
         )
         print("Also send the target profile")
 
-        conn.send_msg_and_await_reception_status_sync(
+        connection.send_msg_and_await_reception_status(
             FRBCFillLevelTargetProfile(
                 message_id=uuid.uuid4(),
                 start_time=datetime.datetime.now(tz=datetime.timezone.utc),
@@ -121,12 +123,12 @@ class MyFRBCControlType(FRBCControlType):
         )
 
         print("Also send the storage status.")
-        conn.send_msg_and_await_reception_status_sync(
+        connection.send_msg_and_await_reception_status(
             FRBCStorageStatus(message_id=uuid.uuid4(), present_fill_level=10.0)
         )
 
         print("Also send the actuator status.")
-        conn.send_msg_and_await_reception_status_sync(
+        connection.send_msg_and_await_reception_status(
             FRBCActuatorStatus(
                 message_id=uuid.uuid4(),
                 actuator_id=actuator_id,
@@ -135,15 +137,15 @@ class MyFRBCControlType(FRBCControlType):
             )
         )
 
-    def deactivate(self, conn: S2Connection) -> None:
+    def deactivate(self, connection: S2SyncConnection) -> None:
         print("The control type FRBC is now deactivated.")
 
 
 class MyNoControlControlType(NoControlControlType):
-    def activate(self, conn: S2Connection) -> None:
+    def activate(self, connection: S2SyncConnection) -> None:
         print("The control type NoControl is now activated.")
 
-    def deactivate(self, conn: S2Connection) -> None:
+    def deactivate(self, connection: S2SyncConnection) -> None:
         print("The control type NoControl is now deactivated.")
 
 
@@ -152,11 +154,9 @@ def stop(s2_connection, signal_num, _current_stack_frame):
     s2_connection.stop()
 
 
-def start_s2_session(url, client_node_id=str(uuid.uuid4())):
-    s2_conn = S2Connection(
-        url=url,
-        role=EnergyManagementRole.RM,
-        control_types=[MyFRBCControlType(), MyNoControlControlType()],
+def start_s2_session(url, client_node_id: uuid.UUID):
+    # Configure a resource manager
+    rm_handler = ResourceManagerHandler(
         asset_details=AssetDetails(
             resource_id=client_node_id,
             name="Some asset",
@@ -166,23 +166,43 @@ def start_s2_session(url, client_node_id=str(uuid.uuid4())):
             provides_forecast=False,
             provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
         ),
-        reconnect=True,
-        verify_certificate=False,
+        control_types=[MyFRBCControlType(), MyNoControlControlType()]
     )
-    signal.signal(signal.SIGINT, partial(stop, s2_conn))
-    signal.signal(signal.SIGTERM, partial(stop, s2_conn))
 
-    s2_conn.start_as_rm()
+    # Setup the underlying websocket connection
+    ws_medium = WebsocketClientMedium(url=url, verify_certificate=False)
+
+    eventloop = asyncio.get_event_loop()
+    eventloop.run_until_complete(ws_medium.connect())
+
+    # Configure the S2 connection on top of the websocket connection
+    s2_conn = S2SyncConnection(medium=ws_medium)
+    rm_handler.register_handlers(s2_conn)
+    s2_conn.start()
+
+    stop_event = threading.Event()
+
+    def stop(signal_num, _current_stack_frame):
+        print(f"Received signal {signal_num}. Will stop S2 connection.")
+        stop_event.set()
+
+    signal.signal(signal.SIGINT, stop)
+    signal.signal(signal.SIGTERM, stop)
+    stop_event.wait()
+
+    s2_conn.stop()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="A simple S2 reseource manager example.")
+    client_node_id = uuid.uuid4()
     parser.add_argument(
-        "endpoint",
+        "--endpoint",
         type=str,
-        help="WebSocket endpoint uri for the server (CEM) e.g. "
-        "ws://localhost:8080/backend/rm/s2python-frbc/cem/dummy_model/ws",
+        required=False,
+        help=f"WebSocket endpoint uri for the server (CEM) e.g. ws://localhost:8000/ws/{client_node_id}",
+        default=f"ws://localhost:8000/ws/{client_node_id}",
     )
     args = parser.parse_args()
 
-    start_s2_session(args.endpoint)
+    start_s2_session(args.endpoint, client_node_id)

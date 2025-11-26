@@ -61,6 +61,9 @@ S2MessageType = str
 M = TypeVar("M", bound=S2MessageComponent)
 
 
+UnparsedS2Message = Union[dict[Any, Any], str, bytes]
+
+
 # May be generated with development_utilities/generate_s2_message_type_to_class.py
 TYPE_TO_MESSAGE_CLASS: Dict[str, Type[S2Message]] = {
     'DDBC.ActuatorStatus': DDBCActuatorStatus,
@@ -103,13 +106,13 @@ TYPE_TO_MESSAGE_CLASS: Dict[str, Type[S2Message]] = {
 
 class S2Parser:
     @staticmethod
-    def _parse_json_if_required(unparsed_message: Union[dict[Any, Any], str, bytes]) -> dict:
+    def _parse_json_if_required(unparsed_message: UnparsedS2Message) -> dict:
         if isinstance(unparsed_message, (str, bytes)):
             return json.loads(unparsed_message)
         return unparsed_message
 
     @staticmethod
-    def parse_as_any_message(unparsed_message: Union[dict[Any, Any], str, bytes]) -> S2Message:
+    def parse_as_any_message(unparsed_message: UnparsedS2Message) -> S2Message:
         """Parse the message as any S2 python message regardless of message type.
 
         :param unparsed_message: The message as a JSON-formatted string or as a json-parsed dictionary.
@@ -130,7 +133,7 @@ class S2Parser:
 
     @staticmethod
     def parse_as_message(
-        unparsed_message: Union[dict[Any, Any], str, bytes], as_message: Type[M]
+        unparsed_message: UnparsedS2Message, as_message: Type[M]
     ) -> M:
         """Parse the message to a specific S2 python message.
 
@@ -144,7 +147,7 @@ class S2Parser:
 
     @staticmethod
     def parse_message_type(
-        unparsed_message: Union[dict[Any, Any], str, bytes],
+        unparsed_message: UnparsedS2Message,
     ) -> Optional[S2MessageType]:
         """Parse only the message type from the unparsed message.
 
