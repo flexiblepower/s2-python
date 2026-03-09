@@ -2,7 +2,7 @@ import abc
 import asyncio
 from asyncio import AbstractEventLoop
 import typing
-from typing import AsyncGenerator, Awaitable, Callable, Union
+from typing import AsyncGenerator, Union
 
 from s2python.s2_parser import UnparsedS2Message
 

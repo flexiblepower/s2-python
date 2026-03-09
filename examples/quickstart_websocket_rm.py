@@ -1,6 +1,4 @@
 import argparse
-import asyncio
-import threading
 import logging
 import sys
 import uuid
@@ -33,8 +31,7 @@ from s2python.frbc import (
 )
 from s2python.connection import AssetDetails, BlockingWebsocketClientRM
 from s2python.connection.sync import S2SyncConnection
-from s2python.connection.async_.medium.websocket import WebsocketClientMedium
-from s2python.connection.sync.control_type.class_based import FRBCControlType, NoControlControlType, ResourceManagerHandler
+from s2python.connection.sync.control_type.class_based import FRBCControlType, NoControlControlType
 
 logger = logging.getLogger("s2python")
 logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -45,11 +42,13 @@ class MyFRBCControlType(FRBCControlType):
     def handle_instruction(
         self, connection: S2SyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Callable[[], None]]
     ) -> None:
+        assert send_okay
         if not isinstance(msg, FRBCInstruction):
             raise RuntimeError(
                 f"Expected an FRBCInstruction but received a message of type {type(msg)}."
             )
         print(f"I have received the message {msg} from {connection}")
+        send_okay()
 
     def activate(self, connection: S2SyncConnection) -> None:
         print("The control type FRBC is now activated.")
@@ -149,15 +148,10 @@ class MyNoControlControlType(NoControlControlType):
         print("The control type NoControl is now deactivated.")
 
 
-def stop(s2_connection, signal_num, _current_stack_frame):
-    print(f"Received signal {signal_num}. Will stop S2 connection.")
-    s2_connection.stop()
-
-
-def start_s2_session(url, client_node_id: uuid.UUID):
+def start_s2_session(url, rm_id: uuid.UUID):
     # Configure a resource manager
     asset_details = AssetDetails(
-            resource_id=client_node_id,
+            resource_id=rm_id,
             name="Some asset",
             instruction_processing_delay=Duration.from_milliseconds(20),
             roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
@@ -184,14 +178,14 @@ def start_s2_session(url, client_node_id: uuid.UUID):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="A simple S2 reseource manager example.")
-    client_node_id = uuid.uuid4()
+    RM_ID = uuid.uuid4()
     parser.add_argument(
         "--endpoint",
         type=str,
         required=False,
-        help=f"WebSocket endpoint uri for the server (CEM) e.g. ws://localhost:8003/ws/{client_node_id}",
-        default=f"ws://localhost:8003/ws/{client_node_id}",
+        help=f"WebSocket endpoint uri for the server (CEM) e.g. ws://localhost:8003/ws/{RM_ID}",
+        default=f"ws://localhost:8003/ws/{RM_ID}",
     )
     args = parser.parse_args()
 
-    start_s2_session(args.endpoint, client_node_id)
+    start_s2_session(args.endpoint, RM_ID)

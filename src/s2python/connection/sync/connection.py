@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import threading
 import uuid
 from typing import Any, Coroutine, Optional, Type, Callable
 
@@ -35,7 +34,7 @@ class S2SyncConnection:
     @staticmethod
     async def _create_async_s2_connection(medium: S2MediumConnection, eventloop: asyncio.AbstractEventLoop) -> S2AsyncConnection:
         return S2AsyncConnection(medium, eventloop)
- 
+
     def run(self) -> None:
         self._eventloop.run_until_complete(self._async_s2_connection.run())
 

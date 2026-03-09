@@ -147,16 +147,11 @@ class MyNoControlControlType(NoControlControlType):
         print("The control type NoControl is now deactivated.")
 
 
-def stop(s2_connection, signal_num, _current_stack_frame):
-    print(f"Received signal {signal_num}. Will stop S2 connection.")
-    s2_connection.stop()
-
-
-async def start_s2_session(url, client_node_id: uuid.UUID):
+async def start_s2_session(url, rm_id: uuid.UUID):
     # Configure a resource manager
     rm_handler = ResourceManagerHandler(
         asset_details=AssetDetails(
-            resource_id=client_node_id,
+            resource_id=rm_id,
             name="Some asset",
             instruction_processing_delay=Duration.from_milliseconds(20),
             roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
@@ -178,7 +173,7 @@ async def start_s2_session(url, client_node_id: uuid.UUID):
     eventloop = asyncio.get_running_loop()
 
     async def stop():
-        print(f"Received signal. Will stop S2 connection.")
+        print("Received signal. Will stop S2 connection.")
         await s2_conn.stop()
 
     eventloop.add_signal_handler(signal.SIGINT, lambda: eventloop.create_task(stop()))
@@ -188,14 +183,14 @@ async def start_s2_session(url, client_node_id: uuid.UUID):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="A simple S2 reseource manager example.")
-    client_node_id = uuid.uuid4()
+    RM_ID = uuid.uuid4()
     parser.add_argument(
         "--endpoint",
         type=str,
         required=False,
-        help=f"WebSocket endpoint uri for the server (CEM) e.g. ws://localhost:8003/ws/{client_node_id}",
-        default=f"ws://localhost:8003/ws/{client_node_id}",
+        help=f"WebSocket endpoint uri for the server (CEM) e.g. ws://localhost:8003/ws/{RM_ID}",
+        default=f"ws://localhost:8003/ws/{RM_ID}",
     )
     args = parser.parse_args()
 
-    asyncio.run(start_s2_session(args.endpoint, client_node_id))
+    asyncio.run(start_s2_session(args.endpoint, RM_ID))

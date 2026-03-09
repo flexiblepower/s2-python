@@ -1,13 +1,12 @@
-from s2python.connection.connection_events import ConnectionStopped
-from s2python.connection.async_.medium.s2_medium import S2MediumConnection, MediumClosedConnectionError, \
-    S2AsyncMediumConnection, S2SyncToAsyncMediumConnection, S2SyncMediumConnection
-
 import asyncio
 import json
 import logging
 import uuid
 from typing import Optional, Type
 
+from s2python.connection.connection_events import ConnectionStopped
+from s2python.connection.async_.medium.s2_medium import S2MediumConnection, MediumClosedConnectionError, \
+    S2AsyncMediumConnection, S2SyncToAsyncMediumConnection, S2SyncMediumConnection
 from s2python.common import (
     ReceptionStatusValues,
     ReceptionStatus,
@@ -90,7 +89,7 @@ class S2AsyncConnection:
             try:
                 task.cancel()
                 await task
-            except (asyncio.CancelledError, Exception):
+            except (asyncio.CancelledError, Exception):  # pylint: disable=broad-exception-caught
                 pass
 
         for task in done:
@@ -100,7 +99,7 @@ class S2AsyncConnection:
                 pass
             except MediumClosedConnectionError:
                 logger.info("The other party closed the websocket connection.")
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 logger.exception("An error occurred in the S2 connection. Terminating current connection.")
 
     async def _handle_received_messages(self) -> None:
@@ -172,7 +171,7 @@ class S2AsyncConnection:
         logger.debug("Sending message %s", json_msg)
         try:
             await self._medium.send(json_msg)
-        except MediumClosedConnectionError:
+        except MediumClosedConnectionError as e:
             logger.error("Unable to send message %s due to %s", s2_msg, str(e))
             raise
 
@@ -213,7 +212,7 @@ class S2AsyncConnection:
             try:
                 task.cancel()
                 await task
-            except (asyncio.CancelledError, Exception):
+            except (asyncio.CancelledError, Exception):  # pylint: disable=broad-exception-caught
                 pass
 
         if reception_status_task in done:
@@ -233,7 +232,7 @@ class S2AsyncConnection:
                 error = f"Received a permanent error for message {s2_msg.message_id} with diagnostic label: {reception_status.diagnostic_label}"
                 logger.error(error)
                 raise PermanentConnectionError(error)
-            elif reception_status.status != ReceptionStatusValues.OK and raise_on_error:
+            if reception_status.status != ReceptionStatusValues.OK and raise_on_error:
                 raise RuntimeError(f"ReceptionStatus was not OK but rather {reception_status.status}")
 
         return reception_status

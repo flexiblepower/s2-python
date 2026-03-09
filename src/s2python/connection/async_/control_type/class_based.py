@@ -1,7 +1,7 @@
 import abc
 import logging
 import uuid
-from typing import Coroutine, Optional, List, Any, Callable
+from typing import Coroutine, Optional, List, Any
 
 from s2python.connection.asset_details import AssetDetails
 from s2python.common import (
@@ -22,7 +22,6 @@ from s2python.frbc import FRBCInstruction
 from s2python.ppbc import PPBCScheduleInstruction
 from s2python.ombc import OMBCInstruction
 from s2python.pebc import PEBCInstruction
-from s2python.message import S2Message
 
 logger = logging.getLogger("s2python")
 

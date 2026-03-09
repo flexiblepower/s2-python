@@ -13,4 +13,3 @@ __all__ = [
     "S2ConnectionEventsAndMessages",
     "BlockingWebsocketClientRM"
 ]
-

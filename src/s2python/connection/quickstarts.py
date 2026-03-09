@@ -1,10 +1,8 @@
 import asyncio
 import logging
 import threading
-import uuid
 
-from s2python.common import Duration, RoleType, Commodity, Currency, Role, CommodityQuantity
-from s2python.connection import AssetDetails
+from s2python.connection.asset_details import AssetDetails
 from s2python.connection.async_ import WebsocketClientMedium
 from s2python.connection.sync import S2SyncConnection
 from s2python.connection.sync.control_type.class_based import ResourceManagerHandler, S2ControlType
@@ -14,6 +12,7 @@ logger = logging.getLogger("s2python")
 
 class BlockingWebsocketClientRM:
     _thread: threading.Thread
+    _eventloop: asyncio.AbstractEventLoop
     _control_types: list[S2ControlType]
     _s2_connection: S2SyncConnection
 

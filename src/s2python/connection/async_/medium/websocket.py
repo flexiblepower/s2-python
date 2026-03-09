@@ -4,6 +4,7 @@ from typing import AsyncGenerator, Optional, Dict, Any
 from typing_extensions import override
 
 from s2python.s2_parser import UnparsedS2Message
+from s2python.connection.async_.medium.s2_medium import MediumClosedConnectionError, MediumCouldNotConnectError, S2AsyncMediumConnection
 
 try:
     import websockets
@@ -15,8 +16,6 @@ except ImportError as exc:
     raise ImportError(
         "The 'websockets' package is required. Run 'pip install s2-python[ws]' to use this feature."
     ) from exc
-
-from s2python.connection.async_.medium.s2_medium import MediumClosedConnectionError, MediumCouldNotConnectError, S2AsyncMediumConnection
 
 logger = logging.getLogger("s2python")
 
@@ -51,21 +50,21 @@ class WebsocketClientMedium(S2AsyncMediumConnection):
                     "Authorization": f"Bearer {self._bearer_token}"
                 }
 
-            self.ws = await ws_connect(uri=self.url, **connection_kwargs)
+            self._ws = await ws_connect(uri=self.url, **connection_kwargs)
         except (EOFError, OSError, websockets.WebSocketException) as e:
             self._closed = True
             message = f"Could not connect due to: {e}"
             logger.error(message)
-            raise MediumCouldNotConnectError(message)
+            raise MediumCouldNotConnectError(message) from e
 
     @override
     async def is_connected(self) -> bool:
-        return self.ws is not None and not self._closed
+        return self._ws is not None and not self._closed
 
     @override
     async def messages(self) -> AsyncGenerator[UnparsedS2Message, None]:
         try:
-            async for message in self.ws:
+            async for message in self._ws:
                 yield message
         except websockets.WebSocketException as e:
             self._closed = True
@@ -74,7 +73,7 @@ class WebsocketClientMedium(S2AsyncMediumConnection):
     @override
     async def send(self, message: str) -> None:
         try:
-            await self.ws.send(message)
+            await self._ws.send(message)
         except websockets.WebSocketException as e:
             self._closed = True
             raise MediumClosedConnectionError(f'Could not send message {message}') from e

@@ -123,7 +123,7 @@ class ResourceManagerHandler:
             )
             return
 
-        send_okay
+        send_okay()
 
         logger.debug(
             "CEM selected control type %s. Activating control type.",
