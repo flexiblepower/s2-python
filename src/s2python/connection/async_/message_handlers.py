@@ -1,7 +1,9 @@
 import asyncio
 import logging
 import uuid
-from typing import Any, Coroutine, Optional, Type, Dict, Callable, TYPE_CHECKING
+from typing import Any, Coroutine, Optional, Type, Dict, Callable, TYPE_CHECKING, cast
+
+from s2python.connection.errors import PermanentConnectionError
 
 if TYPE_CHECKING:
     from s2python.connection.async_.connection import S2AsyncConnection
@@ -13,7 +15,8 @@ from s2python.message import S2Message, S2MessageWithID
 
 logger = logging.getLogger("s2python")
 
-S2EventHandlerAsync = Callable[["S2AsyncConnection", S2ConnectionEvent, Optional[Coroutine[Any, Any, None]]], Coroutine[Any, Any, None]]
+SendOkayRun = Optional[Callable[[], Coroutine[Any, Any, None]]]
+S2EventHandlerAsync = Callable[["S2AsyncConnection", S2ConnectionEventsAndMessages, Optional[Callable[[], Coroutine[Any, Any, None]]]], Coroutine[Any, Any, None]]
 
 class SendOkay:
     _status_is_send: asyncio.Event
@@ -66,17 +69,22 @@ class MessageHandlers:
         """
         handler = self.handlers.get(type(event))
         if handler is not None:
-            send_okay = None
+            send_okay: Optional[SendOkay] = None
             try:
                 if hasattr(event, "message_id"):
+                    cast(S2MessageWithID, event)
                     logger.debug('Handling S2 message with message id %s using handler %s', event.message_id, handler)
                     send_okay = SendOkay(connection, event.message_id)
-                    await handler(connection, event, send_okay.run())
+                    await handler(connection, event, send_okay.run)
                 else:
                     logger.debug('Handling S2 connection event (without message id) using handler %s', handler)
                     await handler(connection, event, None)
+            except PermanentConnectionError:
+                logger.error("While processing message %s a permanent connection error occurred. Stopping the connection.")
+                raise
             except Exception:
                 if send_okay and not send_okay._status_is_send.is_set():
+                    cast(S2MessageWithID, event)
                     await connection.respond_with_reception_status(
                         subject_message_id=event.message_id,
                         status=ReceptionStatusValues.PERMANENT_ERROR,
@@ -85,6 +93,7 @@ class MessageHandlers:
                     )
                 raise
             if send_okay:
+                cast(S2MessageWithID, event)
                 await send_okay.ensure_send(type(event))
         else:
             logger.warning(
@@ -93,7 +102,7 @@ class MessageHandlers:
             )
 
     def register_handler(
-        self, event_type: Type[S2ConnectionEvent], handler: S2EventHandlerAsync
+        self, event_type: Type[S2ConnectionEventsAndMessages], handler: S2EventHandlerAsync
     ) -> None:
         """Register a coroutine function or a normal function as the handler for a specific S2 message type.
 
@@ -102,6 +111,6 @@ class MessageHandlers:
         """
         self.handlers[event_type] = handler
 
-    def unregister_handler(self, s2_message_type: Type[S2ConnectionEvent]):
+    def unregister_handler(self, s2_message_type: Type[S2ConnectionEventsAndMessages]):
         if s2_message_type in self.handlers:
             del self.handlers[s2_message_type]

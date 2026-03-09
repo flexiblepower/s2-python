@@ -1,6 +1,8 @@
 import abc
+import asyncio
+from asyncio import AbstractEventLoop
 import typing
-from typing import AsyncGenerator, Awaitable, Callable
+from typing import AsyncGenerator, Awaitable, Callable, Union
 
 from s2python.s2_parser import UnparsedS2Message
 
@@ -15,7 +17,7 @@ class MediumCouldNotConnectError(S2MediumException):
     ...
 
 
-class S2MediumConnection(abc.ABC):
+class S2AsyncMediumConnection(abc.ABC):
     @abc.abstractmethod
     async def is_connected(self) -> bool:
         ...
@@ -29,34 +31,39 @@ class S2MediumConnection(abc.ABC):
         ...
 
 
-# BuildS2ConnectionAsync = Callable[[S2MediumConnectionAsync], Awaitable["S2AsyncConnection"]]
-#
-#
-# class S2MediumConnectorAsync(abc.ABC):
-#     """S2 medium specific factory for S2Connections."""
-#
-#     @abc.abstractmethod
-#     async def set_connection_builder(self,
-#                                      builder: BuildS2ConnectionAsync) -> None:
-#         ...
-#
-#     @abc.abstractmethod
-#     async def run(self) -> None:
-#         """Start up the connection or start listening for new connections.
-#
-#         This function may block or not depending in the implementation.
-#         E.g. it will block if a listening socket is opened, or it may return once a single client
-#         connection is established.
-#         """
-#         ...
-#
-#     @abc.abstractmethod
-#     async def close(self) -> None:
-#         """Close the medium connector.
-#
-#         This does not close any functions created by the connector, only the connector itself.
-#         Also, this function may not be implemented in all cases. For instance, if the connector
-#         only creates a single client connection and then exits, there is no need to close anything
-#         so in those cases this function may be a no-op.
-#         """
-#         ...
+class S2SyncMediumConnection(abc.ABC):
+    @abc.abstractmethod
+    def is_connected(self) -> bool:
+        ...
+
+    @abc.abstractmethod
+    def messages(self) -> typing.Generator[UnparsedS2Message, None, None]:
+        ...
+
+    @abc.abstractmethod
+    def send(self, message: str) -> None:
+        ...
+
+
+S2MediumConnection = Union[S2AsyncMediumConnection, S2SyncMediumConnection]
+
+
+class S2SyncToAsyncMediumConnection(S2AsyncMediumConnection):
+    _sync_medium: S2SyncMediumConnection
+    _eventloop: AbstractEventLoop
+
+    def __init__(self, sync_medium: S2SyncMediumConnection, eventloop: typing.Optional[AbstractEventLoop] = None) -> None:
+        self._sync_medium = sync_medium
+        self._eventloop = asyncio.get_event_loop() if eventloop is None else eventloop
+
+    async def is_connected(self) -> bool:
+        return await self._eventloop.run_in_executor(None, self._sync_medium.is_connected)
+
+    async def messages(self) -> AsyncGenerator[UnparsedS2Message, None]:
+        generator = await self._eventloop.run_in_executor(None, self._sync_medium.messages)
+
+        while True:
+            yield await self._eventloop.run_in_executor(None, generator.__next__)
+
+    async def send(self, message: str) -> None:
+        await self._eventloop.run_in_executor(None, self._sync_medium.send, message)

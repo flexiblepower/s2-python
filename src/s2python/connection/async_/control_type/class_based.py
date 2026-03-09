@@ -11,6 +11,7 @@ from s2python.common import (
     SelectControlType,
 )
 from s2python.connection.async_.connection import S2AsyncConnection
+from s2python.connection.async_.message_handlers import SendOkayRun
 from s2python.connection.types import S2ConnectionEvent, S2ConnectionEventsAndMessages
 from s2python.version import S2_VERSION
 
@@ -20,6 +21,7 @@ from s2python.common import ControlType as ProtocolControlType
 from s2python.frbc import FRBCInstruction
 from s2python.ppbc import PPBCScheduleInstruction
 from s2python.ombc import OMBCInstruction
+from s2python.pebc import PEBCInstruction
 from s2python.message import S2Message
 
 logger = logging.getLogger("s2python")
@@ -74,7 +76,7 @@ class ResourceManagerHandler:
         )
 
     async def _on_handshake(
-        self, _: S2AsyncConnection, event: S2ConnectionEvent, send_okay: Optional[Coroutine[Any, Any, None]]
+        self, _: S2AsyncConnection, event: S2ConnectionEvent, send_okay: SendOkayRun
     ) -> None:
         assert send_okay is not None
         if not isinstance(event, Handshake):
@@ -89,10 +91,10 @@ class ResourceManagerHandler:
             event.role,
             event.supported_protocol_versions,
         )
-        await send_okay
+        await send_okay()
 
     async def _on_handshake_response(
-        self, connection: S2AsyncConnection, event: S2ConnectionEvent, send_okay: Optional[Coroutine[Any, Any, None]]
+        self, connection: S2AsyncConnection, event: S2ConnectionEvent, send_okay: SendOkayRun
     ) -> None:
         assert send_okay is not None
         if not isinstance(event, HandshakeResponse):
@@ -106,7 +108,7 @@ class ResourceManagerHandler:
         logger.debug(
             "CEM selected to use version %s", event.selected_protocol_version
         )
-        await send_okay
+        await send_okay()
         logger.debug("Handshake complete. Sending first ResourceManagerDetails.")
 
         await connection.send_msg_and_await_reception_status(
@@ -114,7 +116,7 @@ class ResourceManagerHandler:
         )
 
     async def _on_select_control_type(
-        self, connection: S2AsyncConnection, event: S2ConnectionEvent, send_okay: Optional[Coroutine[Any, Any, None]]
+        self, connection: S2AsyncConnection, event: S2ConnectionEvent, send_okay: SendOkayRun
     ) -> None:
         assert send_okay is not None
         if not isinstance(event, SelectControlType):
@@ -124,7 +126,7 @@ class ResourceManagerHandler:
             )
             return
 
-        await send_okay
+        await send_okay()
 
         logger.debug(
             "CEM selected control type %s. Activating control type.",
@@ -145,7 +147,7 @@ class ResourceManagerHandler:
             self._current_control_type.register_handlers(connection)
             await self._current_control_type.activate(connection)
 
-    async def _on_connection_stop(self, connection: S2AsyncConnection, __: S2ConnectionEvent, ___: Optional[Coroutine[Any, Any, None]]):
+    async def _on_connection_stop(self, connection: S2AsyncConnection, __: S2ConnectionEvent, ___: SendOkayRun):
         if self._current_control_type:
             await self._current_control_type.deactivate(connection)
             self._current_control_type = None
@@ -160,7 +162,7 @@ class FRBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def handle_instruction(
-        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Coroutine[Any, Any, None]]
+        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: SendOkayRun
     ) -> None: ...
 
     @abc.abstractmethod
@@ -181,7 +183,7 @@ class PPBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def handle_instruction(
-        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Coroutine[Any, Any, None]]
+        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: SendOkayRun
     ) -> None: ...
 
     @abc.abstractmethod
@@ -202,7 +204,7 @@ class OMBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def handle_instruction(
-        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Coroutine[Any, Any, None]]
+        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: SendOkayRun
     ) -> None: ...
 
     @abc.abstractmethod
@@ -219,7 +221,12 @@ class PEBCControlType(S2ControlType):
         return ProtocolControlType.POWER_ENVELOPE_BASED_CONTROL
 
     def register_handlers(self, connection: S2AsyncConnection) -> None:
-        pass
+        connection.register_handler(PEBCInstruction, self.handle_instruction)
+
+    @abc.abstractmethod
+    async def handle_instruction(
+            self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: SendOkayRun
+    ) -> None: ...
 
     @abc.abstractmethod
     async def activate(self, connection: S2AsyncConnection) -> None: ...

@@ -173,24 +173,24 @@ def start_s2_session(url, client_node_id: uuid.UUID):
     ws_medium = WebsocketClientMedium(url=url, verify_certificate=False)
 
     eventloop = asyncio.get_event_loop()
+    print('Before connecting to websocket')
     eventloop.run_until_complete(ws_medium.connect())
+    print('After connecting to websocket')
 
     # Configure the S2 connection on top of the websocket connection
-    s2_conn = S2SyncConnection(medium=ws_medium)
+    s2_conn = S2SyncConnection(medium=ws_medium, eventloop=eventloop)
     rm_handler.register_handlers(s2_conn)
-    s2_conn.start()
-
-    stop_event = threading.Event()
 
     def stop(signal_num, _current_stack_frame):
         print(f"Received signal {signal_num}. Will stop S2 connection.")
-        stop_event.set()
+        s2_conn.stop()
 
     signal.signal(signal.SIGINT, stop)
     signal.signal(signal.SIGTERM, stop)
-    stop_event.wait()
 
-    s2_conn.stop()
+    print('Starting s2 connection')
+    s2_conn.run()
+    print('S2 connection stopped')
 
 
 if __name__ == "__main__":
@@ -200,8 +200,8 @@ if __name__ == "__main__":
         "--endpoint",
         type=str,
         required=False,
-        help=f"WebSocket endpoint uri for the server (CEM) e.g. ws://localhost:8000/ws/{client_node_id}",
-        default=f"ws://localhost:8000/ws/{client_node_id}",
+        help=f"WebSocket endpoint uri for the server (CEM) e.g. ws://localhost:8003/ws/{client_node_id}",
+        default=f"ws://localhost:8003/ws/{client_node_id}",
     )
     args = parser.parse_args()
 

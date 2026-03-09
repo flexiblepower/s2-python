@@ -13,7 +13,7 @@ import time
 import threading
 import uuid
 import ssl
-from typing import Any, Optional, List, Dict, Awaitable
+from typing import Any, Optional, List, Dict, Awaitable, Union, Callable, Type
 
 from websockets.asyncio.client import (
     ClientConnection as WSConnection,

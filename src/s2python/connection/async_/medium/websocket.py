@@ -16,12 +16,12 @@ except ImportError as exc:
         "The 'websockets' package is required. Run 'pip install s2-python[ws]' to use this feature."
     ) from exc
 
-from s2python.connection.async_.medium.s2_medium import MediumClosedConnectionError, MediumCouldNotConnectError, S2MediumConnection
+from s2python.connection.async_.medium.s2_medium import MediumClosedConnectionError, MediumCouldNotConnectError, S2AsyncMediumConnection
 
 logger = logging.getLogger("s2python")
 
 
-class WebsocketClientMedium(S2MediumConnection):
+class WebsocketClientMedium(S2AsyncMediumConnection):
     url: str
 
     _ws: Optional[WSConnection]

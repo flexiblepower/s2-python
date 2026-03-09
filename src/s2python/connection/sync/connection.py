@@ -21,47 +21,27 @@ S2EventHandlerSync = Callable[["S2SyncConnection", S2ConnectionEvent, Optional[C
 
 
 class S2SyncConnection:
-    _thread: threading.Thread
     _eventloop: asyncio.AbstractEventLoop
     _async_s2_connection: S2AsyncConnection
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         medium: S2MediumConnection,
         eventloop: Optional[asyncio.AbstractEventLoop] = None,
     ) -> None:
-        self._thread = threading.Thread(target=self._run_eventloop)
         self._eventloop = asyncio.new_event_loop() if eventloop is None else eventloop
-        self._async_s2_connection = S2AsyncConnection(medium, self._eventloop)
+        self._async_s2_connection = self._eventloop.run_until_complete(S2SyncConnection._create_async_s2_connection(medium, self._eventloop))
 
-    def start(self) -> None:
-        self._thread.start()
-        asyncio.run_coroutine_threadsafe(
-            self._async_s2_connection.start(),
-            self._eventloop,
-        ).result()
-
-    def _run_eventloop(self) -> None:
-        logger.debug("Starting synchronous S2 connection event loop in thread %s", self._thread.name)
-        self._eventloop.run_forever()
-        logger.debug("Synchronous S2 connection event loop in thread %s has stopped", self._thread.name)
+    @staticmethod
+    async def _create_async_s2_connection(medium: S2MediumConnection, eventloop: asyncio.AbstractEventLoop) -> S2AsyncConnection:
+        return S2AsyncConnection(medium, eventloop)
+ 
+    def run(self) -> None:
+        self._eventloop.run_until_complete(self._async_s2_connection.run())
 
     def stop(self) -> None:
-        """Stops the S2 connection.
-
-        Note: Ensure this method is called from a different thread than the thread running the S2 connection.
-        Otherwise it will block waiting on the coroutine _do_stop to terminate successfully but it can't run
-        the coroutine. A `RuntimeError` will be raised to prevent the indefinite block.
-        """
-        if threading.current_thread() == self._thread:
-            raise RuntimeError(
-                "Do not call stop from the thread running the S2 connection. This results in an infinite block!"
-            )
-        if self._eventloop.is_running():
-            asyncio.run_coroutine_threadsafe(self._async_s2_connection.stop(), self._eventloop).result()
-        self._eventloop.stop()
-        self._thread.join()
-        logger.info("Stopped the S2 connection.")
+        """Gracefully stops the S2 connection."""
+        asyncio.run_coroutine_threadsafe(self._async_s2_connection.stop(), self._eventloop).result()
 
     def register_handler(self, s2_message_type: Type[S2ConnectionEventsAndMessages], handler: S2EventHandlerSync) -> None:
         """Register a handler for a specific S2 message type.
@@ -73,14 +53,14 @@ class S2SyncConnection:
         async def handle_s2_message_async_wrapper(
             _: S2AsyncConnection,
             s2_msg: S2ConnectionEvent,
-            send_okay: Optional[Coroutine[Any, Any, None]],
+            send_okay: Optional[Callable[[], Coroutine[Any, Any, None]]],
         ) -> None:
             await self._eventloop.run_in_executor(
                 None,
                 handler,
                 self,
                 s2_msg,
-                lambda: asyncio.run_coroutine_threadsafe(send_okay, self._eventloop).result() if send_okay else None,
+                lambda: asyncio.run_coroutine_threadsafe(send_okay(), self._eventloop).result() if send_okay else None,
             )
 
         self._async_s2_connection.register_handler(s2_message_type, handle_s2_message_async_wrapper)

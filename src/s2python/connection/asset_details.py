@@ -12,9 +12,6 @@ from s2python.common import (
 )
 from s2python.common import CommodityQuantity, ControlType
 
-if typing.TYPE_CHECKING:
-    from s2python.connection.async_.control_type.class_based import S2ControlType
-
 
 class HasProtocolControlType(typing.Protocol):
     def get_protocol_control_type(self) -> ControlType:

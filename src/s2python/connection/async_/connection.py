@@ -1,5 +1,6 @@
 from s2python.connection.connection_events import ConnectionStopped
-from s2python.connection.async_.medium.s2_medium import S2MediumConnection, MediumClosedConnectionError
+from s2python.connection.async_.medium.s2_medium import S2MediumConnection, MediumClosedConnectionError, \
+    S2AsyncMediumConnection, S2SyncToAsyncMediumConnection, S2SyncMediumConnection
 
 import asyncio
 import json
@@ -12,6 +13,7 @@ from s2python.common import (
     ReceptionStatus,
 )
 from s2python.connection.async_.message_handlers import MessageHandlers, S2EventHandlerAsync
+from s2python.connection.errors import PermanentConnectionError, CouldNotReceiveStatusReceptionError
 from s2python.connection.types import S2ConnectionEventsAndMessages
 from s2python.reception_status_awaiter import ReceptionStatusAwaiter
 from s2python.s2_parser import S2Parser
@@ -22,42 +24,35 @@ from s2python.connection.connection_events import ConnectionStarted
 logger = logging.getLogger("s2python")
 
 
-
-class CouldNotReceiveStatusReceptionError(Exception):
-    ...
-
-
-class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
+class S2AsyncConnection:
     _eventloop: asyncio.AbstractEventLoop
-    _main_task: Optional[asyncio.Task]
     _stop_event: asyncio.Event
     """Stop the S2 connection permanently."""
     _received_messages: asyncio.Queue
 
     _reception_status_awaiter: ReceptionStatusAwaiter
-    _medium: S2MediumConnection
+    _medium: S2AsyncMediumConnection
     _s2_parser: S2Parser
     _handlers: MessageHandlers
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         medium: S2MediumConnection,
         eventloop: Optional[asyncio.AbstractEventLoop] = None,
     ) -> None:
         self._eventloop = eventloop if eventloop is not None else asyncio.get_event_loop()
-        self._main_task = None
         self._stop_event = asyncio.Event()
 
         self._reception_status_awaiter = ReceptionStatusAwaiter()
-        self._medium = medium
+        if isinstance(medium, S2AsyncMediumConnection):
+            self._medium = medium
+        elif isinstance(medium, S2SyncMediumConnection):
+            self._medium = S2SyncToAsyncMediumConnection(medium)
+        else:
+            raise RuntimeError(f'Unexpected medium type {type(medium)}. Medium must be either an '
+                               'S2AsyncMediumConnection or S2SyncMediumConnection.')
         self._s2_parser = S2Parser()
         self._handlers = MessageHandlers()
-
-    async def start(self) -> None:
-        """Start this connection with the given S2 role such as resource manager or CEM and connect to the other party."""
-        logger.debug('Starting S2 connection as %s.',)
-
-        self._main_task = self._eventloop.create_task(self._run())
 
     async def stop(self) -> None:
         """Stop the S2 connection gracefully and wait till it stops.
@@ -65,15 +60,14 @@ class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
         Note: Not thread-safe. Must be run from the same event loop as `start_as_rm` runs in.
         Does not stop the underlying medium!
         """
-        logger.info("Will stop the S2 connection.")
+        logger.info("Will stop the S2 connection at the earliest moment.")
         self._stop_event.set()
-        if self._main_task is not None:
-            await self._main_task
 
     async def _wait_till_stop(self) -> None:
         await self._stop_event.wait()
 
-    async def _run(self) -> None:
+    async def run(self) -> None:
+        logger.debug('Starting S2 connection on eventloop %s.', id(self._eventloop))
         self._received_messages = asyncio.Queue()
 
         if not await self._medium.is_connected():
@@ -93,6 +87,13 @@ class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
 
         await self._handlers.handle_event(self, ConnectionStopped())
 
+        for task in pending:
+            try:
+                task.cancel()
+                await task
+            except (asyncio.CancelledError, Exception):
+                pass
+
         for task in done:
             try:
                 await task
@@ -102,13 +103,6 @@ class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
                 logger.info("The other party closed the websocket connection.")
             except Exception:
                 logger.exception("An error occurred in the S2 connection. Terminating current connection.")
-
-        for task in pending:
-            try:
-                task.cancel()
-                await task
-            except (asyncio.CancelledError, Exception):
-                pass
 
     async def _handle_received_messages(self) -> None:
         while not self._stop_event.is_set():
@@ -235,7 +229,12 @@ class S2AsyncConnection:  # pylint: disable=too-many-instance-attributes
             await stop_event_task
             raise CouldNotReceiveStatusReceptionError(f"Connection stopped while waiting for ReceptionStatus for message {s2_msg.message_id}")
 
-        if reception_status.status != ReceptionStatusValues.OK and raise_on_error:
-            raise RuntimeError(f"ReceptionStatus was not OK but rather {reception_status.status}")
+        if raise_on_error:
+            if reception_status.status == ReceptionStatusValues.PERMANENT_ERROR:
+                error = f"Received a permanent error for message {s2_msg.message_id} with diagnostic label: {reception_status.diagnostic_label}"
+                logger.error(error)
+                raise PermanentConnectionError(error)
+            elif reception_status.status != ReceptionStatusValues.OK and raise_on_error:
+                raise RuntimeError(f"ReceptionStatus was not OK but rather {reception_status.status}")
 
         return reception_status
