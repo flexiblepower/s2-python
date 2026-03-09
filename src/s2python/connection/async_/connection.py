@@ -55,10 +55,9 @@ class S2AsyncConnection:
         self._handlers = MessageHandlers()
 
     async def stop(self) -> None:
-        """Stop the S2 connection gracefully and wait till it stops.
+        """Stop the S2 connection gracefully.
 
-        Note: Not thread-safe. Must be run from the same event loop as `start_as_rm` runs in.
-        Does not stop the underlying medium!
+        Note: Does not stop the underlying medium!
         """
         logger.info("Will stop the S2 connection at the earliest moment.")
         self._stop_event.set()

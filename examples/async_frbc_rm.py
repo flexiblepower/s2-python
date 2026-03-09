@@ -1,12 +1,11 @@
 import argparse
 import asyncio
-from functools import partial
 import logging
 import sys
 import uuid
 import signal
 import datetime
-from typing import Callable, Optional, Coroutine, Any
+from typing import Optional, Coroutine, Any
 
 from s2python.connection.types import S2ConnectionEventsAndMessages
 from s2python.common import (
@@ -32,8 +31,7 @@ from s2python.frbc import (
     FRBCActuatorStatus,
 )
 from s2python.connection import AssetDetails
-from s2python.connection.async_ import S2AsyncConnection
-from s2python.connection.async_.medium.websocket import WebsocketClientMedium
+from s2python.connection.async_ import S2AsyncConnection, WebsocketClientMedium
 from s2python.connection.async_.control_type.class_based import FRBCControlType, NoControlControlType, ResourceManagerHandler
 
 logger = logging.getLogger("s2python")

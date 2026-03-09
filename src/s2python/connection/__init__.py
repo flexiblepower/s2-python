@@ -4,3 +4,13 @@ from s2python.connection.control_type import RoleHandler
 from s2python.connection.types import S2ConnectionEventsAndMessages
 from s2python.connection.quickstarts import BlockingWebsocketClientRM
 
+__all__ = [
+    "AssetDetails",
+    "ConnectionStarted",
+    "ConnectionStopped",
+    "S2ConnectionEvent",
+    "RoleHandler",
+    "S2ConnectionEventsAndMessages",
+    "BlockingWebsocketClientRM"
+]
+

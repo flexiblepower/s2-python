@@ -167,7 +167,7 @@ class FRBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def activate(self, connection: S2AsyncConnection) -> None:
-        """Overwrite with the actual dctivation logic of your Resource Manager for this particular control type."""
+        """Overwrite with the actual activation logic of your Resource Manager for this particular control type."""
 
     @abc.abstractmethod
     async def deactivate(self, connection: S2AsyncConnection) -> None:
@@ -188,7 +188,7 @@ class PPBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def activate(self, connection: S2AsyncConnection) -> None:
-        """Overwrite with the actual dctivation logic of your Resource Manager for this particular control type."""
+        """Overwrite with the actual activation logic of your Resource Manager for this particular control type."""
 
     @abc.abstractmethod
     async def deactivate(self, connection: S2AsyncConnection) -> None:
@@ -209,7 +209,7 @@ class OMBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def activate(self, connection: S2AsyncConnection) -> None:
-        """Overwrite with the actual dctivation logic of your Resource Manager for this particular control type."""
+        """Overwrite with the actual activation logic of your Resource Manager for this particular control type."""
 
     @abc.abstractmethod
     async def deactivate(self, connection: S2AsyncConnection) -> None:
