@@ -1,7 +1,7 @@
 import abc
 import logging
 import uuid
-from typing import Coroutine, Optional, List, Any
+from typing import Optional, List
 
 from s2python.connection.asset_details import AssetDetails
 from s2python.common import (
@@ -11,8 +11,10 @@ from s2python.common import (
     SelectControlType,
 )
 from s2python.connection.async_.connection import S2AsyncConnection
-from s2python.connection.async_.message_handlers import SendOkayRun
-from s2python.connection.types import S2ConnectionEvent, S2ConnectionEventsAndMessages
+from s2python.connection.types import (
+    S2ConnectionEventsAndMessages,
+    SendOkayRunAsync,
+)
 from s2python.version import S2_VERSION
 
 from s2python.connection.connection_events import ConnectionStarted, ConnectionStopped
@@ -40,14 +42,12 @@ class S2ControlType(abc.ABC):
     async def deactivate(self, connection: S2AsyncConnection) -> None: ...
 
 
-
 class ResourceManagerHandler:
     asset_details: AssetDetails
     _current_control_type: Optional[S2ControlType]
     _control_types: List[S2ControlType]
 
-    def __init__(self, control_types: List[S2ControlType],
-                 asset_details: AssetDetails) -> None:
+    def __init__(self, control_types: List[S2ControlType], asset_details: AssetDetails) -> None:
         self.asset_details = asset_details
         self._current_control_type = None
         self._control_types = control_types
@@ -62,7 +62,9 @@ class ResourceManagerHandler:
         connection.register_handler(SelectControlType, self._on_select_control_type)
         connection.register_handler(ConnectionStopped, self._on_connection_stop)
 
-    async def _on_connection_started(self, connection: S2AsyncConnection, _: S2ConnectionEvent, __: Optional[Coroutine[Any, Any, None]]) -> None:
+    async def _on_connection_started(
+        self, connection: S2AsyncConnection, _: S2ConnectionEventsAndMessages, __: SendOkayRunAsync
+    ) -> None:
         await connection.send_msg_and_await_reception_status(
             Handshake(
                 message_id=uuid.uuid4(),
@@ -70,12 +72,13 @@ class ResourceManagerHandler:
                 supported_protocol_versions=[S2_VERSION],
             )
         )
-        logger.debug(
-            "Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM."
-        )
+        logger.debug("Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM.")
 
     async def _on_handshake(
-        self, _: S2AsyncConnection, event: S2ConnectionEvent, send_okay: SendOkayRun
+        self,
+        _: S2AsyncConnection,
+        event: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunAsync,
     ) -> None:
         assert send_okay is not None
         if not isinstance(event, Handshake):
@@ -93,7 +96,10 @@ class ResourceManagerHandler:
         await send_okay()
 
     async def _on_handshake_response(
-        self, connection: S2AsyncConnection, event: S2ConnectionEvent, send_okay: SendOkayRun
+        self,
+        connection: S2AsyncConnection,
+        event: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunAsync,
     ) -> None:
         assert send_okay is not None
         if not isinstance(event, HandshakeResponse):
@@ -104,9 +110,7 @@ class ResourceManagerHandler:
             return
 
         logger.debug("Received HandshakeResponse %s", event.to_json())
-        logger.debug(
-            "CEM selected to use version %s", event.selected_protocol_version
-        )
+        logger.debug("CEM selected to use version %s", event.selected_protocol_version)
         await send_okay()
         logger.debug("Handshake complete. Sending first ResourceManagerDetails.")
 
@@ -115,7 +119,10 @@ class ResourceManagerHandler:
         )
 
     async def _on_select_control_type(
-        self, connection: S2AsyncConnection, event: S2ConnectionEvent, send_okay: SendOkayRun
+        self,
+        connection: S2AsyncConnection,
+        event: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunAsync,
     ) -> None:
         assert send_okay is not None
         if not isinstance(event, SelectControlType):
@@ -146,7 +153,12 @@ class ResourceManagerHandler:
             self._current_control_type.register_handlers(connection)
             await self._current_control_type.activate(connection)
 
-    async def _on_connection_stop(self, connection: S2AsyncConnection, __: S2ConnectionEvent, ___: SendOkayRun):
+    async def _on_connection_stop(
+        self,
+        connection: S2AsyncConnection,
+        __: S2ConnectionEventsAndMessages,
+        ___: SendOkayRunAsync,
+    ) -> None:
         if self._current_control_type:
             await self._current_control_type.deactivate(connection)
             self._current_control_type = None
@@ -161,7 +173,10 @@ class FRBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def handle_instruction(
-        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: SendOkayRun
+        self,
+        connection: S2AsyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunAsync,
     ) -> None: ...
 
     @abc.abstractmethod
@@ -182,7 +197,10 @@ class PPBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def handle_instruction(
-        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: SendOkayRun
+        self,
+        connection: S2AsyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunAsync,
     ) -> None: ...
 
     @abc.abstractmethod
@@ -203,7 +221,10 @@ class OMBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def handle_instruction(
-        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: SendOkayRun
+        self,
+        connection: S2AsyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunAsync,
     ) -> None: ...
 
     @abc.abstractmethod
@@ -224,7 +245,10 @@ class PEBCControlType(S2ControlType):
 
     @abc.abstractmethod
     async def handle_instruction(
-            self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: SendOkayRun
+        self,
+        connection: S2AsyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunAsync,
     ) -> None: ...
 
     @abc.abstractmethod

@@ -14,8 +14,15 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("s2python")
 
-SendOkayRun = Optional[Callable[[], Coroutine[Any, Any, None]]]
-S2EventHandlerAsync = Callable[["S2AsyncConnection", S2ConnectionEventsAndMessages, Optional[Callable[[], Coroutine[Any, Any, None]]]], Coroutine[Any, Any, None]]
+S2EventHandlerAsync = Callable[
+    [
+        "S2AsyncConnection",
+        S2ConnectionEventsAndMessages,
+        Optional[Callable[[], Coroutine[Any, Any, None]]],
+    ],
+    Coroutine[Any, Any, None],
+]
+
 
 class SendOkay:
     _status_is_send: asyncio.Event
@@ -60,7 +67,9 @@ class MessageHandlers:
     def __init__(self) -> None:
         self.handlers = {}
 
-    async def handle_event(self, connection: "S2AsyncConnection", event: S2ConnectionEventsAndMessages) -> None:
+    async def handle_event(
+        self, connection: "S2AsyncConnection", event: S2ConnectionEventsAndMessages
+    ) -> None:
         """Handle the S2 message using the registered handler.
 
         :param connection: The S2 conncetion the `msg` is received from.
@@ -68,32 +77,37 @@ class MessageHandlers:
         """
         handler = self.handlers.get(type(event))
         if handler is not None:
-            send_okay: Optional[SendOkay] = None
-            try:
-                if hasattr(event, "message_id"):
-                    cast(S2MessageWithID, event)
-                    logger.debug('Handling S2 message with message id %s using handler %s', event.message_id, handler)
-                    send_okay = SendOkay(connection, event.message_id)
+            if hasattr(event, "message_id"):
+                msg_event = cast(S2MessageWithID, event)
+                logger.debug(
+                    "Handling S2 message with message id %s using handler %s",
+                    msg_event.message_id,
+                    handler,
+                )
+                send_okay = SendOkay(connection, msg_event.message_id)
+                try:
                     await handler(connection, event, send_okay.run)
-                else:
-                    logger.debug('Handling S2 connection event (without message id) using handler %s', handler)
-                    await handler(connection, event, None)
-            except PermanentConnectionError:
-                logger.error("While processing message %s a permanent connection error occurred. Stopping the connection.")
-                raise
-            except Exception:
-                if send_okay and not send_okay._status_is_send.is_set():  # pylint: disable=protected-access
-                    cast(S2MessageWithID, event)
-                    await connection.respond_with_reception_status(
-                        subject_message_id=event.message_id,
-                        status=ReceptionStatusValues.PERMANENT_ERROR,
-                        diagnostic_label=f"While processing message {event.message_id} "
-                                         f"an unrecoverable error occurred.",
+                except PermanentConnectionError:
+                    logger.error(
+                        "While processing message %s a permanent connection error occurred. Stopping the connection."
                     )
-                raise
-            if send_okay:
-                cast(S2MessageWithID, event)
-                await send_okay.ensure_send(type(event))
+                    raise
+                except Exception:
+                    if not send_okay._status_is_send.is_set():  # pylint: disable=protected-access
+                        await connection.respond_with_reception_status(
+                            subject_message_id=msg_event.message_id,
+                            status=ReceptionStatusValues.PERMANENT_ERROR,
+                            diagnostic_label=f"While processing message {msg_event.message_id} "
+                            f"an unrecoverable error occurred.",
+                        )
+                    raise
+                await send_okay.ensure_send(type(msg_event))
+            else:
+                logger.debug(
+                    "Handling S2 connection event (without message id) using handler %s",
+                    handler,
+                )
+                await handler(connection, event, None)
         else:
             logger.warning(
                 "Received an event of type %s but no handler is registered. Ignoring the event.",
@@ -110,6 +124,6 @@ class MessageHandlers:
         """
         self.handlers[event_type] = handler
 
-    def unregister_handler(self, s2_message_type: Type[S2ConnectionEventsAndMessages]):
+    def unregister_handler(self, s2_message_type: Type[S2ConnectionEventsAndMessages]) -> None:
         if s2_message_type in self.handlers:
             del self.handlers[s2_message_type]

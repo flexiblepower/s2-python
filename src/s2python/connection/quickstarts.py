@@ -19,7 +19,9 @@ class BlockingWebsocketClientRM:
     url: str
     asset_details: AssetDetails
 
-    def __init__(self, asset_details: AssetDetails, url: str, control_types: list[S2ControlType]):
+    def __init__(
+        self, asset_details: AssetDetails, url: str, control_types: list[S2ControlType]
+    ) -> None:
         self.url = url
         self.asset_details = asset_details
         self._thread = threading.Thread(target=self._run)
@@ -29,8 +31,7 @@ class BlockingWebsocketClientRM:
         self._eventloop = asyncio.new_event_loop()
 
         rm_handler = ResourceManagerHandler(
-            asset_details=self.asset_details,
-            control_types=self._control_types
+            asset_details=self.asset_details, control_types=self._control_types
         )
 
         ws_medium = WebsocketClientMedium(url=self.url, verify_certificate=False)
@@ -39,17 +40,21 @@ class BlockingWebsocketClientRM:
         # Configure the S2 connection on top of the websocket connection
         self._s2_connection = S2SyncConnection(medium=ws_medium, eventloop=self._eventloop)
         rm_handler.register_handlers(self._s2_connection)
-        logger.debug("Starting synchronous S2 connection event loop in thread %s", self._thread.name)
+        logger.debug(
+            "Starting synchronous S2 connection event loop in thread %s", self._thread.name
+        )
         self._s2_connection.run()
-        logger.debug("Synchronous S2 connection event loop in thread %s has stopped", self._thread.name)
+        logger.debug(
+            "Synchronous S2 connection event loop in thread %s has stopped", self._thread.name
+        )
 
-    def start(self):
+    def start(self) -> None:
         self._thread.start()
 
-    def wait_till_done(self):
+    def wait_till_done(self) -> None:
         self._thread.join()
 
-    def stop(self):
+    def stop(self) -> None:
         """Stops the S2 connection.
 
         Note: Ensure this method is called from a different thread than the thread running the S2 connection.

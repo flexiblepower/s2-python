@@ -1,12 +1,16 @@
 import asyncio
 import logging
 import uuid
-from typing import Any, Coroutine, Optional, Type, Callable
+from typing import Optional, Type, Callable
 
 from s2python.common import (
     ReceptionStatusValues,
 )
-from s2python.connection.types import S2ConnectionEvent, S2ConnectionEventsAndMessages
+from s2python.connection.types import (
+    S2ConnectionEventsAndMessages,
+    SendOkayRunAsync,
+    SendOkayRunSync,
+)
 from s2python.message import S2Message
 
 from s2python.common import ReceptionStatus
@@ -16,7 +20,9 @@ from s2python.message import S2MessageWithID
 
 logger = logging.getLogger("s2python")
 
-S2EventHandlerSync = Callable[["S2SyncConnection", S2ConnectionEvent, Optional[Callable[[], None]]], None]
+S2EventHandlerSync = Callable[
+    ["S2SyncConnection", S2ConnectionEventsAndMessages, SendOkayRunSync], None
+]
 
 
 class S2SyncConnection:
@@ -29,10 +35,14 @@ class S2SyncConnection:
         eventloop: Optional[asyncio.AbstractEventLoop] = None,
     ) -> None:
         self._eventloop = asyncio.new_event_loop() if eventloop is None else eventloop
-        self._async_s2_connection = self._eventloop.run_until_complete(S2SyncConnection._create_async_s2_connection(medium, self._eventloop))
+        self._async_s2_connection = self._eventloop.run_until_complete(
+            S2SyncConnection._create_async_s2_connection(medium, self._eventloop)
+        )
 
     @staticmethod
-    async def _create_async_s2_connection(medium: S2MediumConnection, eventloop: asyncio.AbstractEventLoop) -> S2AsyncConnection:
+    async def _create_async_s2_connection(
+        medium: S2MediumConnection, eventloop: asyncio.AbstractEventLoop
+    ) -> S2AsyncConnection:
         return S2AsyncConnection(medium, eventloop)
 
     def run(self) -> None:
@@ -42,7 +52,9 @@ class S2SyncConnection:
         """Gracefully stops the S2 connection."""
         asyncio.run_coroutine_threadsafe(self._async_s2_connection.stop(), self._eventloop).result()
 
-    def register_handler(self, s2_message_type: Type[S2ConnectionEventsAndMessages], handler: S2EventHandlerSync) -> None:
+    def register_handler(
+        self, s2_message_type: Type[S2ConnectionEventsAndMessages], handler: S2EventHandlerSync
+    ) -> None:
         """Register a handler for a specific S2 message type.
 
         :param s2_message_type: The S2 message type to register the handler for.
@@ -51,15 +63,19 @@ class S2SyncConnection:
 
         async def handle_s2_message_async_wrapper(
             _: S2AsyncConnection,
-            s2_msg: S2ConnectionEvent,
-            send_okay: Optional[Callable[[], Coroutine[Any, Any, None]]],
+            s2_msg: S2ConnectionEventsAndMessages,
+            send_okay: SendOkayRunAsync,
         ) -> None:
             await self._eventloop.run_in_executor(
                 None,
                 handler,
                 self,
                 s2_msg,
-                lambda: asyncio.run_coroutine_threadsafe(send_okay(), self._eventloop).result() if send_okay else None,
+                lambda: (
+                    asyncio.run_coroutine_threadsafe(send_okay(), self._eventloop).result()
+                    if send_okay
+                    else None
+                ),
             )
 
         self._async_s2_connection.register_handler(s2_message_type, handle_s2_message_async_wrapper)
@@ -67,9 +83,7 @@ class S2SyncConnection:
     def unregister_handler(self, s2_message_type: Type[S2MessageWithID]) -> None:
         self._async_s2_connection.unregister_handler(s2_message_type)
 
-    def send_and_forget(
-        self, s2_msg: S2Message
-    ) -> None:
+    def send_and_forget(self, s2_msg: S2Message) -> None:
         asyncio.run_coroutine_threadsafe(
             self._async_s2_connection.send_and_forget(s2_msg),
             self._eventloop,

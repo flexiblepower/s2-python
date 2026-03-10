@@ -1,7 +1,7 @@
 import abc
 import logging
 import uuid
-from typing import Optional, List, Callable
+from typing import Optional, List
 
 from s2python.connection.asset_details import AssetDetails
 from s2python.common import (
@@ -11,7 +11,7 @@ from s2python.common import (
     SelectControlType,
 )
 from s2python.connection.sync.connection import S2SyncConnection
-from s2python.connection.types import S2ConnectionEvent, S2ConnectionEventsAndMessages
+from s2python.connection.types import S2ConnectionEventsAndMessages, SendOkayRunSync
 from s2python.version import S2_VERSION
 
 from s2python.connection.connection_events import ConnectionStarted, ConnectionStopped
@@ -38,14 +38,12 @@ class S2ControlType(abc.ABC):
     def deactivate(self, connection: S2SyncConnection) -> None: ...
 
 
-
 class ResourceManagerHandler:
     asset_details: AssetDetails
     _current_control_type: Optional[S2ControlType]
     _control_types: List[S2ControlType]
 
-    def __init__(self, control_types: List[S2ControlType],
-                 asset_details: AssetDetails) -> None:
+    def __init__(self, control_types: List[S2ControlType], asset_details: AssetDetails) -> None:
         self.asset_details = asset_details
         self._current_control_type = None
         self._control_types = control_types
@@ -60,7 +58,12 @@ class ResourceManagerHandler:
         connection.register_handler(SelectControlType, self._on_select_control_type)
         connection.register_handler(ConnectionStopped, self._on_connection_stop)
 
-    def _on_connection_started(self, connection: S2SyncConnection, _: S2ConnectionEvent, __: Optional[Callable[[], None]]) -> None:
+    def _on_connection_started(
+        self,
+        connection: S2SyncConnection,
+        _: S2ConnectionEventsAndMessages,
+        __: SendOkayRunSync,
+    ) -> None:
         connection.send_msg_and_await_reception_status(
             Handshake(
                 message_id=uuid.uuid4(),
@@ -68,12 +71,13 @@ class ResourceManagerHandler:
                 supported_protocol_versions=[S2_VERSION],
             )
         )
-        logger.debug(
-            "Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM."
-        )
+        logger.debug("Send handshake to CEM. Expecting Handshake and HandshakeResponse from CEM.")
 
     def _on_handshake(
-        self, _: S2SyncConnection, event: S2ConnectionEvent, send_okay: Optional[Callable[[], None]]
+        self,
+        _: S2SyncConnection,
+        event: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunSync,
     ) -> None:
         assert send_okay is not None
         if not isinstance(event, Handshake):
@@ -91,7 +95,10 @@ class ResourceManagerHandler:
         send_okay()
 
     def _on_handshake_response(
-        self, connection: S2SyncConnection, event: S2ConnectionEvent, send_okay: Optional[Callable[[], None]]
+        self,
+        connection: S2SyncConnection,
+        event: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunSync,
     ) -> None:
         assert send_okay is not None
         if not isinstance(event, HandshakeResponse):
@@ -102,9 +109,7 @@ class ResourceManagerHandler:
             return
 
         logger.debug("Received HandshakeResponse %s", event.to_json())
-        logger.debug(
-            "CEM selected to use version %s", event.selected_protocol_version
-        )
+        logger.debug("CEM selected to use version %s", event.selected_protocol_version)
         send_okay()
         logger.debug("Handshake complete. Sending first ResourceManagerDetails.")
 
@@ -113,7 +118,10 @@ class ResourceManagerHandler:
         )
 
     def _on_select_control_type(
-        self, connection: S2SyncConnection, event: S2ConnectionEvent, send_okay: Optional[Callable[[], None]]
+        self,
+        connection: S2SyncConnection,
+        event: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunSync,
     ) -> None:
         assert send_okay is not None
         if not isinstance(event, SelectControlType):
@@ -144,7 +152,12 @@ class ResourceManagerHandler:
             self._current_control_type.register_handlers(connection)
             self._current_control_type.activate(connection)
 
-    def _on_connection_stop(self, connection: S2SyncConnection, __: S2ConnectionEvent, ___: Optional[Callable[[], None]]):
+    def _on_connection_stop(
+        self,
+        connection: S2SyncConnection,
+        __: S2ConnectionEventsAndMessages,
+        ___: SendOkayRunSync,
+    ) -> None:
         if self._current_control_type:
             self._current_control_type.deactivate(connection)
             self._current_control_type = None
@@ -159,7 +172,10 @@ class FRBCControlType(S2ControlType):
 
     @abc.abstractmethod
     def handle_instruction(
-        self, connection: S2SyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Callable[[], None]]
+        self,
+        connection: S2SyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunSync,
     ) -> None: ...
 
     @abc.abstractmethod
@@ -180,7 +196,10 @@ class PPBCControlType(S2ControlType):
 
     @abc.abstractmethod
     def handle_instruction(
-        self, connection: S2SyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Callable[[], None]]
+        self,
+        connection: S2SyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunSync,
     ) -> None: ...
 
     @abc.abstractmethod
@@ -201,7 +220,10 @@ class OMBCControlType(S2ControlType):
 
     @abc.abstractmethod
     def handle_instruction(
-        self, connection: S2SyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Callable[[], None]]
+        self,
+        connection: S2SyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunSync,
     ) -> None: ...
 
     @abc.abstractmethod

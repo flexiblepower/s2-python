@@ -5,9 +5,8 @@ import sys
 import uuid
 import signal
 import datetime
-from typing import Optional, Coroutine, Any
 
-from s2python.connection.types import S2ConnectionEventsAndMessages
+from s2python.connection.types import S2ConnectionEventsAndMessages, SendOkayRunAsync
 from s2python.common import (
     Duration,
     Role,
@@ -32,7 +31,11 @@ from s2python.frbc import (
 )
 from s2python.connection import AssetDetails
 from s2python.connection.async_ import S2AsyncConnection, WebsocketClientMedium
-from s2python.connection.async_.control_type.class_based import FRBCControlType, NoControlControlType, ResourceManagerHandler
+from s2python.connection.async_.control_type.class_based import (
+    FRBCControlType,
+    NoControlControlType,
+    ResourceManagerHandler,
+)
 
 logger = logging.getLogger("s2python")
 logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -41,7 +44,10 @@ logger.setLevel(logging.DEBUG)
 
 class MyFRBCControlType(FRBCControlType):
     async def handle_instruction(
-        self, connection: S2AsyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Coroutine[Any, Any, None]]
+        self,
+        connection: S2AsyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunAsync,
     ) -> None:
         if not isinstance(msg, FRBCInstruction):
             raise RuntimeError(
@@ -159,7 +165,7 @@ async def start_s2_session(url, rm_id: uuid.UUID):
             provides_forecast=False,
             provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
         ),
-        control_types=[MyFRBCControlType(), MyNoControlControlType()]
+        control_types=[MyFRBCControlType(), MyNoControlControlType()],
     )
 
     # Setup the underlying websocket connection

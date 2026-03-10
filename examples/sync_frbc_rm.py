@@ -5,7 +5,6 @@ import sys
 import uuid
 import signal
 import datetime
-from typing import Callable, Optional
 
 from s2python.common import (
     Duration,
@@ -17,7 +16,7 @@ from s2python.common import (
     PowerRange,
     CommodityQuantity,
 )
-from s2python.connection.types import S2ConnectionEventsAndMessages
+from s2python.connection.types import S2ConnectionEventsAndMessages, SendOkayRunSync
 from s2python.frbc import (
     FRBCInstruction,
     FRBCSystemDescription,
@@ -33,7 +32,11 @@ from s2python.frbc import (
 from s2python.connection import AssetDetails
 from s2python.connection.sync import S2SyncConnection
 from s2python.connection.async_ import WebsocketClientMedium
-from s2python.connection.sync.control_type.class_based import FRBCControlType, NoControlControlType, ResourceManagerHandler
+from s2python.connection.sync.control_type.class_based import (
+    FRBCControlType,
+    NoControlControlType,
+    ResourceManagerHandler,
+)
 
 logger = logging.getLogger("s2python")
 logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -42,7 +45,10 @@ logger.setLevel(logging.DEBUG)
 
 class MyFRBCControlType(FRBCControlType):
     def handle_instruction(
-        self, connection: S2SyncConnection, msg: S2ConnectionEventsAndMessages, send_okay: Optional[Callable[[], None]]
+        self,
+        connection: S2SyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunSync,
     ) -> None:
         if not isinstance(msg, FRBCInstruction):
             raise RuntimeError(
@@ -160,16 +166,16 @@ def start_s2_session(url, rm_id: uuid.UUID):
             provides_forecast=False,
             provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
         ),
-        control_types=[MyFRBCControlType(), MyNoControlControlType()]
+        control_types=[MyFRBCControlType(), MyNoControlControlType()],
     )
 
     # Setup the underlying websocket connection
     ws_medium = WebsocketClientMedium(url=url, verify_certificate=False)
 
     eventloop = asyncio.get_event_loop()
-    print('Before connecting to websocket')
+    print("Before connecting to websocket")
     eventloop.run_until_complete(ws_medium.connect())
-    print('After connecting to websocket')
+    print("After connecting to websocket")
 
     # Configure the S2 connection on top of the websocket connection
     s2_conn = S2SyncConnection(medium=ws_medium, eventloop=eventloop)
@@ -182,9 +188,9 @@ def start_s2_session(url, rm_id: uuid.UUID):
     signal.signal(signal.SIGINT, stop)
     signal.signal(signal.SIGTERM, stop)
 
-    print('Starting s2 connection')
+    print("Starting s2 connection")
     s2_conn.run()
-    print('S2 connection stopped')
+    print("S2 connection stopped")
 
 
 if __name__ == "__main__":
