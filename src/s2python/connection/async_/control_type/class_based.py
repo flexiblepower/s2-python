@@ -29,6 +29,11 @@ logger = logging.getLogger("s2python")
 
 
 class S2ControlType(abc.ABC):
+    asset_details: AssetDetails
+
+    def set_asset_details(self, asset_details: AssetDetails):
+        self.asset_details = asset_details
+
     @abc.abstractmethod
     def get_protocol_control_type(self) -> ProtocolControlType: ...
 
@@ -51,6 +56,9 @@ class ResourceManagerHandler:
         self.asset_details = asset_details
         self._current_control_type = None
         self._control_types = control_types
+
+        for control_type in self._control_types:
+            control_type.set_asset_details(asset_details)
 
     def get_s2_role(self) -> EnergyManagementRole:
         return EnergyManagementRole.RM
