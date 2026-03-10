@@ -14,7 +14,11 @@
 <br />
 
 This Python package implements the message validation for the EN50491-12-2 "S2" standard for home and building energy management. This implementation
-is based on the asyncapi description of the protocol provided in the [s2-ws-json](https://github.com/flexiblepower/s2-ws-json/) repository. 
+is based on the asyncapi description of the protocol provided in the [s2-ws-json](https://github.com/flexiblepower/s2-ws-json/) repository.
+To learn more about the S2 standard:
+- [Read the S2 standard's documentation](https://docs.s2standard.org/) for a detailed explanation of S2
+- [Visit the website](https://s2standard.org) for a high-level explanation of S2
+- [Read the whitepaper](https://ecostandard.org/wp-content/uploads/2024/05/20240521_DSF_PositionPaper.pdf) to learn why it's important to expose and utilise energy flexibility
 
 ## To Install
 You can install this package using pip or any Python dependency manager that collects the packages from PyPI:
