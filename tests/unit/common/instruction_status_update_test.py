@@ -3,7 +3,7 @@ import json
 import uuid
 from unittest import TestCase
 
-from pytz import timezone
+from zoneinfo import ZoneInfo
 
 from s2python.common import InstructionStatusUpdate, InstructionStatus
 
@@ -44,9 +44,7 @@ class InstructionStatusUpdateTest(TestCase):
             message_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced3"),
             instruction_id=uuid.UUID("2bdec96b-be3b-4ba9-afa0-c4a0632cced4"),
             status_type=InstructionStatus.SUCCEEDED,
-            timestamp=timezone("Europe/Amsterdam").localize(
-                datetime(2023, 8, 2, 12, 48, 42)
-            ),
+            timestamp=datetime(2023, 8, 2, 12, 48, 42, tzinfo=ZoneInfo("Europe/Amsterdam")),
         )
 
         # Act

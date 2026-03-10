@@ -15,8 +15,6 @@ license-files = ["LICENSE"]
 requires-python = ">=3.9, < 3.14"
 dependencies = [
     "pydantic>=2.8.2",
-    "pytz",
-    "click",
     "typing-extensions",
 ]
 classifiers = [
@@ -25,7 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",    
+    "Programming Language :: Python :: 3.13",
 ]
 
 [tool.setuptools_scm]
@@ -44,7 +42,6 @@ testing = [
     "pytest-coverage",
     "pytest-timer",
     "mypy",
-    "types-pytz",
     "pylint",
     "pyright",
 ]
