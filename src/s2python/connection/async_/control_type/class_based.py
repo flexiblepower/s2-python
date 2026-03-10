@@ -31,7 +31,7 @@ logger = logging.getLogger("s2python")
 class S2ControlType(abc.ABC):
     asset_details: AssetDetails
 
-    def set_asset_details(self, asset_details: AssetDetails):
+    def set_asset_details(self, asset_details: AssetDetails) -> None:
         self.asset_details = asset_details
 
     @abc.abstractmethod
