@@ -95,7 +95,11 @@ class SendPowerMeasurementPeriodically:
 
 
 class MyFRBCControlType(FRBCControlType):
-    _power_measurement_task: Optional[SendPowerMeasurementPeriodically] = None
+    _power_measurement_task: Optional[SendPowerMeasurementPeriodically]
+
+    def __init__(self):
+        super().__init__()
+        self._power_measurement_task = None
 
     async def handle_instruction(
         self,

@@ -1,5 +1,6 @@
 import logging
 import ssl
+from types import TracebackType
 from typing import AsyncGenerator, Optional, Dict, Any
 from typing_extensions import override
 
@@ -36,6 +37,13 @@ class WebsocketClientMedium(S2AsyncMediumConnection):
     def __init__(
         self, url: str, verify_certificate: bool = True, bearer_token: Optional[str] = None
     ) -> None:
+        """Construct a Websocket client medium.
+
+        :param url: The websocket url to connect to.
+        :param verify_certificate: If we should verify the TLS certificate.
+        IF SET TO FALSE THERE IS NO GUARANTEE THE CONNECTION IS SECURE. USE WITH CAUTION.
+        :param bearer_token: Security token set in the 'Authorization' header as 'Bearer {token}' if provided.
+        """
         self.url = url
 
         self._ws = None
@@ -69,11 +77,16 @@ class WebsocketClientMedium(S2AsyncMediumConnection):
             await self._ws.close()
             self._closed = True
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "WebsocketClientMedium":
         await self.connect()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: Optional[type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
         await self.disconnect()
 
     @override
