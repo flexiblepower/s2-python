@@ -105,6 +105,20 @@ class S2SyncConnection:
         timeout_reception_status: float = 5.0,
         raise_on_error: bool = True,
     ) -> ReceptionStatus:
+        """Send an S2 message and wait for the corresponding ReceptionStatus message.
+
+        :param s2_msg: The S2 message to send.
+        :param timeout_reception_status: How long to wait for the ReceptionStatus message before giving up and raising
+        a TimeoutError. Note that if the connection is stopped while waiting, a CouldNotReceiveStatusReceptionError
+        will be raised instead.
+        :param raise_on_error: Throw an error in case the ReceptionStatus message has a status other than OK. If set to
+        False, the ReceptionStatus will be returned even if it contains an error status.
+        :raises TimeoutError: If no ReceptionStatus message is received within the specified timeout.
+        :raises CouldNotReceiveStatusReceptionError: If the connection is stopped while waiting for the ReceptionStatus message.
+        :raises PermanentConnectionError: If a ReceptionStatus message with status PERMANENT_ERROR is received and raise_on_error is True.
+        :raises RuntimeError: If a ReceptionStatus message with a status other than OK or PERMANENT_ERROR is received and raise_on_error is True.
+        :return: The ReceptionStatus associated with this S2 message.
+        """
         return asyncio.run_coroutine_threadsafe(
             self._async_s2_connection.send_msg_and_await_reception_status(
                 s2_msg, timeout_reception_status, raise_on_error

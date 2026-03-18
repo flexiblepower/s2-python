@@ -5,8 +5,13 @@ import uuid
 from typing import Optional, Type
 
 from s2python.connection.connection_events import ConnectionStopped
-from s2python.connection.async_.medium.s2_medium import S2MediumConnection, MediumClosedConnectionError, \
-    S2AsyncMediumConnection, S2SyncToAsyncMediumConnection, S2SyncMediumConnection
+from s2python.connection.async_.medium.s2_medium import (
+    S2MediumConnection,
+    MediumClosedConnectionError,
+    S2AsyncMediumConnection,
+    S2SyncToAsyncMediumConnection,
+    S2SyncMediumConnection,
+)
 from s2python.common import (
     ReceptionStatusValues,
     ReceptionStatus,
@@ -48,8 +53,10 @@ class S2AsyncConnection:
         elif isinstance(medium, S2SyncMediumConnection):
             self._medium = S2SyncToAsyncMediumConnection(medium)
         else:
-            raise RuntimeError(f'Unexpected medium type {type(medium)}. Medium must be either an '
-                               'S2AsyncMediumConnection or S2SyncMediumConnection.')
+            raise RuntimeError(
+                f"Unexpected medium type {type(medium)}. Medium must be either an "
+                "S2AsyncMediumConnection or S2SyncMediumConnection."
+            )
         self._s2_parser = S2Parser()
         self._handlers = MessageHandlers()
 
@@ -65,11 +72,13 @@ class S2AsyncConnection:
         await self._stop_event.wait()
 
     async def run(self) -> None:
-        logger.debug('Starting S2 connection on eventloop %s.', id(self._eventloop))
+        logger.debug("Starting S2 connection on eventloop %s.", id(self._eventloop))
         self._received_messages = asyncio.Queue()
 
         if not await self._medium.is_connected():
-            raise MediumClosedConnectionError("Cannot start the S2 connection if the underlying medium is closed.")
+            raise MediumClosedConnectionError(
+                "Cannot start the S2 connection if the underlying medium is closed."
+            )
 
         background_tasks = [
             self._eventloop.create_task(self._receive_messages()),
@@ -79,9 +88,7 @@ class S2AsyncConnection:
 
         await self._handlers.handle_event(self, ConnectionStarted())
 
-        (done, pending) = await asyncio.wait(
-            background_tasks, return_when=asyncio.FIRST_COMPLETED
-        )
+        (done, pending) = await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
 
         await self._handlers.handle_event(self, ConnectionStopped())
 
@@ -100,12 +107,14 @@ class S2AsyncConnection:
             except MediumClosedConnectionError:
                 logger.info("The other party closed the websocket connection.")
             except Exception:  # pylint: disable=broad-exception-caught
-                logger.exception("An error occurred in the S2 connection. Terminating current connection.")
+                logger.exception(
+                    "An error occurred in the S2 connection. Terminating current connection."
+                )
 
     async def _handle_received_messages(self) -> None:
         while not self._stop_event.is_set():
             msg = await self._received_messages.get()
-            logger.debug('Handling received message %s', msg.to_json())
+            logger.debug("Handling received message %s", msg.to_json())
             await self._handlers.handle_event(self, msg)
 
     async def _receive_messages(self) -> None:
@@ -152,10 +161,14 @@ class S2AsyncConnection:
                     )
                     await self._reception_status_awaiter.receive_reception_status(s2_msg)
                 else:
-                    logger.debug('Message is not a reception status, putting it in the received messages queue.')
+                    logger.debug(
+                        "Message is not a reception status, putting it in the received messages queue."
+                    )
                     await self._received_messages.put(s2_msg)
 
-    def register_handler(self, event_type: Type[S2ConnectionEventsAndMessages], handler: S2EventHandlerAsync) -> None:
+    def register_handler(
+        self, event_type: Type[S2ConnectionEventsAndMessages], handler: S2EventHandlerAsync
+    ) -> None:
         """Register a handler for a specific S2 message type.
 
         :param event_type: The S2 connection event to register the handler for.
@@ -178,9 +191,7 @@ class S2AsyncConnection:
     async def respond_with_reception_status(
         self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
     ) -> None:
-        logger.debug(
-            "Responding to message %s with status %s", subject_message_id, status
-        )
+        logger.debug("Responding to message %s with status %s", subject_message_id, status)
         await self.send_and_forget(
             ReceptionStatus(
                 subject_message_id=subject_message_id,
@@ -195,18 +206,36 @@ class S2AsyncConnection:
         timeout_reception_status: float = 5.0,
         raise_on_error: bool = True,
     ) -> ReceptionStatus:
+        """Send an S2 message and wait for the corresponding ReceptionStatus message.
+
+        :param s2_msg: The S2 message to send.
+        :param timeout_reception_status: How long to wait for the ReceptionStatus message before giving up and raising
+        a TimeoutError. Note that if the connection is stopped while waiting, a CouldNotReceiveStatusReceptionError
+        will be raised instead.
+        :param raise_on_error: Throw an error in case the ReceptionStatus message has a status other than OK. If set to
+        False, the ReceptionStatus will be returned even if it contains an error status.
+        :raises TimeoutError: If no ReceptionStatus message is received within the specified timeout.
+        :raises CouldNotReceiveStatusReceptionError: If the connection is stopped while waiting for the ReceptionStatus message.
+        :raises PermanentConnectionError: If a ReceptionStatus message with status PERMANENT_ERROR is received and raise_on_error is True.
+        :raises RuntimeError: If a ReceptionStatus message with a status other than OK or PERMANENT_ERROR is received and raise_on_error is True.
+        :return: The ReceptionStatus associated with this S2 message.
+        """
         await self.send_and_forget(s2_msg)
         logger.debug(
             "Waiting for ReceptionStatus for %s %s seconds",
             s2_msg.message_id,
             timeout_reception_status,
         )
-        reception_status_task = self._eventloop.create_task(self._reception_status_awaiter.wait_for_reception_status(
-            s2_msg.message_id, timeout_reception_status
-        ))
+        reception_status_task = self._eventloop.create_task(
+            self._reception_status_awaiter.wait_for_reception_status(
+                s2_msg.message_id, timeout_reception_status
+            )
+        )
         stop_event_task = self._eventloop.create_task(self._wait_till_stop())
 
-        (done, pending) = await asyncio.wait([reception_status_task, stop_event_task], return_when=asyncio.FIRST_COMPLETED)
+        (done, pending) = await asyncio.wait(
+            [reception_status_task, stop_event_task], return_when=asyncio.FIRST_COMPLETED
+        )
 
         for task in pending:
             try:
@@ -223,9 +252,11 @@ class S2AsyncConnection:
                 self._stop_event.set()
                 raise
         else:
-            #stop_event_task in done
+            # stop_event_task in done
             await stop_event_task
-            raise CouldNotReceiveStatusReceptionError(f"Connection stopped while waiting for ReceptionStatus for message {s2_msg.message_id}")
+            raise CouldNotReceiveStatusReceptionError(
+                f"Connection stopped while waiting for ReceptionStatus for message {s2_msg.message_id}"
+            )
 
         if raise_on_error:
             if reception_status.status == ReceptionStatusValues.PERMANENT_ERROR:
@@ -233,6 +264,8 @@ class S2AsyncConnection:
                 logger.error(error)
                 raise PermanentConnectionError(error)
             if reception_status.status != ReceptionStatusValues.OK and raise_on_error:
-                raise RuntimeError(f"ReceptionStatus was not OK but rather {reception_status.status}")
+                raise RuntimeError(
+                    f"ReceptionStatus was not OK but rather {reception_status.status}"
+                )
 
         return reception_status
