@@ -231,22 +231,20 @@ async def start_s2_session(url, rm_id: uuid.UUID):
     )
 
     # Setup the underlying websocket connection
-    ws_medium = WebsocketClientMedium(url=url, verify_certificate=False)
-    await ws_medium.connect()
+    async with WebsocketClientMedium(url=url, verify_certificate=False) as ws_medium:
+        # Configure the S2 connection on top of the websocket connection
+        s2_conn = S2AsyncConnection(medium=ws_medium)
+        rm_handler.register_handlers(s2_conn)
 
-    # Configure the S2 connection on top of the websocket connection
-    s2_conn = S2AsyncConnection(medium=ws_medium)
-    rm_handler.register_handlers(s2_conn)
+        eventloop = asyncio.get_running_loop()
 
-    eventloop = asyncio.get_running_loop()
+        async def stop():
+            print("Received signal. Will stop S2 connection.")
+            await s2_conn.stop()
 
-    async def stop():
-        print("Received signal. Will stop S2 connection.")
-        await s2_conn.stop()
-
-    eventloop.add_signal_handler(signal.SIGINT, lambda: eventloop.create_task(stop()))
-    eventloop.add_signal_handler(signal.SIGTERM, lambda: eventloop.create_task(stop()))
-    await s2_conn.run()
+        eventloop.add_signal_handler(signal.SIGINT, lambda: eventloop.create_task(stop()))
+        eventloop.add_signal_handler(signal.SIGTERM, lambda: eventloop.create_task(stop()))
+        await s2_conn.run()
 
 
 if __name__ == "__main__":

@@ -64,6 +64,18 @@ class WebsocketClientMedium(S2AsyncMediumConnection):
             logger.error(message)
             raise MediumCouldNotConnectError(message) from e
 
+    async def disconnect(self) -> None:
+        if self._ws is not None:
+            await self._ws.close()
+            self._closed = True
+
+    async def __aenter__(self):
+        await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.disconnect()
+
     @override
     async def is_connected(self) -> bool:
         return self._ws is not None and not self._closed
