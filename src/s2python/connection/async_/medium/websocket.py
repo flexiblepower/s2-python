@@ -2,7 +2,6 @@ import logging
 import ssl
 from typing import AsyncGenerator, Optional, Dict, Any
 from typing_extensions import override
-from websockets import Data
 
 from s2python.connection.async_.medium.s2_medium import (
     MediumClosedConnectionError,
@@ -17,6 +16,7 @@ try:
         ClientConnection as WSConnection,
         connect as ws_connect,
     )
+    from websockets import Data
 except ImportError as exc:
     raise ImportError(
         "The 'websockets' package is required. Run 'pip install s2-python[ws]' to use this feature."
