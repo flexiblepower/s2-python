@@ -24,6 +24,7 @@ from s2python.frbc import FRBCInstruction
 from s2python.ppbc import PPBCScheduleInstruction
 from s2python.ombc import OMBCInstruction
 from s2python.pebc import PEBCInstruction
+from s2python.ddbc import DDBCInstruction
 
 logger = logging.getLogger("s2python")
 
@@ -250,6 +251,28 @@ class PEBCControlType(S2ControlType):
 
     def register_handlers(self, connection: S2AsyncConnection) -> None:
         connection.register_handler(PEBCInstruction, self.handle_instruction)
+
+    @abc.abstractmethod
+    async def handle_instruction(
+        self,
+        connection: S2AsyncConnection,
+        msg: S2ConnectionEventsAndMessages,
+        send_okay: SendOkayRunAsync,
+    ) -> None: ...
+
+    @abc.abstractmethod
+    async def activate(self, connection: S2AsyncConnection) -> None: ...
+
+    @abc.abstractmethod
+    async def deactivate(self, connection: S2AsyncConnection) -> None: ...
+
+
+class DDBCControlType(S2ControlType):
+    def get_protocol_control_type(self) -> ProtocolControlType:
+        return ProtocolControlType.DEMAND_DRIVEN_BASED_CONTROL
+
+    def register_handlers(self, connection: S2AsyncConnection) -> None:
+        connection.register_handler(DDBCInstruction, self.handle_instruction)
 
     @abc.abstractmethod
     async def handle_instruction(
