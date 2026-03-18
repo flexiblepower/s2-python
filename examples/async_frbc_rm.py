@@ -1,10 +1,12 @@
 import argparse
 import asyncio
 import logging
+import random
 import sys
 import uuid
 import signal
 import datetime
+from typing import Optional
 
 from s2python.connection.types import S2ConnectionEventsAndMessages, SendOkayRunAsync
 from s2python.common import (
@@ -16,6 +18,8 @@ from s2python.common import (
     NumberRange,
     PowerRange,
     CommodityQuantity,
+    PowerValue,
+    PowerMeasurement,
 )
 from s2python.frbc import (
     FRBCInstruction,
@@ -42,7 +46,57 @@ logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(logging.DEBUG)
 
 
+class SendPowerMeasurementPeriodically:
+    _connection: S2AsyncConnection
+    _period: datetime.timedelta
+    _task: Optional[asyncio.Task]
+
+    def __init__(self, connection: S2AsyncConnection, period: datetime.timedelta):
+        self._connection = connection
+        self._period = period
+        self._task = None
+
+    async def _send_power_measurement(self):
+        while True:
+            # Grab the value from an API or anywhere else. Using a random value in this example.
+            value = random.uniform(10.0, 100.0)
+            print(f"Sending a power measurement message with value={value}")
+            await self._connection.send_msg_and_await_reception_status(
+                PowerMeasurement(
+                    message_id=uuid.uuid4(),
+                    values=[
+                        PowerValue(
+                            value=value,
+                            commodity_quantity=CommodityQuantity.ELECTRIC_POWER_3_PHASE_SYMMETRIC,
+                        )
+                    ],
+                    measurement_timestamp=datetime.datetime.now(tz=datetime.timezone.utc),
+                )
+            )
+            print("Sent a power measurement message.")
+            await asyncio.sleep(self._period.total_seconds())
+
+    async def start(self):
+        if self._task is not None:
+            raise RuntimeError("Already started")
+        print("Start sending power measurements periodically")
+        self._task = asyncio.create_task(self._send_power_measurement())
+
+    async def stop(self):
+        if self._task is None:
+            raise RuntimeError("Not started yet")
+        self._task.cancel()
+        try:
+            await self._task
+        except asyncio.CancelledError:
+            pass
+        self._task = None
+        print("Stopped sending power measurements periodically")
+
+
 class MyFRBCControlType(FRBCControlType):
+    _power_measurement_task: Optional[SendPowerMeasurementPeriodically] = None
+
     async def handle_instruction(
         self,
         connection: S2AsyncConnection,
@@ -83,7 +137,7 @@ class MyFRBCControlType(FRBCControlType):
                                             PowerRange(
                                                 start_of_range=-200.0,
                                                 end_of_range=200.0,
-                                                commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1,
+                                                commodity_quantity=CommodityQuantity.ELECTRIC_POWER_3_PHASE_SYMMETRIC,
                                             )
                                         ],
                                     )
@@ -141,8 +195,16 @@ class MyFRBCControlType(FRBCControlType):
             )
         )
 
+        self._power_measurement_task = SendPowerMeasurementPeriodically(
+            connection, datetime.timedelta(seconds=3)
+        )
+        await self._power_measurement_task.start()
+
     async def deactivate(self, connection: S2AsyncConnection) -> None:
         print("The control type FRBC is now deactivated.")
+        if self._power_measurement_task is not None:
+            await self._power_measurement_task.stop()
+            self._power_measurement_task = None
 
 
 class MyNoControlControlType(NoControlControlType):
@@ -163,7 +225,7 @@ async def start_s2_session(url, rm_id: uuid.UUID):
             roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
             currency=Currency.EUR,
             provides_forecast=False,
-            provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
+            provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_3_PHASE_SYMMETRIC],
         ),
         control_types=[MyFRBCControlType(), MyNoControlControlType()],
     )

@@ -1,10 +1,13 @@
 import argparse
 import asyncio
 import logging
+import random
 import sys
+import threading
 import uuid
 import signal
 import datetime
+from typing import Optional
 
 from s2python.common import (
     Duration,
@@ -15,6 +18,8 @@ from s2python.common import (
     NumberRange,
     PowerRange,
     CommodityQuantity,
+    PowerMeasurement,
+    PowerValue,
 )
 from s2python.connection.types import S2ConnectionEventsAndMessages, SendOkayRunSync
 from s2python.frbc import (
@@ -41,6 +46,53 @@ from s2python.connection.sync.control_type.class_based import (
 logger = logging.getLogger("s2python")
 logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(logging.DEBUG)
+
+
+class SendPowerMeasurementPeriodically:
+    _connection: S2SyncConnection
+    _period: datetime.timedelta
+    _thread: Optional[threading.Thread]
+    _stop: threading.Event
+
+    def __init__(self, connection: S2SyncConnection, period: datetime.timedelta):
+        self._connection = connection
+        self._period = period
+        self._thread = None
+        self._stop = threading.Event()
+
+    def _send_power_measurement(self):
+        while not self._stop.is_set():
+            # Grab the value from an API or anywhere else. Using a random value in this example.
+            value = random.uniform(10.0, 100.0)
+            print(f"Sending a power measurement message with value={value}")
+            self._connection.send_msg_and_await_reception_status(
+                PowerMeasurement(
+                    message_id=uuid.uuid4(),
+                    values=[
+                        PowerValue(
+                            value=value,
+                            commodity_quantity=CommodityQuantity.ELECTRIC_POWER_3_PHASE_SYMMETRIC,
+                        )
+                    ],
+                    measurement_timestamp=datetime.datetime.now(tz=datetime.timezone.utc),
+                )
+            )
+            print("Sent a power measurement message.")
+            self._stop.wait(self._period.total_seconds())
+
+    def start(self):
+        if self._thread is not None:
+            raise RuntimeError("Already started")
+        print("Start sending power measurements periodically")
+        self._thread = threading.Thread(target=self._send_power_measurement)
+        self._thread.start()
+
+    def stop(self):
+        if self._thread is None:
+            raise RuntimeError("Not started yet")
+        self._stop.set()
+        self._thread.join(5.0)
+        print("Stopped sending power measurements periodically")
 
 
 class MyFRBCControlType(FRBCControlType):
@@ -84,7 +136,7 @@ class MyFRBCControlType(FRBCControlType):
                                             PowerRange(
                                                 start_of_range=-200.0,
                                                 end_of_range=200.0,
-                                                commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1,
+                                                commodity_quantity=CommodityQuantity.ELECTRIC_POWER_3_PHASE_SYMMETRIC,
                                             )
                                         ],
                                     )
@@ -142,8 +194,16 @@ class MyFRBCControlType(FRBCControlType):
             )
         )
 
+        self._power_measurement_task = SendPowerMeasurementPeriodically(
+            connection, datetime.timedelta(seconds=3)
+        )
+        self._power_measurement_task.start()
+
     def deactivate(self, connection: S2SyncConnection) -> None:
         print("The control type FRBC is now deactivated.")
+        if self._power_measurement_task is not None:
+            self._power_measurement_task.stop()
+            self._power_measurement_task = None
 
 
 class MyNoControlControlType(NoControlControlType):
@@ -164,7 +224,7 @@ def start_s2_session(url, rm_id: uuid.UUID):
             roles=[Role(role=RoleType.ENERGY_CONSUMER, commodity=Commodity.ELECTRICITY)],
             currency=Currency.EUR,
             provides_forecast=False,
-            provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_L1],
+            provides_power_measurements=[CommodityQuantity.ELECTRIC_POWER_3_PHASE_SYMMETRIC],
         ),
         control_types=[MyFRBCControlType(), MyNoControlControlType()],
     )
@@ -183,7 +243,7 @@ def start_s2_session(url, rm_id: uuid.UUID):
 
     def stop(signal_num, _current_stack_frame):
         print(f"Received signal {signal_num}. Will stop S2 connection.")
-        s2_conn.stop()
+        threading.Thread(target=s2_conn.stop).start()
 
     signal.signal(signal.SIGINT, stop)
     signal.signal(signal.SIGTERM, stop)
