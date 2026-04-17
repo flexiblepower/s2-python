@@ -33,8 +33,8 @@ class PEBCPowerConstraintsTest(TestCase):
             "commodity_quantity": "ELECTRIC.POWER.L1",
             "limit_type": "LOWER_LIMIT",
             "range_boundary": {
-                "start_of_range": 0.0,
-                "end_of_range": -2000.0
+                "start_of_range": -2000.0,
+                "end_of_range": 0.0
             },
             "abnormal_condition_only": false
         }
@@ -43,9 +43,7 @@ class PEBCPowerConstraintsTest(TestCase):
         """
 
         # Act
-        pebc_power_constraints: PEBCPowerConstraints = PEBCPowerConstraints.from_json(
-            json_str
-        )
+        pebc_power_constraints: PEBCPowerConstraints = PEBCPowerConstraints.from_json(json_str)
 
         self.assertEqual(
             pebc_power_constraints.id,
@@ -124,9 +122,7 @@ class PEBCPowerConstraintsTest(TestCase):
                 PEBCAllowedLimitRange(
                     commodity_quantity=CommodityQuantity.ELECTRIC_POWER_L1,
                     limit_type=PEBCPowerEnvelopeLimitType.LOWER_LIMIT,
-                    range_boundary=NumberRange(
-                        start_of_range=0.0, end_of_range=-2000.0
-                    ),
+                    range_boundary=NumberRange(start_of_range=-2000.0, end_of_range=0.0),
                     abnormal_condition_only=False,
                 ),
             ],
@@ -153,7 +149,7 @@ class PEBCPowerConstraintsTest(TestCase):
                 {
                     "commodity_quantity": "ELECTRIC.POWER.L1",
                     "limit_type": "LOWER_LIMIT",
-                    "range_boundary": {"start_of_range": 0.0, "end_of_range": -2000.0},
+                    "range_boundary": {"start_of_range": -2000.0, "end_of_range": 0.0},
                     "abnormal_condition_only": False,
                 },
             ],
@@ -175,8 +171,8 @@ class PEBCPowerConstraintsTest(TestCase):
             "commodity_quantity": "ELECTRIC.POWER.L1",
             "limit_type": "LOWER_LIMIT",
             "range_boundary": {
-                "start_of_range": 0.0,
-                "end_of_range": -2000.0
+                "start_of_range": -2000.0,
+                "end_of_range": 0.0
             },
             "abnormal_condition_only": false
         }
@@ -236,8 +232,8 @@ class PEBCPowerConstraintsTest(TestCase):
             "commodity_quantity": "ELECTRIC.POWER.L1",
             "limit_type": "LOWER_LIMIT",
             "range_boundary": {
-                "start_of_range": 0.0,
-                "end_of_range": -2000.0
+                "start_of_range": -2000.0,
+                "end_of_range": 0.0
             },
             "abnormal_condition_only": false
         }
