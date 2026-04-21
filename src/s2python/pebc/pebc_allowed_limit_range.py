@@ -29,12 +29,7 @@ class PEBCAllowedLimitRange(GenPEBCAllowedLimitRange, S2MessageComponent):
 
     @model_validator(mode="after")
     def validate_range_boundary(self) -> Self:
-        # According to the specification "There must be at least one PEBC.AllowedLimitRange for the UPPER_LIMIT
-        # and at least one AllowedLimitRange for the LOWER_LIMIT." However for something that produces energy
-        # end_of_range=-2000 and start_of_range=0 is valid. Therefore absolute value used here.
-        if abs(self.range_boundary.start_of_range) > abs(
-            self.range_boundary.end_of_range
-        ):
+        if self.range_boundary.start_of_range > self.range_boundary.end_of_range:
             raise ValueError(
                 self,
                 "The start of the range must be smaller or equal than the end of the range.",
