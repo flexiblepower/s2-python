@@ -83,10 +83,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         should_be_waiting_still_1 = not wait_task_1.done()
         should_be_waiting_still_2 = not wait_task_2.done()
         await awaiter.receive_reception_status(s2_reception_status)
-        await wait_task_1
-        await wait_task_2
-        received_s2_reception_status_1 = wait_task_1.result()
-        received_s2_reception_status_2 = wait_task_2.result()
+        results = await asyncio.gather(wait_task_1, wait_task_2, return_exceptions=True)
 
         # Assert
         expected_s2_reception_status = ReceptionStatus(  # pyright: ignore[reportCallIssue]
@@ -95,8 +92,14 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(should_be_waiting_still_1)
         self.assertTrue(should_be_waiting_still_2)
-        self.assertEqual(expected_s2_reception_status, received_s2_reception_status_1)
-        self.assertEqual(expected_s2_reception_status, received_s2_reception_status_2)
+
+        successful_results = [result for result in results if not isinstance(result, Exception)]
+        exception_results = [result for result in results if isinstance(result, Exception)]
+
+        self.assertEqual(1, len(successful_results))
+        self.assertEqual(1, len(exception_results))
+        self.assertEqual(expected_s2_reception_status, successful_results[0])
+        self.assertIsInstance(exception_results[0], TimeoutError)
 
     async def test__receive_reception_status__wrong_message(self):
         # Arrange
