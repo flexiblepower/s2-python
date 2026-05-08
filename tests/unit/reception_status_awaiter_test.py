@@ -99,7 +99,7 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         self.assertEqual(1, len(successful_results))
         self.assertEqual(1, len(exception_results))
         self.assertEqual(expected_s2_reception_status, successful_results[0])
-        self.assertIsInstance(exception_results[0], TimeoutError)
+        self.assertIsInstance(exception_results[0], asyncio.TimeoutError)
 
     async def test__receive_reception_status__wrong_message(self):
         # Arrange

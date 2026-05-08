@@ -247,7 +247,7 @@ class S2AsyncConnection:
         if reception_status_task in done:
             try:
                 reception_status = await reception_status_task
-            except TimeoutError:
+            except (TimeoutError, asyncio.TimeoutError):
                 logger.error("Did not receive a reception status on time for %s", s2_msg.message_id)
                 self._stop_event.set()
                 raise
