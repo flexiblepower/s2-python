@@ -13,6 +13,10 @@ from s2python.common import ReceptionStatus
 
 
 class ReceptionStatusAwaiter:
+    """Notify coroutines waiting for a `ReceptionStatus` by subject message ID.
+
+    Reception statuses are single-consumer: once awaited, they are removed."""
+
     received: Dict[uuid.UUID, ReceptionStatus]
     awaiting: Dict[uuid.UUID, asyncio.Event]
 
@@ -23,22 +27,21 @@ class ReceptionStatusAwaiter:
     async def wait_for_reception_status(
         self, message_id: uuid.UUID, timeout_reception_status: float
     ) -> ReceptionStatus:
-        if message_id in self.received:
-            reception_status = self.received[message_id]
-        else:
-            if message_id in self.awaiting:
-                received_event = self.awaiting[message_id]
-            else:
-                received_event = asyncio.Event()
-                self.awaiting[message_id] = received_event
 
+        existing = self.received.pop(message_id, None)
+        if existing is not None:
+            return existing
+
+        received_event = self.awaiting.get(message_id)
+        if received_event is None:
+            received_event = asyncio.Event()
+            self.awaiting[message_id] = received_event
+
+        try:
             await asyncio.wait_for(received_event.wait(), timeout_reception_status)
-            reception_status = self.received[message_id]
-
-            if message_id in self.awaiting:
-                del self.awaiting[message_id]
-
-        return reception_status
+            return self.received.pop(message_id)
+        finally:
+            self.awaiting.pop(message_id, None)
 
     async def receive_reception_status(self, reception_status: ReceptionStatus) -> None:
         if not isinstance(reception_status, ReceptionStatus):
@@ -46,15 +49,16 @@ class ReceptionStatusAwaiter:
                 f"Expected a ReceptionStatus but received message {reception_status}"
             )
 
-        if reception_status.subject_message_id in self.received:
+        mid = reception_status.subject_message_id
+
+        if mid in self.received:
             raise RuntimeError(
-                f"ReceptationStatus for message_subject_id {reception_status.subject_message_id} has already "
-                f"been received!"
+                f"ReceptionStatus for message_subject_id {mid} has already been received!"
             )
 
-        self.received[reception_status.subject_message_id] = reception_status
-        awaiting = self.awaiting.get(reception_status.subject_message_id)
+        self.received[mid] = reception_status
 
-        if awaiting:
+        awaiting = self.awaiting.get(mid)
+        if awaiting is not None:
             awaiting.set()
-            del self.awaiting[reception_status.subject_message_id]
+            self.awaiting.pop(mid, None)
