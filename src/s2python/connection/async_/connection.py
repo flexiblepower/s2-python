@@ -2,7 +2,7 @@ import asyncio
 import json
 import logging
 import uuid
-from typing import Optional, Type, cast
+from typing import Optional, Type
 
 from s2python.connection.connection_events import ConnectionStopped
 from s2python.connection.async_.medium.s2_medium import (
@@ -250,7 +250,7 @@ class S2AsyncConnection:
             timeout_reception_status,
         )
         tasks: list[asyncio.Task] = []
-        done: set[asyncio.Task] = set()
+        done: set[asyncio.Task]
         try:
             reception_status_task = self._eventloop.create_task(
                 self._reception_status_awaiter.wait_for_reception_status(
@@ -267,27 +267,24 @@ class S2AsyncConnection:
                 if not task.done():
                     task.cancel()
             # Collect every task result so concurrently completed tasks cannot leak exceptions.
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+            await asyncio.gather(*tasks, return_exceptions=True)
 
-        reception_status_result, stop_event_result = results
-        if reception_status_task in done and isinstance(
-            reception_status_result, BaseException
-        ):
-            if isinstance(
-                reception_status_result, (TimeoutError, asyncio.TimeoutError)
-            ):
+        reception_status = None
+        if reception_status_task in done:
+            try:
+                reception_status = reception_status_task.result()
+            except (TimeoutError, asyncio.TimeoutError):
                 logger.error(
                     "Did not receive a reception status on time for %s",
                     s2_msg.message_id,
                 )
                 self._stop_event.set()
-            raise reception_status_result
-        if stop_event_task in done and isinstance(stop_event_result, BaseException):
-            raise stop_event_result
+                raise
 
-        if reception_status_task in done:
-            reception_status = cast(ReceptionStatus, reception_status_result)
-        else:
+        if stop_event_task in done:
+            stop_event_task.result()
+
+        if reception_status is None:
             raise CouldNotReceiveStatusReceptionError(
                 f"Connection stopped while waiting for ReceptionStatus for message {s2_msg.message_id}"
             )
