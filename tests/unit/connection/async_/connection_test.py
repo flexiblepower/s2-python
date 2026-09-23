@@ -1,14 +1,17 @@
 """Tests for async connection task management."""
 
 import asyncio
-from typing import Coroutine
+from typing import AsyncGenerator, Coroutine
 import uuid
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, Mock
 
 from s2python.common import ReceptionStatus, ReceptionStatusValues
 from s2python.connection.async_.connection import S2AsyncConnection
-from s2python.connection.async_.medium.s2_medium import S2AsyncMediumConnection
+from s2python.connection.async_.medium.s2_medium import (
+    S2AsyncMediumConnection,
+    UnparsedMediumData,
+)
 from s2python.connection.connection_events import ConnectionStarted, ConnectionStopped
 from s2python.connection.errors import (
     CouldNotReceiveStatusReceptionError,
@@ -16,13 +19,14 @@ from s2python.connection.errors import (
 )
 
 
-class _Medium(S2AsyncMediumConnection):
+class _EmptyMessageAsyncMedium(S2AsyncMediumConnection):
     async def is_connected(self) -> bool:
         return True
 
-    async def messages(self):
-        if False:
-            yield ""
+    async def messages(self) -> AsyncGenerator[UnparsedMediumData, None]:
+        empty_messages: tuple[UnparsedMediumData, ...] = ()
+        for message in empty_messages:
+            yield message
 
     async def send(self, message: str) -> None:
         pass
@@ -34,7 +38,7 @@ class _BlockingReceptionStatusAwaiter:
         self.done = asyncio.Event()
 
     async def wait_for_reception_status(
-        self, message_id: uuid.UUID, timeout_reception_status: float
+        self, _: uuid.UUID, __: float
     ) -> ReceptionStatus:  # pyright: ignore [reportReturnType]
         self.waiting.set()
         try:
@@ -48,7 +52,7 @@ class _ResultReceptionStatusAwaiter:
         self.result = result
 
     async def wait_for_reception_status(
-        self, message_id: uuid.UUID, timeout_reception_status: float
+        self, _: uuid.UUID, __: float
     ) -> ReceptionStatus:
         if isinstance(self.result, BaseException):
             raise self.result
@@ -87,7 +91,7 @@ class _RecordingTaskFactory:
 
 class _LifecycleConnection(S2AsyncConnection):
     def __init__(self, task_factory: _RecordingTaskFactory) -> None:
-        super().__init__(_Medium(), eventloop=task_factory)  # type: ignore[arg-type]
+        super().__init__(_EmptyMessageAsyncMedium(), eventloop=task_factory)  # type: ignore[arg-type]
         self.receive_started = asyncio.Event()
         self.handle_started = asyncio.Event()
         self.receive_done = asyncio.Event()
@@ -136,7 +140,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         self,
     ) -> None:
         # Arrange
-        connection = S2AsyncConnection(_Medium())
+        connection = S2AsyncConnection(_EmptyMessageAsyncMedium())
         awaiter = _BlockingReceptionStatusAwaiter()
         connection._reception_status_awaiter = awaiter
 
@@ -158,7 +162,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         self,
     ) -> None:
         # Arrange
-        connection = _BlockingStopConnection(_Medium())
+        connection = _BlockingStopConnection(_EmptyMessageAsyncMedium())
         expected_status = self.reception_status()
         connection._reception_status_awaiter = _ResultReceptionStatusAwaiter(
             expected_status
@@ -178,7 +182,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         self,
     ) -> None:
         # Arrange
-        connection = _BlockingStopConnection(_Medium())
+        connection = _BlockingStopConnection(_EmptyMessageAsyncMedium())
         connection._reception_status_awaiter = _ResultReceptionStatusAwaiter(
             asyncio.TimeoutError()
         )
@@ -193,7 +197,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
     async def test__send_msg_and_await_reception_status__real_timeout_stops_connection(
         self,
     ) -> None:
-        connection = S2AsyncConnection(_Medium())
+        connection = S2AsyncConnection(_EmptyMessageAsyncMedium())
 
         with self.assertRaises(asyncio.TimeoutError):
             await connection.send_msg_and_await_reception_status(
@@ -207,7 +211,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         self,
     ) -> None:
         # Arrange
-        connection = S2AsyncConnection(_Medium())
+        connection = S2AsyncConnection(_EmptyMessageAsyncMedium())
         awaiter = _BlockingReceptionStatusAwaiter()
         connection._reception_status_awaiter = awaiter
         send_task = asyncio.create_task(
@@ -230,7 +234,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         self,
     ) -> None:
         # Arrange
-        connection = _FailingStopConnection(_Medium())
+        connection = _FailingStopConnection(_EmptyMessageAsyncMedium())
         connection._reception_status_awaiter = _ResultReceptionStatusAwaiter(
             self.reception_status()
         )
@@ -243,7 +247,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         self,
     ) -> None:
         # Arrange
-        connection = _BlockingStopConnection(_Medium())
+        connection = _BlockingStopConnection(_EmptyMessageAsyncMedium())
         connection._reception_status_awaiter = _ResultReceptionStatusAwaiter(
             ValueError("reception status waiter failed")
         )
@@ -258,7 +262,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         self,
     ) -> None:
         # Arrange
-        connection = _BlockingStopConnection(_Medium())
+        connection = _BlockingStopConnection(_EmptyMessageAsyncMedium())
         connection._reception_status_awaiter = _ResultReceptionStatusAwaiter(
             asyncio.CancelledError()
         )
@@ -273,7 +277,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         self,
     ) -> None:
         # Arrange
-        connection = S2AsyncConnection(_Medium())
+        connection = S2AsyncConnection(_EmptyMessageAsyncMedium())
         permanent_error_status = self.reception_status(
             ReceptionStatusValues.PERMANENT_ERROR
         )
@@ -289,7 +293,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         self,
     ) -> None:
         # Arrange
-        connection = S2AsyncConnection(_Medium())
+        connection = S2AsyncConnection(_EmptyMessageAsyncMedium())
         permanent_error_status = self.reception_status(
             ReceptionStatusValues.PERMANENT_ERROR
         )
