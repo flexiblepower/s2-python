@@ -1,6 +1,7 @@
 """Tests for async connection task management."""
 
 import asyncio
+from typing import Coroutine
 import uuid
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, Mock
@@ -76,9 +77,9 @@ class _BlockingStopConnection(S2AsyncConnection):
 class _RecordingTaskFactory:
     def __init__(self) -> None:
         self.loop = asyncio.get_event_loop()
-        self.tasks = []
+        self.tasks: list[asyncio.Task] = []
 
-    def create_task(self, coroutine):
+    def create_task(self, coroutine: Coroutine) -> asyncio.Task:
         task = self.loop.create_task(coroutine)
         self.tasks.append(task)
         return task
@@ -171,6 +172,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         # Assert
         self.assertEqual(expected_status, received_status)
         self.assertTrue(connection.stop_waiter_done.is_set())
+        self.assertFalse(connection._stop_event.is_set())
 
     async def test__send_msg_and_await_reception_status__times_out_and_stops_connection(
         self,
@@ -267,7 +269,7 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(connection.stop_waiter_done.is_set())
 
-    async def test__send_msg_and_await_reception_status__handles_error_statuses(
+    async def test__send_msg_and_await_reception_status__raises_on_permanent_error(
         self,
     ) -> None:
         # Arrange
@@ -283,14 +285,24 @@ class AsyncConnectionTest(IsolatedAsyncioTestCase):
         with self.assertRaises(PermanentConnectionError):
             await connection.send_msg_and_await_reception_status(self.message)
 
+    async def test__send_msg_and_await_reception_status__returns_permanent_error_when_raise_on_error_is_false(
+        self,
+    ) -> None:
+        # Arrange
         connection = S2AsyncConnection(_Medium())
+        permanent_error_status = self.reception_status(
+            ReceptionStatusValues.PERMANENT_ERROR
+        )
         connection._reception_status_awaiter = _ResultReceptionStatusAwaiter(
             permanent_error_status
         )
+
+        # Act
         received_status = await connection.send_msg_and_await_reception_status(
             self.message, raise_on_error=False
         )
 
+        # Assert
         self.assertEqual(permanent_error_status, received_status)
 
     async def test__run__graceful_stop_drains_background_tasks(self) -> None:

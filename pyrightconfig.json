@@ -8,6 +8,13 @@
     "src/s2python/generated/"
   ],
 
+  "executionEnvironments": [
+    {
+      "root": "tests",
+      "reportAttributeAccessIssue": "none"
+    }
+  ],
+
   "defineConstant": {
     "DEBUG": true
   }
