@@ -16,8 +16,14 @@ from s2python.common import (
     ReceptionStatusValues,
     ReceptionStatus,
 )
-from s2python.connection.async_.message_handlers import MessageHandlers, S2EventHandlerAsync
-from s2python.connection.errors import PermanentConnectionError, CouldNotReceiveStatusReceptionError
+from s2python.connection.async_.message_handlers import (
+    MessageHandlers,
+    S2EventHandlerAsync,
+)
+from s2python.connection.errors import (
+    PermanentConnectionError,
+    CouldNotReceiveStatusReceptionError,
+)
 from s2python.connection.types import S2ConnectionEventsAndMessages
 from s2python.reception_status_awaiter import ReceptionStatusAwaiter
 from s2python.s2_parser import S2Parser
@@ -44,7 +50,9 @@ class S2AsyncConnection:
         medium: S2MediumConnection,
         eventloop: Optional[asyncio.AbstractEventLoop] = None,
     ) -> None:
-        self._eventloop = eventloop if eventloop is not None else asyncio.get_event_loop()
+        self._eventloop = (
+            eventloop if eventloop is not None else asyncio.get_event_loop()
+        )
         self._stop_event = asyncio.Event()
 
         self._reception_status_awaiter = ReceptionStatusAwaiter()
@@ -80,36 +88,36 @@ class S2AsyncConnection:
                 "Cannot start the S2 connection if the underlying medium is closed."
             )
 
-        background_tasks = [
-            self._eventloop.create_task(self._receive_messages()),
-            self._eventloop.create_task(self._wait_till_stop()),
-            self._eventloop.create_task(self._handle_received_messages()),
-        ]
+        background_tasks = []
+        try:
+            background_tasks.append(
+                self._eventloop.create_task(self._receive_messages())
+            )
+            background_tasks.append(self._eventloop.create_task(self._wait_till_stop()))
+            background_tasks.append(
+                self._eventloop.create_task(self._handle_received_messages())
+            )
 
-        await self._handlers.handle_event(self, ConnectionStarted())
+            await self._handlers.handle_event(self, ConnectionStarted())
+            await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
+            await self._handlers.handle_event(self, ConnectionStopped())
+        finally:
+            for task in background_tasks:
+                if not task.done():
+                    task.cancel()
+            await asyncio.gather(*background_tasks, return_exceptions=True)
 
-        (done, pending) = await asyncio.wait(background_tasks, return_when=asyncio.FIRST_COMPLETED)
-
-        await self._handlers.handle_event(self, ConnectionStopped())
-
-        for task in pending:
-            try:
-                task.cancel()
-                await task
-            except (asyncio.CancelledError, Exception):  # pylint: disable=broad-exception-caught
-                pass
-
-        for task in done:
-            try:
-                await task
-            except asyncio.CancelledError:
-                pass
-            except MediumClosedConnectionError:
-                logger.info("The other party closed the websocket connection.")
-            except Exception:  # pylint: disable=broad-exception-caught
-                logger.exception(
-                    "An error occurred in the S2 connection. Terminating current connection."
-                )
+            for task in background_tasks:
+                try:
+                    task.result()
+                except asyncio.CancelledError:
+                    pass
+                except MediumClosedConnectionError:
+                    logger.info("The other party closed the websocket connection.")
+                except Exception:  # pylint: disable=broad-exception-caught
+                    logger.exception(
+                        "An error occurred in the S2 connection. Terminating current connection."
+                    )
 
     async def _handle_received_messages(self) -> None:
         while not self._stop_event.is_set():
@@ -131,7 +139,9 @@ class S2AsyncConnection:
             except json.JSONDecodeError:
                 await self.send_and_forget(
                     ReceptionStatus(
-                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                        subject_message_id=uuid.UUID(
+                            "00000000-0000-0000-0000-000000000000"
+                        ),
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Not valid json.",
                     )
@@ -147,7 +157,9 @@ class S2AsyncConnection:
                     )
                 else:
                     await self.respond_with_reception_status(
-                        subject_message_id=uuid.UUID("00000000-0000-0000-0000-000000000000"),
+                        subject_message_id=uuid.UUID(
+                            "00000000-0000-0000-0000-000000000000"
+                        ),
                         status=ReceptionStatusValues.INVALID_DATA,
                         diagnostic_label="Message appears valid json but could not find a message_id field.",
                     )
@@ -159,7 +171,9 @@ class S2AsyncConnection:
                         "Message is a reception status for %s so registering in cache.",
                         s2_msg.subject_message_id,
                     )
-                    await self._reception_status_awaiter.receive_reception_status(s2_msg)
+                    await self._reception_status_awaiter.receive_reception_status(
+                        s2_msg
+                    )
                 else:
                     logger.debug(
                         "Message is not a reception status, putting it in the received messages queue."
@@ -167,7 +181,9 @@ class S2AsyncConnection:
                     await self._received_messages.put(s2_msg)
 
     def register_handler(
-        self, event_type: Type[S2ConnectionEventsAndMessages], handler: S2EventHandlerAsync
+        self,
+        event_type: Type[S2ConnectionEventsAndMessages],
+        handler: S2EventHandlerAsync,
     ) -> None:
         """Register a handler for a specific S2 message type.
 
@@ -176,7 +192,9 @@ class S2AsyncConnection:
         """
         self._handlers.register_handler(event_type, handler)
 
-    def unregister_handler(self, s2_message_type: Type[S2ConnectionEventsAndMessages]) -> None:
+    def unregister_handler(
+        self, s2_message_type: Type[S2ConnectionEventsAndMessages]
+    ) -> None:
         self._handlers.unregister_handler(s2_message_type)
 
     async def send_and_forget(self, s2_msg: S2Message) -> None:
@@ -189,9 +207,14 @@ class S2AsyncConnection:
             raise
 
     async def respond_with_reception_status(
-        self, subject_message_id: uuid.UUID, status: ReceptionStatusValues, diagnostic_label: str
+        self,
+        subject_message_id: uuid.UUID,
+        status: ReceptionStatusValues,
+        diagnostic_label: str,
     ) -> None:
-        logger.debug("Responding to message %s with status %s", subject_message_id, status)
+        logger.debug(
+            "Responding to message %s with status %s", subject_message_id, status
+        )
         await self.send_and_forget(
             ReceptionStatus(
                 subject_message_id=subject_message_id,
@@ -226,34 +249,42 @@ class S2AsyncConnection:
             s2_msg.message_id,
             timeout_reception_status,
         )
-        reception_status_task = self._eventloop.create_task(
-            self._reception_status_awaiter.wait_for_reception_status(
-                s2_msg.message_id, timeout_reception_status
+        tasks: list[asyncio.Task] = []
+        done: set[asyncio.Task]
+        try:
+            reception_status_task = self._eventloop.create_task(
+                self._reception_status_awaiter.wait_for_reception_status(
+                    s2_msg.message_id, timeout_reception_status
+                )
             )
-        )
-        stop_event_task = self._eventloop.create_task(self._wait_till_stop())
+            tasks.append(reception_status_task)
+            stop_event_task = self._eventloop.create_task(self._wait_till_stop())
+            tasks.append(stop_event_task)
 
-        (done, pending) = await asyncio.wait(
-            [reception_status_task, stop_event_task], return_when=asyncio.FIRST_COMPLETED
-        )
+            (done, _) = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+        finally:
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
+            # Collect every task result so concurrently completed tasks cannot leak exceptions.
+            await asyncio.gather(*tasks, return_exceptions=True)
 
-        for task in pending:
-            try:
-                task.cancel()
-                await task
-            except (asyncio.CancelledError, Exception):  # pylint: disable=broad-exception-caught
-                pass
-
+        reception_status = None
         if reception_status_task in done:
             try:
-                reception_status = await reception_status_task
+                reception_status = reception_status_task.result()
             except (TimeoutError, asyncio.TimeoutError):
-                logger.error("Did not receive a reception status on time for %s", s2_msg.message_id)
+                logger.error(
+                    "Did not receive a reception status on time for %s",
+                    s2_msg.message_id,
+                )
                 self._stop_event.set()
                 raise
-        else:
-            # stop_event_task in done
-            await stop_event_task
+
+        if stop_event_task in done:
+            stop_event_task.result()
+
+        if reception_status is None:
             raise CouldNotReceiveStatusReceptionError(
                 f"Connection stopped while waiting for ReceptionStatus for message {s2_msg.message_id}"
             )

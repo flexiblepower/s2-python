@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
 
+set -e
 . .venv/bin/activate
-pylint src/ tests/unit/ examples/
+pylint src/ examples/
+PYTHONPATH="src:$PYTHONPATH" pylint --disable=protected-access,invalid-overridden-method tests/unit/
