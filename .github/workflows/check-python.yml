@@ -6,89 +6,61 @@ on:
       python-version:
         required: true
         type: string
-      release-artifact:
-        required: true
-        type: boolean
 
 jobs:
-  prepare:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: ${{ steps.artifact.outputs.name }}
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}  # deep clone for setuptools-scm
       - uses: actions/setup-python@v4
-        id: setup-python
         with:
           python-version: ${{ inputs.python-version }}
-      - name: Build package distribution files
-        run: >-
-          pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e clean,build
-      - name: Name distribution artifact
-        id: artifact
-        run: echo "name=${{ inputs.release-artifact && 'python-distribution-files' || format('python-distribution-files-{0}', inputs.python-version) }}" >> "$GITHUB_OUTPUT"
-      - name: Store distribution files
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.artifact.outputs.name }}
-          path: dist/
-          retention-days: 1
+          cache: pip
+          cache-dependency-path: dev-requirements.txt
+      - name: Install development dependencies
+        run: python -m pip install -r dev-requirements.txt
+      - name: Check package builds
+        run: python -m tox -e build
 
   test:
-    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
-        id: setup-python
         with:
           python-version: ${{ inputs.python-version }}
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.prepare.outputs.artifact-name }}
-          path: dist/
+          cache: pip
+          cache-dependency-path: dev-requirements.txt
+      - name: Install development dependencies
+        run: python -m pip install -r dev-requirements.txt
       - name: Run tests
-        run: >-
-          pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox --develop
+        run: python -m tox --develop
 
   lint:
-    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
-        id: setup-python
         with:
           python-version: ${{ inputs.python-version }}
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.prepare.outputs.artifact-name }}
-          path: dist/
+          cache: pip
+          cache-dependency-path: dev-requirements.txt
+      - name: Install development dependencies
+        run: python -m pip install -r dev-requirements.txt
       - name: Run lint
-        run: >-
-          pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e lint --develop
+        run: python -m tox -e lint --develop
 
   typecheck:
-    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
-        id: setup-python
         with:
           python-version: ${{ inputs.python-version }}
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.prepare.outputs.artifact-name }}
-          path: dist/
+          cache: pip
+          cache-dependency-path: dev-requirements.txt
+      - name: Install development dependencies
+        run: python -m pip install -r dev-requirements.txt
       - name: Run typecheck
-        run: >-
-          pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e typecheck --develop
+        run: python -m tox -e typecheck --develop

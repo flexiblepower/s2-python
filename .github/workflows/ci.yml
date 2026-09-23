@@ -27,26 +27,13 @@ jobs:
   checks:
     strategy:
       matrix:
-        include:
-          - python: "3.9"
-            release: true
-          - python: "3.10"
-          - python: "3.11"
-          - python: "3.12"
-          - python: "3.13"
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     uses: ./.github/workflows/check-python.yml
     with:
       python-version: ${{ matrix.python }}
-      release-artifact: ${{ matrix.release || false }}
-
-  finalize:
-    needs: checks
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Finished checks"
 
   publish:
-    needs: finalize
+    needs: checks
     if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     environment:
@@ -55,15 +42,22 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with: {name: python-distribution-files, path: dist/}
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}  # deep clone for setuptools-scm
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          cache: pip
+          cache-dependency-path: dev-requirements.txt
+      - name: Install development dependencies
+        run: python -m pip install -r dev-requirements.txt
+      - name: Build package distribution files
+        run: python -m tox -e build
       - name: Publish Package
         uses: pypa/gh-action-pypi-publish@release/v1
-        # run: pipx run tox -e publish
 
   test-publish:
-    needs: finalize
+    needs: checks
     if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/test') }}
     runs-on: ubuntu-latest
     environment:
@@ -72,11 +66,18 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with: {name: python-distribution-files, path: dist/}
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}  # deep clone for setuptools-scm
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          cache: pip
+          cache-dependency-path: dev-requirements.txt
+      - name: Install development dependencies
+        run: python -m pip install -r dev-requirements.txt
+      - name: Build package distribution files
+        run: python -m tox -e build
       - name: Publish Package
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-        # run: pipx run tox -e publish
