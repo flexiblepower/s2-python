@@ -93,8 +93,12 @@ class ReceptionStatusAwaiterTest(IsolatedAsyncioTestCase):
         self.assertTrue(should_be_waiting_still_1)
         self.assertTrue(should_be_waiting_still_2)
 
-        successful_results = [result for result in results if not isinstance(result, Exception)]
-        exception_results = [result for result in results if isinstance(result, Exception)]
+        successful_results = [
+            result for result in results if not isinstance(result, Exception)
+        ]
+        exception_results = [
+            result for result in results if isinstance(result, Exception)
+        ]
 
         self.assertEqual(1, len(successful_results))
         self.assertEqual(1, len(exception_results))

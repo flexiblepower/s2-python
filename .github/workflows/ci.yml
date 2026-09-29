@@ -24,138 +24,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    outputs:
-      wheel-distribution: ${{ steps.wheel-distribution.outputs.path }}
-    steps:
-      - uses: actions/checkout@v4
-        with: {fetch-depth: 0}  # deep clone for setuptools-scm
-      - uses: actions/setup-python@v4
-        id: setup-python
-        with: {python-version: "3.11"}
-      # - name: Run static analysis and format checkers
-      #   run: pipx run pre-commit run --all-files --show-diff-on-failure
-      - name: Build package distribution files
-        run: >-
-          pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e clean,build
-      - name: Record the path of wheel distribution
-        id: wheel-distribution
-        run: echo "path=$(ls dist/*.whl)" >> $GITHUB_OUTPUT
-      - name: Store the distribution files for use in other stages
-        # `tests` and `publish` will use the same pre-built distributions,
-        # so we make sure to release the exact same package that was tested
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-distribution-files
-          path: dist/
-          retention-days: 1
-
-  test:
-    needs: prepare
+  checks:
     strategy:
       matrix:
-        python:
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"  # newest Python that is stable          
-        platform:
-        - ubuntu-latest
-        # - macos-latest
-        # - windows-latest
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        id: setup-python
-        with:
-          python-version: ${{ matrix.python }}
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with: {name: python-distribution-files, path: dist/}
-      - name: Run tests
-        run: >-
-          pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox --develop
-      # - name: Generate coverage report
-      #   run: pipx run coverage lcov -o coverage.lcov
-      # - name: Upload partial coverage report
-      #   uses: coverallsapp/github-action@master
-      #   with:
-      #     path-to-lcov: coverage.lcov
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     flag-name: ${{ matrix.platform }} - py${{ matrix.python }}
-      #     parallel: true
-
-  lint:
-    needs: prepare
-    strategy:
-      matrix:
-        python:
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"  # newest Python that is stable
-        platform:
-        - ubuntu-latest
-        # - macos-latest
-        # - windows-latest
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        id: setup-python
-        with:
-          python-version: ${{ matrix.python }}
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with: {name: python-distribution-files, path: dist/}
-      - name: Run tests
-        run: >-
-          pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e lint --develop
-
-  typecheck:
-    needs: prepare
-    strategy:
-      matrix:
-        python:
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"  # newest Python that is stable          
-        platform:
-        - ubuntu-latest
-        # - macos-latest
-        # - windows-latest
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        id: setup-python
-        with:
-          python-version: ${{ matrix.python }}
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with: {name: python-distribution-files, path: dist/}
-      - name: Run tests
-        run: >-
-          pipx run --python '${{ steps.setup-python.outputs.python-path }}'
-          tox -e typecheck --develop
-
-  finalize:
-    needs: [test, lint, typecheck]
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Finished checks"
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    uses: ./.github/workflows/check-python.yml
+    with:
+      python-version: ${{ matrix.python }}
 
   publish:
-    needs: finalize
+    needs: checks
     if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     environment:
@@ -165,17 +43,21 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with: {fetch-depth: 0}  # deep clone for setuptools-scm
       - uses: actions/setup-python@v4
-        with: {python-version: "3.11"}
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with: {name: python-distribution-files, path: dist/}
+        with:
+          python-version: "3.9"
+          cache: pip
+          cache-dependency-path: dev-requirements.txt
+      - name: Install development dependencies
+        run: python -m pip install -r dev-requirements.txt
+      - name: Build package distribution files
+        run: python -m tox -e build
       - name: Publish Package
         uses: pypa/gh-action-pypi-publish@release/v1
-        # run: pipx run tox -e publish
 
   test-publish:
-    needs: finalize
+    needs: checks
     if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/test') }}
     runs-on: ubuntu-latest
     environment:
@@ -185,13 +67,17 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with: {fetch-depth: 0}  # deep clone for setuptools-scm
       - uses: actions/setup-python@v4
-        with: {python-version: "3.11"}
-      - name: Retrieve pre-built distribution files
-        uses: actions/download-artifact@v4
-        with: {name: python-distribution-files, path: dist/}
+        with:
+          python-version: "3.9"
+          cache: pip
+          cache-dependency-path: dev-requirements.txt
+      - name: Install development dependencies
+        run: python -m pip install -r dev-requirements.txt
+      - name: Build package distribution files
+        run: python -m tox -e build
       - name: Publish Package
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-        # run: pipx run tox -e publish

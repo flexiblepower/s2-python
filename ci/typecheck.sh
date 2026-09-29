@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
 . .venv/bin/activate
-mypy --config-file mypy.ini src/ ./tests/unit/ examples/
-pyright
+status=0
+mypy --config-file mypy.ini src/ ./tests/unit/ examples/ || status=1
+pyright || status=1
+exit "$status"
