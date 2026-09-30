@@ -8,6 +8,8 @@ from s2python.generated.gen_s2 import (
     FRBCLeakageBehaviourElement as GenFRBCLeakageBehaviourElement,
 )
 from s2python.validate_values_mixin import (
+    copy_config,
+    copy_field,
     catch_and_convert_exceptions,
     S2MessageComponent,
 )
@@ -15,12 +17,11 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class FRBCLeakageBehaviourElement(GenFRBCLeakageBehaviourElement, S2MessageComponent):
-    model_config = GenFRBCLeakageBehaviourElement.model_config
-    model_config["validate_assignment"] = True
+    model_config = copy_config(GenFRBCLeakageBehaviourElement.model_config, validate_assignment=True)
 
-    fill_level_range: NumberRange = GenFRBCLeakageBehaviourElement.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
+    fill_level_range: NumberRange = copy_field(GenFRBCLeakageBehaviourElement.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "fill_level_range"
-    ]  # type: ignore[assignment]
+    ])  # type: ignore[assignment]
 
     @model_validator(mode="after")
     def validate_start_end_order(self) -> Self:
