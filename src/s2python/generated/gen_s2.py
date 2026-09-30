@@ -7,7 +7,9 @@ from __future__ import annotations
 from enum import Enum
 from typing import List, Literal, Optional
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, RootModel, conint, constr
+from pydantic import AwareDatetime, ConfigDict, Field, RootModel, conint, constr
+
+from s2python.s2_base_model import S2BaseModel
 
 
 class Duration(RootModel[conint(ge=0)]):
@@ -156,7 +158,7 @@ class ReceptionStatusValues(str, Enum):
     OK = "OK"
 
 
-class NumberRange(BaseModel):
+class NumberRange(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -164,7 +166,7 @@ class NumberRange(BaseModel):
     end_of_range: float = Field(..., description="Number that defines the end of the range")
 
 
-class Transition(BaseModel):
+class Transition(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
         populate_by_name=True
@@ -208,7 +210,7 @@ class Transition(BaseModel):
     )
 
 
-class Timer(BaseModel):
+class Timer(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -225,7 +227,7 @@ class Timer(BaseModel):
     )
 
 
-class PEBCPowerEnvelopeElement(BaseModel):
+class PEBCPowerEnvelopeElement(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -240,7 +242,7 @@ class PEBCPowerEnvelopeElement(BaseModel):
     )
 
 
-class FRBCStorageDescription(BaseModel):
+class FRBCStorageDescription(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -270,7 +272,7 @@ class FRBCStorageDescription(BaseModel):
     )
 
 
-class FRBCLeakageBehaviourElement(BaseModel):
+class FRBCLeakageBehaviourElement(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -284,7 +286,7 @@ class FRBCLeakageBehaviourElement(BaseModel):
     )
 
 
-class FRBCUsageForecastElement(BaseModel):
+class FRBCUsageForecastElement(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -321,7 +323,7 @@ class FRBCUsageForecastElement(BaseModel):
     )
 
 
-class FRBCFillLevelTargetProfileElement(BaseModel):
+class FRBCFillLevelTargetProfileElement(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -332,7 +334,7 @@ class FRBCFillLevelTargetProfileElement(BaseModel):
     )
 
 
-class DDBCAverageDemandRateForecastElement(BaseModel):
+class DDBCAverageDemandRateForecastElement(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -432,7 +434,7 @@ class PPBCPowerSequenceStatus(str, Enum):
     ABORTED = "ABORTED"
 
 
-class OMBCTimerStatus(BaseModel):
+class OMBCTimerStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -445,7 +447,7 @@ class OMBCTimerStatus(BaseModel):
     )
 
 
-class FRBCTimerStatus(BaseModel):
+class FRBCTimerStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -459,7 +461,7 @@ class FRBCTimerStatus(BaseModel):
     )
 
 
-class DDBCTimerStatus(BaseModel):
+class DDBCTimerStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -473,7 +475,7 @@ class DDBCTimerStatus(BaseModel):
     )
 
 
-class SelectControlType(BaseModel):
+class SelectControlType(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -485,7 +487,7 @@ class SelectControlType(BaseModel):
     )
 
 
-class SessionRequest(BaseModel):
+class SessionRequest(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -497,7 +499,7 @@ class SessionRequest(BaseModel):
     )
 
 
-class RevokeObject(BaseModel):
+class RevokeObject(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -509,7 +511,7 @@ class RevokeObject(BaseModel):
     object_id: ID = Field(..., description="The ID of object that needs to be revoked")
 
 
-class Handshake(BaseModel):
+class Handshake(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -523,7 +525,7 @@ class Handshake(BaseModel):
     )
 
 
-class HandshakeResponse(BaseModel):
+class HandshakeResponse(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -534,7 +536,7 @@ class HandshakeResponse(BaseModel):
     )
 
 
-class ReceptionStatus(BaseModel):
+class ReceptionStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -547,7 +549,7 @@ class ReceptionStatus(BaseModel):
     )
 
 
-class InstructionStatusUpdate(BaseModel):
+class InstructionStatusUpdate(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -560,7 +562,7 @@ class InstructionStatusUpdate(BaseModel):
     )
 
 
-class PEBCEnergyConstraint(BaseModel):
+class PEBCEnergyConstraint(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -590,7 +592,7 @@ class PEBCEnergyConstraint(BaseModel):
     )
 
 
-class PPBCScheduleInstruction(BaseModel):
+class PPBCScheduleInstruction(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -621,7 +623,7 @@ class PPBCScheduleInstruction(BaseModel):
     )
 
 
-class PPBCStartInterruptionInstruction(BaseModel):
+class PPBCStartInterruptionInstruction(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -651,7 +653,7 @@ class PPBCStartInterruptionInstruction(BaseModel):
     )
 
 
-class PPBCEndInterruptionInstruction(BaseModel):
+class PPBCEndInterruptionInstruction(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -682,7 +684,7 @@ class PPBCEndInterruptionInstruction(BaseModel):
     )
 
 
-class OMBCStatus(BaseModel):
+class OMBCStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -703,7 +705,7 @@ class OMBCStatus(BaseModel):
     )
 
 
-class OMBCInstruction(BaseModel):
+class OMBCInstruction(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -729,7 +731,7 @@ class OMBCInstruction(BaseModel):
     )
 
 
-class FRBCActuatorStatus(BaseModel):
+class FRBCActuatorStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -753,7 +755,7 @@ class FRBCActuatorStatus(BaseModel):
     )
 
 
-class FRBCStorageStatus(BaseModel):
+class FRBCStorageStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -762,7 +764,7 @@ class FRBCStorageStatus(BaseModel):
     present_fill_level: float = Field(..., description="Present fill level of the Storage")
 
 
-class FRBCLeakageBehaviour(BaseModel):
+class FRBCLeakageBehaviour(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -780,7 +782,7 @@ class FRBCLeakageBehaviour(BaseModel):
     )
 
 
-class FRBCInstruction(BaseModel):
+class FRBCInstruction(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -807,7 +809,7 @@ class FRBCInstruction(BaseModel):
     )
 
 
-class FRBCUsageForecast(BaseModel):
+class FRBCUsageForecast(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -824,7 +826,7 @@ class FRBCUsageForecast(BaseModel):
     )
 
 
-class FRBCFillLevelTargetProfile(BaseModel):
+class FRBCFillLevelTargetProfile(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -841,7 +843,7 @@ class FRBCFillLevelTargetProfile(BaseModel):
     )
 
 
-class DDBCActuatorStatus(BaseModel):
+class DDBCActuatorStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -865,7 +867,7 @@ class DDBCActuatorStatus(BaseModel):
     )
 
 
-class DDBCInstruction(BaseModel):
+class DDBCInstruction(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -890,7 +892,7 @@ class DDBCInstruction(BaseModel):
     )
 
 
-class DDBCAverageDemandRateForecast(BaseModel):
+class DDBCAverageDemandRateForecast(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -905,7 +907,7 @@ class DDBCAverageDemandRateForecast(BaseModel):
     )
 
 
-class PowerValue(BaseModel):
+class PowerValue(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -917,7 +919,7 @@ class PowerValue(BaseModel):
     )
 
 
-class PowerForecastValue(BaseModel):
+class PowerForecastValue(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -951,7 +953,7 @@ class PowerForecastValue(BaseModel):
     )
 
 
-class PowerRange(BaseModel):
+class PowerRange(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -964,7 +966,7 @@ class PowerRange(BaseModel):
     )
 
 
-class Role(BaseModel):
+class Role(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -974,7 +976,7 @@ class Role(BaseModel):
     commodity: Commodity = Field(..., description="Commodity the role refers to.")
 
 
-class PowerForecastElement(BaseModel):
+class PowerForecastElement(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -987,7 +989,7 @@ class PowerForecastElement(BaseModel):
     )
 
 
-class PEBCAllowedLimitRange(BaseModel):
+class PEBCAllowedLimitRange(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1007,7 +1009,7 @@ class PEBCAllowedLimitRange(BaseModel):
     )
 
 
-class PEBCPowerEnvelope(BaseModel):
+class PEBCPowerEnvelope(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1026,7 +1028,7 @@ class PEBCPowerEnvelope(BaseModel):
     )
 
 
-class PPBCPowerSequenceElement(BaseModel):
+class PPBCPowerSequenceElement(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1039,7 +1041,7 @@ class PPBCPowerSequenceElement(BaseModel):
     )
 
 
-class PPBCPowerSequenceContainerStatus(BaseModel):
+class PPBCPowerSequenceContainerStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1064,7 +1066,7 @@ class PPBCPowerSequenceContainerStatus(BaseModel):
     )
 
 
-class OMBCOperationMode(BaseModel):
+class OMBCOperationMode(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1092,7 +1094,7 @@ class OMBCOperationMode(BaseModel):
     )
 
 
-class FRBCOperationModeElement(BaseModel):
+class FRBCOperationModeElement(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1116,7 +1118,7 @@ class FRBCOperationModeElement(BaseModel):
     )
 
 
-class DDBCOperationMode(BaseModel):
+class DDBCOperationMode(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1148,7 +1150,7 @@ class DDBCOperationMode(BaseModel):
     )
 
 
-class ResourceManagerDetails(BaseModel):
+class ResourceManagerDetails(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1201,7 +1203,7 @@ class ResourceManagerDetails(BaseModel):
     )
 
 
-class PowerMeasurement(BaseModel):
+class PowerMeasurement(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1218,7 +1220,7 @@ class PowerMeasurement(BaseModel):
     )
 
 
-class PowerForecast(BaseModel):
+class PowerForecast(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1235,7 +1237,7 @@ class PowerForecast(BaseModel):
     )
 
 
-class PEBCPowerConstraints(BaseModel):
+class PEBCPowerConstraints(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1263,7 +1265,7 @@ class PEBCPowerConstraints(BaseModel):
     )
 
 
-class PEBCInstruction(BaseModel):
+class PEBCInstruction(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1292,7 +1294,7 @@ class PEBCInstruction(BaseModel):
     )
 
 
-class PPBCPowerProfileStatus(BaseModel):
+class PPBCPowerProfileStatus(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1306,7 +1308,7 @@ class PPBCPowerProfileStatus(BaseModel):
     )
 
 
-class OMBCSystemDescription(BaseModel):
+class OMBCSystemDescription(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1336,7 +1338,7 @@ class OMBCSystemDescription(BaseModel):
     )
 
 
-class PPBCPowerSequence(BaseModel):
+class PPBCPowerSequence(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1363,7 +1365,7 @@ class PPBCPowerSequence(BaseModel):
     )
 
 
-class FRBCOperationMode(BaseModel):
+class FRBCOperationMode(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1387,7 +1389,7 @@ class FRBCOperationMode(BaseModel):
     )
 
 
-class DDBCActuatorDescription(BaseModel):
+class DDBCActuatorDescription(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1425,7 +1427,7 @@ class DDBCActuatorDescription(BaseModel):
     )
 
 
-class DDBCSystemDescription(BaseModel):
+class DDBCSystemDescription(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1450,7 +1452,7 @@ class DDBCSystemDescription(BaseModel):
     )
 
 
-class PPBCPowerSequenceContainer(BaseModel):
+class PPBCPowerSequenceContainer(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1466,7 +1468,7 @@ class PPBCPowerSequenceContainer(BaseModel):
     )
 
 
-class FRBCActuatorDescription(BaseModel):
+class FRBCActuatorDescription(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1501,7 +1503,7 @@ class FRBCActuatorDescription(BaseModel):
     )
 
 
-class PPBCPowerProfileDefinition(BaseModel):
+class PPBCPowerProfileDefinition(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
@@ -1527,7 +1529,7 @@ class PPBCPowerProfileDefinition(BaseModel):
     )
 
 
-class FRBCSystemDescription(BaseModel):
+class FRBCSystemDescription(S2BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
