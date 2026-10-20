@@ -9,6 +9,8 @@ from s2python.generated.gen_s2 import (
     CommodityQuantity,
 )
 from s2python.validate_values_mixin import (
+    copy_config,
+    copy_field,
     catch_and_convert_exceptions,
     S2MessageComponent,
 )
@@ -16,11 +18,10 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class PowerMeasurement(GenPowerMeasurement, S2MessageComponent):
-    model_config = GenPowerMeasurement.model_config
-    model_config["validate_assignment"] = True
+    model_config = copy_config(GenPowerMeasurement.model_config, validate_assignment=True)
 
-    message_id: uuid.UUID = GenPowerMeasurement.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
-    values: List[PowerValue] = GenPowerMeasurement.model_fields["values"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    message_id: uuid.UUID = copy_field(GenPowerMeasurement.model_fields["message_id"])  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    values: List[PowerValue] = copy_field(GenPowerMeasurement.model_fields["values"])  # type: ignore[assignment,reportIncompatibleVariableOverride]
 
     @model_validator(mode="after")
     def validate_values_at_most_one_per_commodity_quantity(self) -> Self:

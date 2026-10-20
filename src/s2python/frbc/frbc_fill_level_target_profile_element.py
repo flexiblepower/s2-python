@@ -9,6 +9,8 @@ from s2python.generated.gen_s2 import (
     FRBCFillLevelTargetProfileElement as GenFRBCFillLevelTargetProfileElement,
 )
 from s2python.validate_values_mixin import (
+    copy_config,
+    copy_field,
     catch_and_convert_exceptions,
     S2MessageComponent,
 )
@@ -16,13 +18,12 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class FRBCFillLevelTargetProfileElement(GenFRBCFillLevelTargetProfileElement, S2MessageComponent):
-    model_config = GenFRBCFillLevelTargetProfileElement.model_config
-    model_config["validate_assignment"] = True
+    model_config = copy_config(GenFRBCFillLevelTargetProfileElement.model_config, validate_assignment=True)
 
-    duration: Duration = GenFRBCFillLevelTargetProfileElement.model_fields["duration"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
-    fill_level_range: NumberRange = GenFRBCFillLevelTargetProfileElement.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
+    duration: Duration = copy_field(GenFRBCFillLevelTargetProfileElement.model_fields["duration"])  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    fill_level_range: NumberRange = copy_field(GenFRBCFillLevelTargetProfileElement.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "fill_level_range"
-    ]  # type: ignore[assignment]
+    ])  # type: ignore[assignment]
 
     @model_validator(mode="after")
     def validate_start_end_order(self) -> Self:

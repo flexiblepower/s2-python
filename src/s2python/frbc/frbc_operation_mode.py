@@ -9,6 +9,8 @@ from s2python.common import NumberRange
 from s2python.frbc.frbc_operation_mode_element import FRBCOperationModeElement
 from s2python.generated.gen_s2 import FRBCOperationMode as GenFRBCOperationMode
 from s2python.validate_values_mixin import (
+    copy_config,
+    copy_field,
     S2MessageComponent,
     catch_and_convert_exceptions,
 )
@@ -17,11 +19,10 @@ from s2python.utils import pairwise
 
 @catch_and_convert_exceptions
 class FRBCOperationMode(GenFRBCOperationMode, S2MessageComponent):
-    model_config = GenFRBCOperationMode.model_config
-    model_config["validate_assignment"] = True
+    model_config = copy_config(GenFRBCOperationMode.model_config, validate_assignment=True)
 
-    id: uuid.UUID = GenFRBCOperationMode.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
-    elements: List[FRBCOperationModeElement] = GenFRBCOperationMode.model_fields["elements"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    id: uuid.UUID = copy_field(GenFRBCOperationMode.model_fields["id"])  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    elements: List[FRBCOperationModeElement] = copy_field(GenFRBCOperationMode.model_fields["elements"])  # type: ignore[assignment,reportIncompatibleVariableOverride]
 
     @model_validator(mode="after")
     def validate_contiguous_fill_levels_operation_mode_elements(self) -> Self:
