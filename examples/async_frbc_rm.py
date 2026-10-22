@@ -34,7 +34,8 @@ from s2python.frbc import (
     FRBCActuatorStatus,
 )
 from s2python.connection import AssetDetails
-from s2python.connection.async_ import S2AsyncConnection, WebsocketClientMedium
+from s2python.connection.async_ import S2AsyncConnection
+from s2python.connection.async_.medium.websocket import WebsocketClientMedium
 from s2python.connection.async_.control_type.class_based import (
     FRBCControlType,
     NoControlControlType,
