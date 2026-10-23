@@ -53,7 +53,7 @@ development = [
     "pre-commit",
     "tox",
     "setuptools_scm",
-    "certifi>=2026.10.19",
+    "certifi>=2026.10.19",  # Because of https://emudhra.we-have-a-problem.com/
 ]
 docs = [
     "sphinx",
