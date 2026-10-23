@@ -89,7 +89,8 @@ class MessageHandlers:
                     await handler(connection, event, send_okay.run)
                 except PermanentConnectionError:
                     logger.error(
-                        "While processing message %s a permanent connection error occurred. Stopping the connection."
+                        "While processing message %s a permanent connection error occurred. Stopping the connection.",
+                        msg_event
                     )
                     raise
                 except Exception:
