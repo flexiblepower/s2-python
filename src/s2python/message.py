@@ -78,7 +78,7 @@ from s2python.common import (
     Transition,
 )
 
-S2MessageWithID: TypeAlias = Union[
+S2MessageWithID: TypeAlias = Union[  # pylint: disable=invalid-name
     DDBCAverageDemandRateForecast,
     DDBCInstruction,
     DDBCSystemDescription,

@@ -27,7 +27,7 @@ jobs:
   checks:
     strategy:
       matrix:
-        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python: ["3.11", "3.12", "3.13", "3.14", "3.15"]
     uses: ./.github/workflows/check-python.yml
     with:
       python-version: ${{ matrix.python }}
