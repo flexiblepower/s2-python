@@ -12,7 +12,7 @@ dynamic = ["version"]
 readme = "README.rst"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-requires-python = ">=3.9, < 3.14"
+requires-python = ">=3.11, < 3.16"
 dependencies = [
     "pydantic>=2.8.2",
     "typing-extensions",
@@ -24,6 +24,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
 
 [tool.setuptools_scm]
@@ -51,6 +53,7 @@ development = [
     "pre-commit",
     "tox",
     "setuptools_scm",
+    "certifi>=2026.10.19",
 ]
 docs = [
     "sphinx",
