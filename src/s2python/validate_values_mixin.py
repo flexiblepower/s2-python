@@ -1,3 +1,4 @@
+import copy
 from typing import (
     TypeVar,
     Type,
@@ -14,8 +15,10 @@ from typing_extensions import Self
 
 from pydantic import (  # pylint: disable=no-name-in-module
     BaseModel,
+    ConfigDict,
     ValidationError,
 )
+from pydantic.fields import FieldInfo
 
 from s2python.s2_validation_error import S2ValidationError
 
@@ -115,3 +118,22 @@ def catch_and_convert_exceptions(input_class: Type[S]) -> Type[S]:
     input_class.__init__ = convert_to_s2exception(input_class.__init__)  # type: ignore[method-assign]
 
     return input_class
+
+
+def copy_field(field: FieldInfo) -> Any:
+    """Copy the field of a generated model, to redefine it in a subclass.
+
+    pydantic modifies a FieldInfo that is used as the default of a field. Without
+    a copy, that would change the field of the generated model as well.
+    """
+    return copy.deepcopy(field)
+
+
+def copy_config(config: ConfigDict, **changes: Any) -> ConfigDict:
+    """Copy the config of a generated model with some changes, to use in a subclass.
+
+    Changing the config in place would change the config of the generated model as well.
+    """
+    new_config = ConfigDict(**config)
+    new_config.update(changes)  # type: ignore[typeddict-item]
+    return new_config

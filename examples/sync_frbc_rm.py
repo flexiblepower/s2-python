@@ -36,7 +36,7 @@ from s2python.frbc import (
 )
 from s2python.connection import AssetDetails
 from s2python.connection.sync import S2SyncConnection
-from s2python.connection.async_ import WebsocketClientMedium
+from s2python.connection.async_.medium.websocket import WebsocketClientMedium
 from s2python.connection.sync.control_type.class_based import (
     FRBCControlType,
     NoControlControlType,

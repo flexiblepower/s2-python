@@ -4,6 +4,7 @@ from pydantic import model_validator
 
 from s2python.generated.gen_s2 import PowerRange as GenPowerRange
 from s2python.validate_values_mixin import (
+    copy_config,
     S2MessageComponent,
     catch_and_convert_exceptions,
 )
@@ -11,8 +12,7 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class PowerRange(GenPowerRange, S2MessageComponent):
-    model_config = GenPowerRange.model_config
-    model_config["validate_assignment"] = True
+    model_config = copy_config(GenPowerRange.model_config, validate_assignment=True)
 
     @model_validator(mode="after")
     def validate_start_end_order(self) -> Self:

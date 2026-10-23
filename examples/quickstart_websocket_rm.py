@@ -29,7 +29,8 @@ from s2python.frbc import (
     FRBCStorageStatus,
     FRBCActuatorStatus,
 )
-from s2python.connection import AssetDetails, BlockingWebsocketClientRM
+from s2python.connection import AssetDetails
+from s2python.connection.quickstarts import BlockingWebsocketClientRM
 from s2python.connection.sync import S2SyncConnection
 from s2python.connection.sync.control_type.class_based import FRBCControlType, NoControlControlType
 

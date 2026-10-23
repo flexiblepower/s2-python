@@ -12,6 +12,8 @@ from s2python.generated.gen_s2 import (
 )
 from s2python.pebc.pebc_allowed_limit_range import PEBCAllowedLimitRange
 from s2python.validate_values_mixin import (
+    copy_config,
+    copy_field,
     catch_and_convert_exceptions,
     S2MessageComponent,
 )
@@ -19,17 +21,16 @@ from s2python.validate_values_mixin import (
 
 @catch_and_convert_exceptions
 class PEBCPowerConstraints(GenPEBCPowerConstraints, S2MessageComponent):
-    model_config = GenPEBCPowerConstraints.model_config
-    model_config["validate_assignment"] = True
+    model_config = copy_config(GenPEBCPowerConstraints.model_config, validate_assignment=True)
 
-    message_id: uuid.UUID = GenPEBCPowerConstraints.model_fields["message_id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
-    id: uuid.UUID = GenPEBCPowerConstraints.model_fields["id"]  # type: ignore[assignment,reportIncompatibleVariableOverride]
-    consequence_type: GenPEBCPowerEnvelopeConsequenceType = GenPEBCPowerConstraints.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
+    message_id: uuid.UUID = copy_field(GenPEBCPowerConstraints.model_fields["message_id"])  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    id: uuid.UUID = copy_field(GenPEBCPowerConstraints.model_fields["id"])  # type: ignore[assignment,reportIncompatibleVariableOverride]
+    consequence_type: GenPEBCPowerEnvelopeConsequenceType = copy_field(GenPEBCPowerConstraints.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "consequence_type"
-    ]  # type: ignore[assignment]
-    allowed_limit_ranges: List[PEBCAllowedLimitRange] = GenPEBCPowerConstraints.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
+    ])  # type: ignore[assignment]
+    allowed_limit_ranges: List[PEBCAllowedLimitRange] = copy_field(GenPEBCPowerConstraints.model_fields[  # type: ignore[reportIncompatibleVariableOverride]
         "allowed_limit_ranges"
-    ]  # type: ignore[assignment]
+    ])  # type: ignore[assignment]
 
     @model_validator(mode="after")
     def validate_has_one_upper_one_lower_limit_range(self) -> Self:
