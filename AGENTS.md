@@ -1,4 +1,4 @@
-# Project
+3.14# Project
 - This project is a library, not an application. It is intended to be used as a dependency in other projects.
 - This project defines a python version for the S2 network protocol.
 - We use semantic versioning for this project. The version number is defined in `pyproject.toml` and should be updated with each release.
@@ -13,7 +13,7 @@
 
 # Python
 - We use Python 3.11 as the earliest python to support.
-- We use Python 3.14 as the latest python to support.
+- We use Python 3.15 as the latest python to support.
 
 # Poetry
 - This is a library, do not pin any dependencies in pyproject.toml that break dependency management for downstream users.
