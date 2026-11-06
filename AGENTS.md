@@ -12,7 +12,7 @@
   - Example scripts under the `examples/` folder.
 
 # Python
-- We use Python 3.9 as the earliest python to support.
+- We use Python 3.11 as the earliest python to support.
 - We use Python 3.14 as the latest python to support.
 
 # Poetry
