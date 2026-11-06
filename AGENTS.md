@@ -12,8 +12,8 @@
   - Example scripts under the `examples/` folder.
 
 # Python
-- We use Python 3.9 as the earliest python to support.
-- We use Python 3.14 as the latest python to support.
+- We use Python 3.11 as the earliest python to support.
+- We use Python 3.15 as the latest python to support.
 
 # Poetry
 - This is a library, do not pin any dependencies in pyproject.toml that break dependency management for downstream users.
