@@ -1,4 +1,4 @@
-3.14# Project
+# Project
 - This project is a library, not an application. It is intended to be used as a dependency in other projects.
 - This project defines a python version for the S2 network protocol.
 - We use semantic versioning for this project. The version number is defined in `pyproject.toml` and should be updated with each release.
